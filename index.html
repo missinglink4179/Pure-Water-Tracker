@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>純水管理アプリ</title>
+
+<style>
+body{margin:0;background:#000;color:#fff;font-family:-apple-system;padding:16px;}
+.card{background:#1c1c1e;border-radius:16px;padding:16px;margin-bottom:12px;}
+.big{font-size:36px;font-weight:700;}
+.label{font-size:13px;color:#aaa;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+button{padding:12px;border:none;border-radius:10px;background:#2c2c2e;color:#fff;}
+.primary{width:100%;background:#34c759;color:#000;margin-top:10px;}
+.toggle{display:flex;background:#2c2c2e;border-radius:10px;padding:4px;margin-top:8px;}
+.toggle button{flex:1;}
+.active{background:#34c759;color:#000;}
+.current{text-align:center;font-size:28px;margin:10px 0;color:#34c759;}
+input{width:100%;padding:10px;background:#2c2c2e;border:none;color:#fff;border-radius:10px;}
+.history-item{display:flex;justify-content:space-between;margin-top:6px;background:#2c2c2e;padding:8px;border-radius:8px;}
+.footer{font-size:11px;color:#666;text-align:center;margin-top:14px;line-height:1.6;}
+</style>
+</head>
+
+<body>
+
+<h2 id="title">ピュアニッシュPRO</h2>
+
+<!-- モデル切替 -->
+<div class="card">
+<div class="label">モデル選択</div>
+<div class="toggle">
+<button id="model0" class="active" onclick="setModel(0)">PRO</button>
+<button id="model1" onclick="setModel(1)">JUST</button>
+</div>
+</div>
+
+<div class="card">
+<div class="label">残り容量</div>
+<div id="remain" class="big"></div>
+<div id="percent"></div>
+
+<hr>
+
+<div class="label">総生成量：<span id="max"></span></div>
+<div id="exchange" class="label"></div>
+<div class="label">累計使用量：<span id="total"></span></div>
+</div>
+
+<div class="card">
+<div class="label">PPM（お住まいの地域のppmを入力）</div>
+<input id="ppm" type="number" value="100" onchange="savePPM()">
+</div>
+
+<div class="card">
+<div class="label">コスト表示</div>
+<div class="toggle">
+<button id="btn0" class="active" onclick="setMode(0)">樹脂のみ</button>
+<button id="btn1" onclick="setMode(1)">本体込み</button>
+</div>
+<div class="label">単価：<span id="unit"></span></div>
+</div>
+
+<div class="card">
+<div class="label">使用量</div>
+
+<div class="grid">
+<button onclick="add(1)">+1L</button>
+<button onclick="add(5)">+5L</button>
+<button onclick="add(10)">+10L</button>
+<button onclick="add(20)">+20L</button>
+<button onclick="add(30)">+30L</button>
+<button onclick="add(50)">+50L</button>
+<button onclick="add(-1)">-1L</button>
+</div>
+
+<div id="current" class="current">0 L</div>
+<div id="cost" class="label"></div>
+
+<button class="primary" onclick="record()">記録する</button>
+<button onclick="resetAll()">樹脂リセット</button>
+</div>
+
+<div class="card">
+<div class="label">履歴（最新5件）</div>
+<div id="history"></div>
+</div>
+
+<div class="footer">
+このアプリは個人が作成した純水使用量の管理ツールです。<br>
+「ピュアニッシュ PRO / JUST」の仕様を参考にしていますが、<br>
+公式とは一切関係ありません。<br><br>
+
+参考：<br>
+監修　ビューティフルカーズ<br>
+製造　グリーンライフ<br><br>
+
+作成：missing link<br>
+個人利用の範囲でご使用ください。<br>
+※数値は目安です
+</div>
+
+<script>
+let total=0,current=0,ppm=100,mode=0,history=[],model=0;
+
+// モデル設定
+const models=[
+ {name:"ピュアニッシュPRO",base:180000,resin:12980,body:29480},
+ {name:"ピュアニッシュJUST",base:120000,resin:8980,body:19800}
+];
+
+function setModel(m){
+ model=m;
+ document.getElementById("title").innerText=models[m].name;
+ document.getElementById("model0").classList.toggle("active",m===0);
+ document.getElementById("model1").classList.toggle("active",m===1);
+ update();
+}
+
+function getMax(){return Math.round(models[model].base/ppm);}
+function getUnit(){
+ return mode===0
+ ?(models[model].resin/getMax())
+ :((models[model].resin+models[model].body)/getMax());
+}
+
+function savePPM(){ppm=parseFloat(ppmEl.value)||100;update();}
+function setMode(m){
+ mode=m;
+ btn0.classList.toggle("active",m===0);
+ btn1.classList.toggle("active",m===1);
+ update();
+}
+
+function add(v){
+ current=Math.max(0,current+v);
+ currentEl.innerText=current+" L";
+ update();
+}
+
+function estimate(){
+ if(history.length<2){exchangeEl.innerText="";return;}
+ const avg=history.reduce((a,b)=>a+b.vol,0)/history.length;
+ const days=Math.ceil((getMax()-total)/avg);
+ const d=new Date();
+ d.setDate(d.getDate()+days);
+ exchangeEl.innerText="交換目安："+d.toLocaleDateString();
+}
+
+function update(){
+ const max=getMax();
+ const remain=max-total;
+ remainEl.innerText=remain+" L";
+ percentEl.innerText=Math.round(remain/max*100)+"%";
+ totalEl.innerText=total+" L";
+ maxEl.innerText=max+" L";
+ costEl.innerText="今回："+Math.round(current*getUnit())+"円";
+ unitEl.innerText=getUnit().toFixed(1)+" 円/L";
+ estimate();
+}
+
+function record(){
+ if(current<=0)return;
+ const used=current;
+ const cost=Math.round(used*getUnit());
+ total+=used;
+
+ history.push({
+  date:new Date().toLocaleDateString(),
+  vol:used,
+  cost:cost
+ });
+
+ if(history.length>5)history.shift();
+
+ current=0;
+ currentEl.innerText="0 L";
+
+ update();
+ render();
+}
+
+function render(){
+ historyEl.innerHTML="";
+ history.slice().reverse().forEach(h=>{
+  historyEl.innerHTML+=`
+  <div class="history-item">
+   <span>${h.date}</span>
+   <span>${h.vol}L / ${h.cost}円</span>
+  </div>`;
+ });
+}
+
+function resetAll(){
+ if(confirm("リセットする？")){
+  total=0;
+  history=[];
+  update();
+  render();
+ }
+}
+
+const remainEl=document.getElementById("remain");
+const percentEl=document.getElementById("percent");
+const totalEl=document.getElementById("total");
+const currentEl=document.getElementById("current");
+const costEl=document.getElementById("cost");
+const ppmEl=document.getElementById("ppm");
+const maxEl=document.getElementById("max");
+const unitEl=document.getElementById("unit");
+const exchangeEl=document.getElementById("exchange");
+const historyEl=document.getElementById("history");
+const btn0=document.getElementById("btn0");
+const btn1=document.getElementById("btn1");
+
+update();
+render();
+</script>
+
+</body>
+</html>
