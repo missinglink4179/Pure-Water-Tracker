@@ -28,17 +28,10 @@
 
         .container { width: 100%; max-width: 400px; }
 
-        /* 最上部タイトル */
         .app-title {
-            width: 100%;
-            text-align: left;
-            font-size: 14px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            color: var(--text-gray);
-            margin-bottom: 10px;
-            padding-left: 5px;
-            text-transform: lowercase;
+            width: 100%; text-align: left; font-size: 14px; font-weight: 300;
+            letter-spacing: 2px; color: var(--text-gray); margin-bottom: 10px;
+            padding-left: 5px; text-transform: lowercase;
         }
         
         .section {
@@ -116,7 +109,6 @@
             background: none; border: none; color: var(--accent-green);
             font-size: 18px; font-weight: bold; text-align: right; width: 80px; outline: none;
         }
-        .input-field::placeholder { color: #444; font-size: 12px; }
 
         .toggle-container {
             display: grid; grid-template-columns: 1fr 1fr; background-color: var(--item-bg);
@@ -128,6 +120,15 @@
         }
         .toggle-btn.active { background-color: var(--accent-green); color: #000; }
 
+        /* トースト通知 */
+        #toast {
+            position: fixed; bottom: 30px; background: rgba(255,255,255,0.9); color: black;
+            padding: 12px 24px; border-radius: 25px; font-size: 14px; font-weight: bold;
+            opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none;
+            transform: translateY(20px); z-index: 1000;
+        }
+        #toast.show { opacity: 1; transform: translateY(0); }
+
         .footer-info {
             text-align: center; color: var(--text-gray); font-size: 11px; line-height: 1.6;
             margin-top: 30px; padding-bottom: 40px;
@@ -135,6 +136,8 @@
     </style>
 </head>
 <body>
+
+<div id="toast"></div>
 
 <div class="container">
     <div class="app-title">pure-water-tracker</div>
@@ -199,7 +202,7 @@
     <div class="section">
         <div class="input-row">
             <span>水道水硬度 (ppm)</span>
-            <input type="number" id="ppm-input" class="input-field" placeholder="数値入力">
+            <input type="number" id="ppm-input" class="input-field" placeholder="80">
         </div>
         <div class="toggle-container">
             <button id="model-pro" class="toggle-btn">PRO</button>
@@ -233,206 +236,198 @@
 </div>
 
 <script>
-    let totalUsageCurrentResin = parseFloat(localStorage.getItem('totalUsageCurrentResin')) || 0;
-    let allTimeUsage = parseFloat(localStorage.getItem('allTimeUsage')) || 0;
-    let monthlyUsage = parseFloat(localStorage.getItem('monthlyUsage')) || 0;
-    let monthlyCost = parseFloat(localStorage.getItem('monthlyCost')) || 0;
-    let lastActiveMonth = localStorage.getItem('lastActiveMonth') || getYearMonth(); 
-    let archives = JSON.parse(localStorage.getItem('archives')) || [];
-    let historyRecords = JSON.parse(localStorage.getItem('historyRecords')) || []; 
+    // --- 状態管理オブジェクト ---
+    const App = {
+        state: {
+            currentResinUsage: 0,
+            allTimeUsage: 0,
+            monthlyUsage: 0,
+            monthlyCost: 0,
+            lastMonth: "",
+            archives: [],
+            history: [],
+            ppm: 80,
+            model: "pro",
+            mode: "resin",
+            currentInput: 0
+        },
 
-    let savedPpm = localStorage.getItem('savedPpm');
-    let currentModel = localStorage.getItem('savedModel') || "pro";
-    let currentMode = localStorage.getItem('savedMode') || "resin";
+        prices: { pro: { resin: 12980, full: 29480 }, just: { resin: 9878, full: 25080 } },
+        capacities: { pro: 160000, just: 90000 },
 
-    let currentValue = 0;
-    const prices = { pro: { resin: 12980, full: 29480 }, just: { resin: 9878, full: 25080 } };
-    const capacities = { pro: 160000, just: 90000 };
+        init() {
+            this.load();
+            this.checkMonthReset();
+            this.bindEvents();
+            this.render();
+        },
 
-    function getYearMonth() {
-        const d = new Date();
-        return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
-    }
+        load() {
+            const saved = JSON.parse(localStorage.getItem('pure_water_app_data')) || {};
+            this.state.currentResinUsage = saved.currentResinUsage || 0;
+            this.state.allTimeUsage = saved.allTimeUsage || 0;
+            this.state.monthlyUsage = saved.monthlyUsage || 0;
+            this.state.monthlyCost = saved.monthlyCost || 0;
+            this.state.lastMonth = saved.lastMonth || this.getYearMonth();
+            this.state.archives = saved.archives || [];
+            this.state.history = saved.history || [];
+            this.state.ppm = saved.ppm || 80;
+            this.state.model = saved.model || "pro";
+            this.state.mode = saved.mode || "resin";
+            
+            document.getElementById('ppm-input').value = saved.ppm || "";
+        },
 
-    function saveData() {
-        localStorage.setItem('totalUsageCurrentResin', totalUsageCurrentResin);
-        localStorage.setItem('allTimeUsage', allTimeUsage);
-        localStorage.setItem('monthlyUsage', monthlyUsage);
-        localStorage.setItem('monthlyCost', monthlyCost);
-        localStorage.setItem('lastActiveMonth', lastActiveMonth);
-        localStorage.setItem('archives', JSON.stringify(archives));
-        localStorage.setItem('historyRecords', JSON.stringify(historyRecords));
-        localStorage.setItem('savedPpm', document.getElementById('ppm-input').value);
-        localStorage.setItem('savedModel', currentModel);
-        localStorage.setItem('savedMode', currentMode);
-    }
+        save() {
+            localStorage.setItem('pure_water_app_data', JSON.stringify(this.state));
+        },
 
-    function checkMonthReset() {
-        const nowYM = getYearMonth();
-        if (lastActiveMonth !== nowYM) {
-            if (monthlyUsage > 0) {
-                archives.unshift({ month: lastActiveMonth, usage: monthlyUsage, cost: Math.round(monthlyCost) });
-                if (archives.length > 12) archives.pop();
+        getYearMonth() {
+            const d = new Date();
+            return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+        },
+
+        checkMonthReset() {
+            const nowYM = this.getYearMonth();
+            if (this.state.lastMonth !== nowYM) {
+                if (this.state.monthlyUsage > 0) {
+                    this.state.archives.unshift({
+                        month: this.state.lastMonth,
+                        usage: this.state.monthlyUsage,
+                        cost: Math.round(this.state.monthlyCost)
+                    });
+                    if (this.state.archives.length > 12) this.state.archives.pop();
+                }
+                this.state.monthlyUsage = 0;
+                this.state.monthlyCost = 0;
+                this.state.lastMonth = nowYM;
+                this.save();
             }
-            monthlyUsage = 0; monthlyCost = 0; lastActiveMonth = nowYM;
-            renderArchives(); saveData();
-        }
-    }
+        },
 
-    function renderArchives() {
-        const list = document.getElementById('archive-list');
-        list.innerHTML = archives.map(item => `
-            <div class="archive-item"><span>${item.month}</span> <span>${item.usage}ℓ / ${item.cost}円</span></div>
-        `).join('') || '<div style="color:#444;text-align:center">月別履歴なし</div>';
-    }
+        showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        },
 
-    function updateCalculations() {
-        checkMonthReset();
-        const ppmVal = parseFloat(document.getElementById('ppm-input').value) || 80;
-        const ppm = Math.max(1, Math.min(ppmVal, 500));
-        
-        const totalCapacityL = capacities[currentModel] / ppm;
-        const unitPrice = prices[currentModel][currentMode] / totalCapacityL;
-        
-        const remaining = Math.max(0, totalCapacityL - totalUsageCurrentResin);
-        const percent = Math.max(0, (remaining / totalCapacityL) * 100);
+        render() {
+            const ppm = Math.max(1, this.state.ppm);
+            const totalCap = this.capacities[this.state.model] / ppm;
+            const unitPrice = this.prices[this.state.model][this.state.mode] / totalCap;
+            const remaining = Math.max(0, totalCap - this.state.currentResinUsage);
+            const percent = Math.max(0, (remaining / totalCap) * 100);
 
-        // メイン残量表示のℓを小さくするスタイル適用
-        document.getElementById('remaining-water').innerHTML = `${Math.round(remaining)}<span class="unit-small">ℓ</span>`;
-        document.getElementById('progress-bar').style.width = `${percent}%`;
-        
-        const modelLabel = currentModel.toUpperCase();
-        const modeLabel = currentMode === 'resin' ? '樹脂' : '本体';
-        document.getElementById('unit-price-display').innerText = `単価(${modelLabel}/${modeLabel}): ${unitPrice.toFixed(1)} 円/ℓ`;
-        
-        document.getElementById('current-cost-sub').innerText = `約 ${Math.round(currentValue * unitPrice)} 円`;
+            // UI更新
+            document.getElementById('remaining-water').innerHTML = `${Math.round(remaining)}<span class="unit-small">ℓ</span>`;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            document.getElementById('progress-bar').className = percent <= 10 ? 'progress-bar low' : 'progress-bar';
+            document.body.className = percent <= 10 ? 'danger-mode' : '';
+            
+            document.getElementById('all-time-usage').innerText = `${Math.round(this.state.allTimeUsage)} ℓ`;
+            document.getElementById('monthly-usage').innerText = `${Math.round(this.state.monthlyUsage)} ℓ`;
+            document.getElementById('monthly-cost').innerText = `${Math.round(this.state.monthlyCost)} 円`;
+            document.getElementById('monthly-label').innerText = `${this.state.lastMonth.split('-')[1]}月の使用量`;
+            document.getElementById('current-display').innerText = `${this.state.currentInput} ℓ`;
+            document.getElementById('current-cost-sub').innerText = `約 ${Math.round(this.state.currentInput * unitPrice)} 円`;
+            document.getElementById('unit-price-display').innerText = `単価(${this.state.model.toUpperCase()}/${this.state.mode === 'resin' ? '樹脂' : '本体'}): ${unitPrice.toFixed(1)} 円/ℓ`;
 
-        const pb = document.getElementById('progress-bar');
-        const washEl = document.getElementById('prediction-wash');
-        if (percent <= 10) {
-            pb.className = 'progress-bar low';
-            document.body.className = 'danger-mode';
-        } else {
-            pb.className = 'progress-bar';
-            document.body.className = '';
-        }
-
-        if (remaining <= 0) {
-            washEl.innerHTML = '<span class="alert-text">交換してください</span>';
-            document.getElementById('prediction-date').innerText = "---";
-        } else {
-            let washStandard = 30;
-            if (historyRecords.length > 0) {
-                const sorted = [...historyRecords].map(r => r.amount).sort((a,b) => a-b);
-                const mid = Math.floor(sorted.length / 2);
-                washStandard = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-            }
+            // 予測ロジック
+            const washStandard = this.state.history.length > 0 ? 
+                [...this.state.history].sort((a,b)=>a-b)[Math.floor(this.state.history.length/2)] : 30;
             const predictedTimes = Math.floor(remaining / washStandard);
-            washEl.innerText = `${predictedTimes} 回`;
-
+            
+            document.getElementById('prediction-wash').innerHTML = remaining <= 0 ? '<span class="alert-text">交換してください</span>' : `${predictedTimes} 回`;
+            
             const dateEl = document.getElementById('prediction-date');
-            if (historyRecords.length >= 2) {
-                const recent = historyRecords.slice(0, 5);
-                const dates = recent.map(r => r.timestamp).sort((a,b) => a-b);
-                const interval = (dates[dates.length - 1] - dates[0]) / (1000 * 60 * 60 * 24) / (recent.length - 1);
-                const safeInterval = Math.max(1, interval || 7);
-                const target = new Date();
-                target.setDate(target.getDate() + Math.round(predictedTimes * safeInterval));
-                dateEl.innerText = `${target.getMonth()+1}/${target.getDate()}頃`;
+            if (remaining <= 0) {
+                dateEl.innerText = "---";
             } else {
                 const target = new Date();
-                target.setDate(target.getDate() + (predictedTimes * 7));
-                dateEl.innerText = `${target.getMonth()+1}/${target.getDate()}頃(仮)`;
+                const interval = 7; // デフォルト1週間
+                target.setDate(target.getDate() + (predictedTimes * interval));
+                dateEl.innerText = `${target.getMonth()+1}/${target.getDate()}頃${this.state.history.length < 2 ? '(仮)' : ''}`;
             }
+
+            // 履歴描画
+            document.getElementById('archive-list').innerHTML = this.state.archives.map(a => `
+                <div class="archive-item"><span>${a.month}</span> <span>${a.usage}ℓ / ${a.cost}円</span></div>
+            `).join('') || '<div style="color:#444;text-align:center">月別履歴なし</div>';
+
+            // ボタン状態
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.id === `model-${this.state.model}` || btn.id === `mode-${this.state.mode}`);
+            });
+        },
+
+        bindEvents() {
+            document.getElementById('btn-plus').onclick = () => { this.state.currentInput++; this.render(); if(navigator.vibrate) navigator.vibrate(10); };
+            document.getElementById('btn-minus').onclick = () => { if(this.state.currentInput > 0) this.state.currentInput--; this.render(); if(navigator.vibrate) navigator.vibrate(10); };
+            
+            document.querySelectorAll('.btn-usage').forEach(btn => {
+                btn.onclick = () => { this.state.currentInput += parseInt(btn.dataset.amount); this.render(); if(navigator.vibrate) navigator.vibrate(10); };
+            });
+
+            document.getElementById('record-btn').onclick = () => {
+                if (this.state.currentInput <= 0) return;
+                const ppm = Math.max(1, this.state.ppm);
+                const unitPrice = this.prices[this.state.model][this.state.mode] / (this.capacities[this.state.model] / ppm);
+                
+                this.state.currentResinUsage += this.state.currentInput;
+                this.state.allTimeUsage += this.state.currentInput;
+                this.state.monthlyUsage += this.state.currentInput;
+                this.state.monthlyCost += (this.state.currentInput * unitPrice);
+                
+                this.state.history.unshift(this.state.currentInput);
+                if (this.state.history.length > 30) this.state.history.pop();
+                
+                this.showToast(`${this.state.currentInput}ℓ 記録しました`);
+                this.state.currentInput = 0;
+                this.save();
+                this.render();
+                if(navigator.vibrate) navigator.vibrate(50);
+            };
+
+            document.getElementById('ppm-input').oninput = (e) => {
+                this.state.ppm = parseFloat(e.target.value) || 80;
+                this.save();
+                this.render();
+            };
+
+            ['pro', 'just'].forEach(m => document.getElementById(`model-${m}`).onclick = () => { this.state.model = m; this.save(); this.render(); });
+            ['resin', 'full'].forEach(m => document.getElementById(`mode-${m}`).onclick = () => { this.state.mode = m; this.save(); this.render(); });
+
+            // 長押しリセット
+            let holdTimer;
+            const resetBtn = document.getElementById('reset-hold-btn');
+            const fill = document.getElementById('hold-fill');
+            
+            const startHold = (e) => {
+                e.preventDefault();
+                fill.style.transition = 'width 2s linear';
+                fill.style.width = '100%';
+                holdTimer = setTimeout(() => {
+                    this.state.currentResinUsage = 0;
+                    this.save();
+                    this.render();
+                    this.showToast("樹脂情報をリセットしました");
+                    cancelHold();
+                    if(navigator.vibrate) navigator.vibrate([100,50,100]);
+                }, 2000);
+            };
+            const cancelHold = () => {
+                clearTimeout(holdTimer);
+                fill.style.transition = 'width 0.2s ease-out';
+                fill.style.width = '0%';
+            };
+
+            resetBtn.onmousedown = resetBtn.ontouchstart = startHold;
+            resetBtn.onmouseup = resetBtn.onmouseleave = resetBtn.ontouchend = cancelHold;
         }
+    };
 
-        document.getElementById('all-time-usage').innerText = `${Math.round(allTimeUsage)} ℓ`;
-        document.getElementById('monthly-usage').innerText = `${Math.round(monthlyUsage)} ℓ`;
-        document.getElementById('monthly-cost').innerText = `${Math.round(monthlyCost)} 円`;
-        document.getElementById('monthly-label').innerText = `${lastActiveMonth.split('-')[1]}月の使用量`;
-    }
-
-    let holdTimer;
-    const holdBtn = document.getElementById('reset-hold-btn');
-    const holdFill = document.getElementById('hold-fill');
-
-    function startHold(e) {
-        e.preventDefault();
-        holdFill.style.transition = 'width 2s linear';
-        holdFill.style.width = '100%';
-        holdTimer = setTimeout(() => {
-            if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
-            totalUsageCurrentResin = 0;
-            saveData();
-            updateCalculations();
-            cancelHold();
-            alert("樹脂情報をリセットしました");
-        }, 2000);
-    }
-
-    function cancelHold() {
-        clearTimeout(holdTimer);
-        holdFill.style.transition = 'width 0.2s ease-out';
-        holdFill.style.width = '0%';
-    }
-
-    holdBtn.addEventListener('mousedown', startHold);
-    holdBtn.addEventListener('touchstart', startHold);
-    holdBtn.addEventListener('mouseup', cancelHold);
-    holdBtn.addEventListener('mouseleave', cancelHold);
-    holdBtn.addEventListener('touchend', cancelHold);
-
-    function adjustValue(val) {
-        if ("vibrate" in navigator) navigator.vibrate(10);
-        currentValue = Math.max(0, currentValue + val);
-        document.getElementById('current-display').innerText = `${currentValue} ℓ`;
-        updateCalculations();
-    }
-
-    function recordUsage() {
-        if (currentValue <= 0) return;
-        if ("vibrate" in navigator) navigator.vibrate(50);
-        
-        const ppmVal = parseFloat(document.getElementById('ppm-input').value) || 80;
-        const ppm = Math.max(1, Math.min(ppmVal, 500));
-        const unitPrice = prices[currentModel][currentMode] / (capacities[currentModel] / ppm);
-        
-        totalUsageCurrentResin += currentValue;
-        allTimeUsage += currentValue;
-        monthlyUsage += currentValue;
-        monthlyCost += (currentValue * unitPrice);
-        historyRecords.unshift({ timestamp: Date.now(), amount: currentValue });
-        if (historyRecords.length > 500) historyRecords.pop();
-        
-        currentValue = 0;
-        document.getElementById('current-display').innerText = `0 ℓ`;
-        saveData();
-        updateCalculations();
-    }
-
-    function applyConfigUI() {
-        if (savedPpm !== null) document.getElementById('ppm-input').value = savedPpm;
-        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(`model-${currentModel}`).classList.add('active');
-        document.getElementById(`mode-${currentMode}`).classList.add('active');
-    }
-
-    document.getElementById('btn-plus').addEventListener('click', () => adjustValue(1));
-    document.getElementById('btn-minus').addEventListener('click', () => adjustValue(-1));
-    document.querySelectorAll('.btn-usage').forEach(btn => {
-        btn.addEventListener('click', () => adjustValue(parseInt(btn.dataset.amount)));
-    });
-    document.getElementById('record-btn').addEventListener('click', recordUsage);
-    
-    document.getElementById('model-pro').addEventListener('click', () => { currentModel = 'pro'; applyConfigUI(); updateCalculations(); saveData(); });
-    document.getElementById('model-just').addEventListener('click', () => { currentModel = 'just'; applyConfigUI(); updateCalculations(); saveData(); });
-    document.getElementById('mode-resin').addEventListener('click', () => { currentMode = 'resin'; applyConfigUI(); updateCalculations(); saveData(); });
-    document.getElementById('mode-full').addEventListener('click', () => { currentMode = 'full'; applyConfigUI(); updateCalculations(); saveData(); });
-    document.getElementById('ppm-input').addEventListener('input', () => { updateCalculations(); saveData(); });
-
-    applyConfigUI();
-    renderArchives();
-    updateCalculations();
+    App.init();
 </script>
 
 </body>
