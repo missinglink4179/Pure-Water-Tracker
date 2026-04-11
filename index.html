@@ -27,6 +27,19 @@
         body.danger-mode { background-color: #2a0a0a; }
 
         .container { width: 100%; max-width: 400px; }
+
+        /* 最上部タイトル */
+        .app-title {
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: var(--text-gray);
+            margin-bottom: 10px;
+            padding-left: 5px;
+            text-transform: lowercase;
+        }
         
         .section {
             background-color: var(--panel-bg); border-radius: 20px; padding: 20px; margin-bottom: 20px;
@@ -35,6 +48,7 @@
 
         .main-status { text-align: center; margin-bottom: 20px; }
         .main-remaining-val { font-size: 64px; font-weight: 900; line-height: 1; margin: 10px 0; }
+        .unit-small { font-size: 32px; font-weight: 400; margin-left: 4px; vertical-align: baseline; }
         
         .progress-container {
             width: 100%; height: 12px; background-color: #3a3a3c; border-radius: 6px; overflow: hidden; margin-bottom: 10px;
@@ -123,6 +137,8 @@
 <body>
 
 <div class="container">
+    <div class="app-title">pure-water-tracker</div>
+    
     <div class="section">
         <div class="main-status">
             <div class="status-label">交換まであと</div>
@@ -139,11 +155,11 @@
         <div class="status-grid">
             <div class="status-item">
                 <div class="status-label">累計使用量</div>
-                <div id="all-time-usage" class="status-val">0 L</div>
+                <div id="all-time-usage" class="status-val">0 ℓ</div>
             </div>
             <div class="status-item">
                 <div class="status-label" id="monthly-label">今月の使用量</div>
-                <div id="monthly-usage" class="status-val">0 L</div>
+                <div id="monthly-usage" class="status-val">0 ℓ</div>
             </div>
             <div class="status-item" style="grid-column: span 2;">
                 <div class="status-label">今月の算出コスト</div>
@@ -157,19 +173,19 @@
         <div class="display-container">
             <div class="adjust-row">
                 <button class="btn-adjust" id="btn-minus">－</button>
-                <div id="current-display" class="display-value">0 L</div>
+                <div id="current-display" class="display-value">0 ℓ</div>
                 <button class="btn-adjust" id="btn-plus">＋</button>
             </div>
             <div id="current-cost-sub" class="sub-cost-info">約 0 円</div>
         </div>
         
         <div class="grid-buttons">
-            <button class="btn-usage" data-amount="5">+5L</button>
-            <button class="btn-usage" data-amount="10">+10L</button>
-            <button class="btn-usage" data-amount="20">+20L</button>
-            <button class="btn-usage" data-amount="30">+30L</button>
-            <button class="btn-usage" data-amount="50">+50L</button>
-            <button class="btn-usage" data-amount="100">+100L</button>
+            <button class="btn-usage" data-amount="5">+5ℓ</button>
+            <button class="btn-usage" data-amount="10">+10ℓ</button>
+            <button class="btn-usage" data-amount="20">+20ℓ</button>
+            <button class="btn-usage" data-amount="30">+30ℓ</button>
+            <button class="btn-usage" data-amount="50">+50ℓ</button>
+            <button class="btn-usage" data-amount="100">+100ℓ</button>
         </div>
         
         <button class="btn-record" id="record-btn">記録を保存</button>
@@ -266,7 +282,7 @@
     function renderArchives() {
         const list = document.getElementById('archive-list');
         list.innerHTML = archives.map(item => `
-            <div class="archive-item"><span>${item.month}</span> <span>${item.usage}L / ${item.cost}円</span></div>
+            <div class="archive-item"><span>${item.month}</span> <span>${item.usage}ℓ / ${item.cost}円</span></div>
         `).join('') || '<div style="color:#444;text-align:center">月別履歴なし</div>';
     }
 
@@ -281,12 +297,13 @@
         const remaining = Math.max(0, totalCapacityL - totalUsageCurrentResin);
         const percent = Math.max(0, (remaining / totalCapacityL) * 100);
 
-        document.getElementById('remaining-water').innerText = `${Math.round(remaining)}L`;
+        // メイン残量表示のℓを小さくするスタイル適用
+        document.getElementById('remaining-water').innerHTML = `${Math.round(remaining)}<span class="unit-small">ℓ</span>`;
         document.getElementById('progress-bar').style.width = `${percent}%`;
         
         const modelLabel = currentModel.toUpperCase();
         const modeLabel = currentMode === 'resin' ? '樹脂' : '本体';
-        document.getElementById('unit-price-display').innerText = `単価(${modelLabel}/${modeLabel}): ${unitPrice.toFixed(1)} 円/L`;
+        document.getElementById('unit-price-display').innerText = `単価(${modelLabel}/${modeLabel}): ${unitPrice.toFixed(1)} 円/ℓ`;
         
         document.getElementById('current-cost-sub').innerText = `約 ${Math.round(currentValue * unitPrice)} 円`;
 
@@ -329,8 +346,8 @@
             }
         }
 
-        document.getElementById('all-time-usage').innerText = `${Math.round(allTimeUsage)} L`;
-        document.getElementById('monthly-usage').innerText = `${Math.round(monthlyUsage)} L`;
+        document.getElementById('all-time-usage').innerText = `${Math.round(allTimeUsage)} ℓ`;
+        document.getElementById('monthly-usage').innerText = `${Math.round(monthlyUsage)} ℓ`;
         document.getElementById('monthly-cost').innerText = `${Math.round(monthlyCost)} 円`;
         document.getElementById('monthly-label').innerText = `${lastActiveMonth.split('-')[1]}月の使用量`;
     }
@@ -368,7 +385,7 @@
     function adjustValue(val) {
         if ("vibrate" in navigator) navigator.vibrate(10);
         currentValue = Math.max(0, currentValue + val);
-        document.getElementById('current-display').innerText = `${currentValue} L`;
+        document.getElementById('current-display').innerText = `${currentValue} ℓ`;
         updateCalculations();
     }
 
@@ -388,7 +405,7 @@
         if (historyRecords.length > 500) historyRecords.pop();
         
         currentValue = 0;
-        document.getElementById('current-display').innerText = `0 L`;
+        document.getElementById('current-display').innerText = `0 ℓ`;
         saveData();
         updateCalculations();
     }
