@@ -1,221 +1,421 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>純水管理アプリ</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>純水管理アプリ</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --accent-green: #34c759;
+            --accent-orange: #ff9500;
+            --accent-red: #ff3b30;
+            --panel-bg: #1c1c1e;
+            --item-bg: #2c2c2e;
+            --text-gray: #8e8e93;
+        }
 
-<style>
-body{margin:0;background:#000;color:#fff;font-family:-apple-system;padding:16px;}
-.card{background:#1c1c1e;border-radius:16px;padding:16px;margin-bottom:12px;}
-.big{font-size:36px;font-weight:700;}
-.label{font-size:13px;color:#aaa;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-button{padding:12px;border:none;border-radius:10px;background:#2c2c2e;color:#fff;}
-.primary{width:100%;background:#34c759;color:#000;margin-top:10px;}
-.toggle{display:flex;background:#2c2c2e;border-radius:10px;padding:4px;margin-top:8px;}
-.toggle button{flex:1;}
-.active{background:#34c759;color:#000;}
-.current{text-align:center;font-size:28px;margin:10px 0;color:#34c759;}
-input{width:100%;padding:10px;background:#2c2c2e;border:none;color:#fff;border-radius:10px;}
-.history-item{display:flex;justify-content:space-between;margin-top:6px;background:#2c2c2e;padding:8px;border-radius:8px;}
-.footer{font-size:11px;color:#666;text-align:center;margin-top:14px;line-height:1.6;}
-</style>
+        body {
+            background-color: var(--bg-color);
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
+            display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0;
+            transition: background-color 0.5s ease;
+            user-select: none; -webkit-user-select: none;
+        }
+
+        body.danger-mode { background-color: #2a0a0a; }
+
+        .container { width: 100%; max-width: 400px; }
+        
+        .section {
+            background-color: var(--panel-bg); border-radius: 20px; padding: 20px; margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .main-status { text-align: center; margin-bottom: 20px; }
+        .main-remaining-val { font-size: 64px; font-weight: 900; line-height: 1; margin: 10px 0; }
+        
+        .progress-container {
+            width: 100%; height: 12px; background-color: #3a3a3c; border-radius: 6px; overflow: hidden; margin-bottom: 10px;
+        }
+        .progress-bar {
+            height: 100%; width: 0%; background-color: var(--accent-green);
+            transition: width 0.5s ease, background-color 0.5s ease;
+        }
+        .progress-bar.low { background-color: var(--accent-red); animation: pulse 2s infinite; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        .prediction-info { display: flex; justify-content: space-around; font-size: 13px; color: var(--text-gray); }
+        .prediction-info b { color: #ffffff; }
+        .alert-text { color: var(--accent-red) !important; font-weight: bold; }
+
+        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .status-item { background-color: var(--item-bg); padding: 10px; border-radius: 12px; text-align: center; }
+        .status-label { font-size: 10px; color: var(--text-gray); margin-bottom: 4px; }
+        .status-val { font-size: 16px; font-weight: bold; }
+
+        .archive-list {
+            margin-top: 10px; font-size: 12px; max-height: 60px; overflow-y: auto;
+            border-top: 1px solid #3a3a3c; padding-top: 8px;
+        }
+        .archive-item { display: flex; justify-content: space-between; color: var(--text-gray); margin-bottom: 3px; }
+
+        .display-container {
+            display: flex; flex-direction: column; align-items: center; margin: 10px 0 20px 0;
+        }
+        .adjust-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        .btn-adjust {
+            background-color: var(--item-bg); color: #ffffff; border: none;
+            width: 54px; height: 54px; border-radius: 27px; font-size: 24px; cursor: pointer;
+        }
+        .display-value { font-size: 56px; font-weight: bold; color: var(--accent-green); }
+        .sub-cost-info { font-size: 14px; color: var(--text-gray); margin-top: -5px; }
+
+        .grid-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
+        .btn-usage {
+            background-color: var(--item-bg); color: #ffffff; border: none;
+            padding: 12px; border-radius: 10px; font-size: 14px; cursor: pointer;
+        }
+
+        .btn-record {
+            background-color: var(--accent-green); color: white; border: none;
+            width: 100%; padding: 20px; border-radius: 15px; font-size: 20px; font-weight: bold; cursor: pointer;
+        }
+
+        .btn-reset-hold {
+            background-color: transparent; color: var(--accent-red); border: 1px solid var(--accent-red);
+            padding: 12px; border-radius: 8px; font-size: 12px; margin-top: 20px; width: 100%;
+            cursor: pointer; position: relative; overflow: hidden;
+        }
+        .hold-progress {
+            position: absolute; left: 0; top: 0; height: 100%; background-color: rgba(255, 59, 48, 0.2);
+            width: 0%; transition: none;
+        }
+
+        .input-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: var(--item-bg); padding: 12px 15px; border-radius: 12px; margin-bottom: 10px;
+        }
+        .input-field {
+            background: none; border: none; color: var(--accent-green);
+            font-size: 18px; font-weight: bold; text-align: right; width: 80px; outline: none;
+        }
+        .input-field::placeholder { color: #444; font-size: 12px; }
+
+        .toggle-container {
+            display: grid; grid-template-columns: 1fr 1fr; background-color: var(--item-bg);
+            border-radius: 10px; padding: 4px; margin-bottom: 8px;
+        }
+        .toggle-btn {
+            padding: 10px; border-radius: 7px; border: none; color: #ffffff; background: none;
+            font-size: 13px; font-weight: bold; cursor: pointer;
+        }
+        .toggle-btn.active { background-color: var(--accent-green); color: #000; }
+
+        .footer-info {
+            text-align: center; color: var(--text-gray); font-size: 11px; line-height: 1.6;
+            margin-top: 30px; padding-bottom: 40px;
+        }
+    </style>
 </head>
-
 <body>
 
-<h2 id="title">ピュアニッシュPRO</h2>
+<div class="container">
+    <div class="section">
+        <div class="main-status">
+            <div class="status-label">交換まであと</div>
+            <div id="remaining-water" class="main-remaining-val">---</div>
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div class="prediction-info">
+                <span>目安: <b id="prediction-wash">--- 回</b></span>
+                <span>寿命予測: <b id="prediction-date">---</b></span>
+            </div>
+        </div>
 
-<!-- モデル切替 -->
-<div class="card">
-<div class="label">モデル選択</div>
-<div class="toggle">
-<button id="model0" class="active" onclick="setModel(0)">PRO</button>
-<button id="model1" onclick="setModel(1)">JUST</button>
-</div>
-</div>
+        <div class="status-grid">
+            <div class="status-item">
+                <div class="status-label">累計使用量</div>
+                <div id="all-time-usage" class="status-val">0 L</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label" id="monthly-label">今月の使用量</div>
+                <div id="monthly-usage" class="status-val">0 L</div>
+            </div>
+            <div class="status-item" style="grid-column: span 2;">
+                <div class="status-label">今月の算出コスト</div>
+                <div id="monthly-cost" class="status-val">0 円</div>
+            </div>
+        </div>
+        <div id="archive-list" class="archive-list"></div>
+    </div>
 
-<div class="card">
-<div class="label">残り容量</div>
-<div id="remain" class="big"></div>
-<div id="percent"></div>
+    <div class="section">
+        <div class="display-container">
+            <div class="adjust-row">
+                <button class="btn-adjust" id="btn-minus">－</button>
+                <div id="current-display" class="display-value">0 L</div>
+                <button class="btn-adjust" id="btn-plus">＋</button>
+            </div>
+            <div id="current-cost-sub" class="sub-cost-info">約 0 円</div>
+        </div>
+        
+        <div class="grid-buttons">
+            <button class="btn-usage" data-amount="5">+5L</button>
+            <button class="btn-usage" data-amount="10">+10L</button>
+            <button class="btn-usage" data-amount="20">+20L</button>
+            <button class="btn-usage" data-amount="30">+30L</button>
+            <button class="btn-usage" data-amount="50">+50L</button>
+            <button class="btn-usage" data-amount="100">+100L</button>
+        </div>
+        
+        <button class="btn-record" id="record-btn">記録を保存</button>
+        
+        <button class="btn-reset-hold" id="reset-hold-btn">
+            <div id="hold-fill" class="hold-progress"></div>
+            <span style="position:relative;">長押しで樹脂リセット</span>
+        </button>
+    </div>
 
-<hr>
+    <div class="section">
+        <div class="input-row">
+            <span>水道水硬度 (ppm)</span>
+            <input type="number" id="ppm-input" class="input-field" placeholder="数値入力">
+        </div>
+        <div class="toggle-container">
+            <button id="model-pro" class="toggle-btn">PRO</button>
+            <button id="model-just" class="toggle-btn">JUST</button>
+        </div>
+        <div class="toggle-container">
+            <button id="mode-resin" class="toggle-btn">樹脂のみ</button>
+            <button id="mode-full" class="toggle-btn">本体込み</button>
+        </div>
+        <div id="unit-price-display" style="text-align:right; font-size:11px; color:var(--text-gray); margin-top:5px;">単価: ---</div>
+    </div>
 
-<div class="label">総生成量：<span id="max"></span></div>
-<div id="exchange" class="label"></div>
-<div class="label">累計使用量：<span id="total"></span></div>
-</div>
-
-<div class="card">
-<div class="label">PPM（お住まいの地域のppmを入力）</div>
-<input id="ppm" type="number" value="100" onchange="savePPM()">
-</div>
-
-<div class="card">
-<div class="label">コスト表示</div>
-<div class="toggle">
-<button id="btn0" class="active" onclick="setMode(0)">樹脂のみ</button>
-<button id="btn1" onclick="setMode(1)">本体込み</button>
-</div>
-<div class="label">単価：<span id="unit"></span></div>
-</div>
-
-<div class="card">
-<div class="label">使用量</div>
-
-<div class="grid">
-<button onclick="add(1)">+1L</button>
-<button onclick="add(5)">+5L</button>
-<button onclick="add(10)">+10L</button>
-<button onclick="add(20)">+20L</button>
-<button onclick="add(30)">+30L</button>
-<button onclick="add(50)">+50L</button>
-<button onclick="add(-1)">-1L</button>
-</div>
-
-<div id="current" class="current">0 L</div>
-<div id="cost" class="label"></div>
-
-<button class="primary" onclick="record()">記録する</button>
-<button onclick="resetAll()">樹脂リセット</button>
-</div>
-
-<div class="card">
-<div class="label">履歴（最新5件）</div>
-<div id="history"></div>
-</div>
-
-<div class="footer">
-このアプリは個人が作成した純水使用量の管理ツールです。<br>
-「ピュアニッシュ PRO / JUST」の仕様を参考にしていますが、<br>
-公式とは一切関係ありません。<br><br>
-
-参考：<br>
-監修　ビューティフルカーズ<br>
-製造　グリーンライフ<br><br>
-
-作成：missing link<br>
-個人利用の範囲でご使用ください。<br>
-※数値は目安です
+    <div class="footer-info">
+        Reference<br>
+        監修：ビューティフルカーズ<br>
+        製造：グリーンライフ<br><br>
+        Information<br>
+        本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした<br>
+        個人開発の非公式管理ツールです。<br>
+        ※製造・監修元各社様とは一切関係ありません。<br><br>
+        Terms of Use<br>
+        ・本アプリは非営利目的で制作・公開されています。<br>
+        ・個人利用の範囲内でご活用ください。<br>
+        ・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>
+        ・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
+        ・無断転載・再配布、および商用利用を固く禁じます。<br>
+        ————————————————————————<br>
+        Version 1.0.0<br>
+        © 2026 missing link. All rights reserved.
+    </div>
 </div>
 
 <script>
-let total=0,current=0,ppm=100,mode=0,history=[],model=0;
+    let totalUsageCurrentResin = parseFloat(localStorage.getItem('totalUsageCurrentResin')) || 0;
+    let allTimeUsage = parseFloat(localStorage.getItem('allTimeUsage')) || 0;
+    let monthlyUsage = parseFloat(localStorage.getItem('monthlyUsage')) || 0;
+    let monthlyCost = parseFloat(localStorage.getItem('monthlyCost')) || 0;
+    let lastActiveMonth = localStorage.getItem('lastActiveMonth') || getYearMonth(); 
+    let archives = JSON.parse(localStorage.getItem('archives')) || [];
+    let historyRecords = JSON.parse(localStorage.getItem('historyRecords')) || []; 
 
-// モデル設定
-const models=[
- {name:"ピュアニッシュPRO",base:180000,resin:12980,body:29480},
- {name:"ピュアニッシュJUST",base:120000,resin:8980,body:19800}
-];
+    let savedPpm = localStorage.getItem('savedPpm');
+    let currentModel = localStorage.getItem('savedModel') || "pro";
+    let currentMode = localStorage.getItem('savedMode') || "resin";
 
-function setModel(m){
- model=m;
- document.getElementById("title").innerText=models[m].name;
- document.getElementById("model0").classList.toggle("active",m===0);
- document.getElementById("model1").classList.toggle("active",m===1);
- update();
-}
+    let currentValue = 0;
+    const prices = { pro: { resin: 12980, full: 29480 }, just: { resin: 9878, full: 25080 } };
+    const capacities = { pro: 160000, just: 90000 };
 
-function getMax(){return Math.round(models[model].base/ppm);}
-function getUnit(){
- return mode===0
- ?(models[model].resin/getMax())
- :((models[model].resin+models[model].body)/getMax());
-}
+    function getYearMonth() {
+        const d = new Date();
+        return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+    }
 
-function savePPM(){ppm=parseFloat(ppmEl.value)||100;update();}
-function setMode(m){
- mode=m;
- btn0.classList.toggle("active",m===0);
- btn1.classList.toggle("active",m===1);
- update();
-}
+    function saveData() {
+        localStorage.setItem('totalUsageCurrentResin', totalUsageCurrentResin);
+        localStorage.setItem('allTimeUsage', allTimeUsage);
+        localStorage.setItem('monthlyUsage', monthlyUsage);
+        localStorage.setItem('monthlyCost', monthlyCost);
+        localStorage.setItem('lastActiveMonth', lastActiveMonth);
+        localStorage.setItem('archives', JSON.stringify(archives));
+        localStorage.setItem('historyRecords', JSON.stringify(historyRecords));
+        localStorage.setItem('savedPpm', document.getElementById('ppm-input').value);
+        localStorage.setItem('savedModel', currentModel);
+        localStorage.setItem('savedMode', currentMode);
+    }
 
-function add(v){
- current=Math.max(0,current+v);
- currentEl.innerText=current+" L";
- update();
-}
+    function checkMonthReset() {
+        const nowYM = getYearMonth();
+        if (lastActiveMonth !== nowYM) {
+            if (monthlyUsage > 0) {
+                archives.unshift({ month: lastActiveMonth, usage: monthlyUsage, cost: Math.round(monthlyCost) });
+                if (archives.length > 12) archives.pop();
+            }
+            monthlyUsage = 0; monthlyCost = 0; lastActiveMonth = nowYM;
+            renderArchives(); saveData();
+        }
+    }
 
-function estimate(){
- if(history.length<2){exchangeEl.innerText="";return;}
- const avg=history.reduce((a,b)=>a+b.vol,0)/history.length;
- const days=Math.ceil((getMax()-total)/avg);
- const d=new Date();
- d.setDate(d.getDate()+days);
- exchangeEl.innerText="交換目安："+d.toLocaleDateString();
-}
+    function renderArchives() {
+        const list = document.getElementById('archive-list');
+        list.innerHTML = archives.map(item => `
+            <div class="archive-item"><span>${item.month}</span> <span>${item.usage}L / ${item.cost}円</span></div>
+        `).join('') || '<div style="color:#444;text-align:center">月別履歴なし</div>';
+    }
 
-function update(){
- const max=getMax();
- const remain=max-total;
- remainEl.innerText=remain+" L";
- percentEl.innerText=Math.round(remain/max*100)+"%";
- totalEl.innerText=total+" L";
- maxEl.innerText=max+" L";
- costEl.innerText="今回："+Math.round(current*getUnit())+"円";
- unitEl.innerText=getUnit().toFixed(1)+" 円/L";
- estimate();
-}
+    function updateCalculations() {
+        checkMonthReset();
+        const ppmVal = parseFloat(document.getElementById('ppm-input').value) || 80;
+        const ppm = Math.max(1, Math.min(ppmVal, 500));
+        
+        const totalCapacityL = capacities[currentModel] / ppm;
+        const unitPrice = prices[currentModel][currentMode] / totalCapacityL;
+        
+        const remaining = Math.max(0, totalCapacityL - totalUsageCurrentResin);
+        const percent = Math.max(0, (remaining / totalCapacityL) * 100);
 
-function record(){
- if(current<=0)return;
- const used=current;
- const cost=Math.round(used*getUnit());
- total+=used;
+        document.getElementById('remaining-water').innerText = `${Math.round(remaining)}L`;
+        document.getElementById('progress-bar').style.width = `${percent}%`;
+        
+        const modelLabel = currentModel.toUpperCase();
+        const modeLabel = currentMode === 'resin' ? '樹脂' : '本体';
+        document.getElementById('unit-price-display').innerText = `単価(${modelLabel}/${modeLabel}): ${unitPrice.toFixed(1)} 円/L`;
+        
+        document.getElementById('current-cost-sub').innerText = `約 ${Math.round(currentValue * unitPrice)} 円`;
 
- history.push({
-  date:new Date().toLocaleDateString(),
-  vol:used,
-  cost:cost
- });
+        const pb = document.getElementById('progress-bar');
+        const washEl = document.getElementById('prediction-wash');
+        if (percent <= 10) {
+            pb.className = 'progress-bar low';
+            document.body.className = 'danger-mode';
+        } else {
+            pb.className = 'progress-bar';
+            document.body.className = '';
+        }
 
- if(history.length>5)history.shift();
+        if (remaining <= 0) {
+            washEl.innerHTML = '<span class="alert-text">交換してください</span>';
+            document.getElementById('prediction-date').innerText = "---";
+        } else {
+            let washStandard = 30;
+            if (historyRecords.length > 0) {
+                const sorted = [...historyRecords].map(r => r.amount).sort((a,b) => a-b);
+                const mid = Math.floor(sorted.length / 2);
+                washStandard = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+            }
+            const predictedTimes = Math.floor(remaining / washStandard);
+            washEl.innerText = `${predictedTimes} 回`;
 
- current=0;
- currentEl.innerText="0 L";
+            const dateEl = document.getElementById('prediction-date');
+            if (historyRecords.length >= 2) {
+                const recent = historyRecords.slice(0, 5);
+                const dates = recent.map(r => r.timestamp).sort((a,b) => a-b);
+                const interval = (dates[dates.length - 1] - dates[0]) / (1000 * 60 * 60 * 24) / (recent.length - 1);
+                const safeInterval = Math.max(1, interval || 7);
+                const target = new Date();
+                target.setDate(target.getDate() + Math.round(predictedTimes * safeInterval));
+                dateEl.innerText = `${target.getMonth()+1}/${target.getDate()}頃`;
+            } else {
+                const target = new Date();
+                target.setDate(target.getDate() + (predictedTimes * 7));
+                dateEl.innerText = `${target.getMonth()+1}/${target.getDate()}頃(仮)`;
+            }
+        }
 
- update();
- render();
-}
+        document.getElementById('all-time-usage').innerText = `${Math.round(allTimeUsage)} L`;
+        document.getElementById('monthly-usage').innerText = `${Math.round(monthlyUsage)} L`;
+        document.getElementById('monthly-cost').innerText = `${Math.round(monthlyCost)} 円`;
+        document.getElementById('monthly-label').innerText = `${lastActiveMonth.split('-')[1]}月の使用量`;
+    }
 
-function render(){
- historyEl.innerHTML="";
- history.slice().reverse().forEach(h=>{
-  historyEl.innerHTML+=`
-  <div class="history-item">
-   <span>${h.date}</span>
-   <span>${h.vol}L / ${h.cost}円</span>
-  </div>`;
- });
-}
+    let holdTimer;
+    const holdBtn = document.getElementById('reset-hold-btn');
+    const holdFill = document.getElementById('hold-fill');
 
-function resetAll(){
- if(confirm("リセットする？")){
-  total=0;
-  history=[];
-  update();
-  render();
- }
-}
+    function startHold(e) {
+        e.preventDefault();
+        holdFill.style.transition = 'width 2s linear';
+        holdFill.style.width = '100%';
+        holdTimer = setTimeout(() => {
+            if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
+            totalUsageCurrentResin = 0;
+            saveData();
+            updateCalculations();
+            cancelHold();
+            alert("樹脂情報をリセットしました");
+        }, 2000);
+    }
 
-const remainEl=document.getElementById("remain");
-const percentEl=document.getElementById("percent");
-const totalEl=document.getElementById("total");
-const currentEl=document.getElementById("current");
-const costEl=document.getElementById("cost");
-const ppmEl=document.getElementById("ppm");
-const maxEl=document.getElementById("max");
-const unitEl=document.getElementById("unit");
-const exchangeEl=document.getElementById("exchange");
-const historyEl=document.getElementById("history");
-const btn0=document.getElementById("btn0");
-const btn1=document.getElementById("btn1");
+    function cancelHold() {
+        clearTimeout(holdTimer);
+        holdFill.style.transition = 'width 0.2s ease-out';
+        holdFill.style.width = '0%';
+    }
 
-update();
-render();
+    holdBtn.addEventListener('mousedown', startHold);
+    holdBtn.addEventListener('touchstart', startHold);
+    holdBtn.addEventListener('mouseup', cancelHold);
+    holdBtn.addEventListener('mouseleave', cancelHold);
+    holdBtn.addEventListener('touchend', cancelHold);
+
+    function adjustValue(val) {
+        if ("vibrate" in navigator) navigator.vibrate(10);
+        currentValue = Math.max(0, currentValue + val);
+        document.getElementById('current-display').innerText = `${currentValue} L`;
+        updateCalculations();
+    }
+
+    function recordUsage() {
+        if (currentValue <= 0) return;
+        if ("vibrate" in navigator) navigator.vibrate(50);
+        
+        const ppmVal = parseFloat(document.getElementById('ppm-input').value) || 80;
+        const ppm = Math.max(1, Math.min(ppmVal, 500));
+        const unitPrice = prices[currentModel][currentMode] / (capacities[currentModel] / ppm);
+        
+        totalUsageCurrentResin += currentValue;
+        allTimeUsage += currentValue;
+        monthlyUsage += currentValue;
+        monthlyCost += (currentValue * unitPrice);
+        historyRecords.unshift({ timestamp: Date.now(), amount: currentValue });
+        if (historyRecords.length > 500) historyRecords.pop();
+        
+        currentValue = 0;
+        document.getElementById('current-display').innerText = `0 L`;
+        saveData();
+        updateCalculations();
+    }
+
+    function applyConfigUI() {
+        if (savedPpm !== null) document.getElementById('ppm-input').value = savedPpm;
+        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`model-${currentModel}`).classList.add('active');
+        document.getElementById(`mode-${currentMode}`).classList.add('active');
+    }
+
+    document.getElementById('btn-plus').addEventListener('click', () => adjustValue(1));
+    document.getElementById('btn-minus').addEventListener('click', () => adjustValue(-1));
+    document.querySelectorAll('.btn-usage').forEach(btn => {
+        btn.addEventListener('click', () => adjustValue(parseInt(btn.dataset.amount)));
+    });
+    document.getElementById('record-btn').addEventListener('click', recordUsage);
+    
+    document.getElementById('model-pro').addEventListener('click', () => { currentModel = 'pro'; applyConfigUI(); updateCalculations(); saveData(); });
+    document.getElementById('model-just').addEventListener('click', () => { currentModel = 'just'; applyConfigUI(); updateCalculations(); saveData(); });
+    document.getElementById('mode-resin').addEventListener('click', () => { currentMode = 'resin'; applyConfigUI(); updateCalculations(); saveData(); });
+    document.getElementById('mode-full').addEventListener('click', () => { currentMode = 'full'; applyConfigUI(); updateCalculations(); saveData(); });
+    document.getElementById('ppm-input').addEventListener('input', () => { updateCalculations(); saveData(); });
+
+    applyConfigUI();
+    renderArchives();
+    updateCalculations();
 </script>
 
 </body>
