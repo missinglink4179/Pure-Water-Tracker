@@ -1,37 +1,247 @@
-<div class="input-box">
-    <div class="input-title">今回の洗車使用量</div>
-    <div class="counter-row">
-        <button class="btn-round" onclick="add(-1)">−</button>
-        <div class="current-disp">
-            <span id="inVal">0</span><span style="font-size:24px; margin-left:4px; color:var(--text-sub);">ℓ</span>
-        </div>
-        <button class="btn-round" onclick="add(1)">＋</button>
-    </div>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>pure-water-tracker</title>
+    <style>
+        :root {
+            --bg-color: #0c0c0c;
+            --card-bg: #1c1c1e;
+            --accent-green: #34c759;
+            --accent-yellow: #ffcc00; /* 追加：黄色 */
+            --accent-red: #ff453a;
+            --accent-blue: #0a84ff;
+            --text-main: #ffffff;
+            --text-sub: #8e8e93;
+            --alert-bg-red: rgba(255, 69, 58, 0.15);
+            --alert-bg-yellow: rgba(255, 204, 0, 0.1); /* 追加：黄色のぼやかし */
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; touch-action: manipulation; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
+        .container { width: 100%; max-width: 380px; }
+        .top-title { font-size: 12px; color: var(--text-sub); text-align: center; margin-bottom: 25px; }
+        
+        /* ヘッダーセクションの色連動 */
+        .header-section { text-align: center; margin-bottom: 20px; padding: 20px 10px; border-radius: 24px; transition: background 0.5s ease; }
+        .header-section.warn-yellow { background: radial-gradient(circle, var(--alert-bg-yellow) 0%, transparent 80%); }
+        .header-section.warn-red { background: radial-gradient(circle, var(--alert-bg-red) 0%, transparent 80%); }
+
+        .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
+        .main-val { font-size: 64px; font-weight: 800; line-height: 1; margin-bottom: 15px; cursor: pointer; }
+        .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
+        .no-ppm-alert { font-size: 24px; color: var(--text-sub); font-weight: bold; }
+        
+        .btn-detail { background: none; border: 1px solid #3a3a3c; color: var(--text-sub); padding: 8px 16px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.2s; margin-bottom: 10px; }
+
+        /* バーの色連動 */
+        .progress-container { height: 4px; background: #333; width: 100%; border-radius: 2px; margin: 20px 0; overflow: hidden; position: relative; }
+        .progress-line { height: 100%; background: var(--accent-green); width: 100%; transition: width 0.3s ease, background 0.3s; }
+        .progress-line.yellow { background: var(--accent-yellow); }
+        .progress-line.red { background: var(--accent-red); }
+        
+        .progress-line.resetting { background: var(--accent-blue); width: 0%; }
+        .progress-line.reset-active { width: 100% !important; transition: width 1.5s linear !important; }
+
+        .sub-stats { display: flex; justify-content: space-around; font-size: 12px; color: var(--text-sub); margin-bottom: 25px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; }
+        .card-full { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        
+        .input-box { background: var(--card-bg); padding: 25px 20px; border-radius: 20px; margin-bottom: 15px; }
+        .input-title { font-size: 11px; color: var(--accent-green); font-weight: bold; text-align: center; margin-bottom: 15px; }
+        .counter-row { display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 15px; }
+        .btn-round { width: 50px; height: 50px; border-radius: 50%; border: none; background: #3a3a3c; color: white; font-size: 26px; cursor: pointer; }
+        .current-disp { font-size: 52px; font-weight: bold; }
+        
+        .btn-clear { background: #3a3a3c; color: var(--text-sub); border: none; padding: 6px 16px; border-radius: 20px; font-size: 11px; cursor: pointer; display: block; margin: 0 auto 20px; }
+
+        .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .btn-q { background: #2c2c2e; border: none; padding: 14px 5px; border-radius: 10px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; touch-action: none; }
+        
+        .btn-save { width: 100%; background: var(--accent-green); color: white; padding: 20px; border-radius: 18px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 15px; cursor: pointer; }
+        .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; user-select: none; cursor: pointer; touch-action: none; }
+        
+        .settings-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 10px; }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2c2c2e; }
+        .ppm-input { background: none; border: none; color: var(--accent-green); font-weight: bold; font-size: 16px; text-align: right; width: 80px; }
+        .mode-row { display: flex; gap: 8px; margin-top: 15px; }
+        .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; cursor: pointer; }
+        .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
+        
+        .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.8; padding-bottom: 100px; }
+        .foot-h { font-weight: bold; color: #777; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-title">pure-water-tracker</div>
     
-    <div style="text-align:center; margin-bottom:20px;">
-        <button onclick="clr()" style="background:#3a3a3c; color:var(--text-sub); border:none; padding:5px 15px; border-radius:12px; font-size:11px;">数値をリセット</button>
+    <div id="hSec" class="header-section">
+        <div class="label-xs">交換まであと</div>
+        <div class="main-val" id="remL" onclick="showDetail()"><span class="no-ppm-alert">PPMを入力</span></div>
+        <button class="btn-detail" onclick="showDetail()">コンディション詳細</button>
+        <div class="progress-container">
+            <div class="progress-line" id="pLine"></div>
+        </div>
     </div>
 
-    <div class="quick-grid">
-        <button class="btn-q" onclick="add(5)">+5ℓ</button>
-        <button class="btn-q" onclick="add(10)">+10ℓ</button>
-        <button class="btn-q" onclick="add(20)">+20ℓ</button>
-        <button class="btn-q" onclick="add(30)">+30ℓ</button>
-        <button class="btn-q" onclick="add(50)">+50ℓ</button>
-        <button class="btn-q" onclick="add(100)">+100ℓ</button>
+    <div class="sub-stats">
+        <span>洗車回数：あと <span id="remCount">--</span> 回分</span>
+        <span id="predictDate">寿命予測：--/--頃</span>
+    </div>
+
+    <div class="stats-grid">
+        <div class="card"><div class="label-xs">累計使用量</div><div id="totalUsed">0 ℓ</div></div>
+        <div class="card"><div class="label-xs">今月の使用量</div><div id="monthUsed">0 ℓ</div></div>
+    </div>
+    <div class="card-full"><div class="label-xs">今月の算出コスト</div><div id="costDisp">0 円</div></div>
+
+    <div class="input-box">
+        <div class="input-title">今回の洗車使用量</div>
+        <div class="counter-row">
+            <button class="btn-round" onclick="add(-1)">−</button>
+            <div class="current-disp"><span id="inVal">0</span><span style="font-size:24px; margin-left:4px; color:var(--text-sub);">ℓ</span></div>
+            <button class="btn-round" onclick="add(1)">＋</button>
+        </div>
+        <button class="btn-clear" onclick="clr()">入力をリセット</button>
+        <div class="quick-grid">
+            <button class="btn-q" onclick="add(5)">+5ℓ</button>
+            <button class="btn-q" onclick="add(10)">+10ℓ</button>
+            <button class="btn-q" onclick="add(20)">+20ℓ</button>
+            <button class="btn-q" onclick="add(30)">+30ℓ</button>
+            <button class="btn-q" onclick="add(50)">+50ℓ</button>
+            <button class="btn-q" onclick="add(100)">+100ℓ</button>
+        </div>
+    </div>
+
+    <button class="btn-save" id="saveBtn" onclick="save()">記録を保存</button>
+    <button id="resetBtn" class="btn-reset">長押しで樹脂リセット</button>
+    
+    <div class="settings-box">
+        <div class="setting-item">
+            <span class="label-xs" style="color:#fff; font-size:12px;">水道水硬度 (ppm)</span>
+            <input type="number" id="ppmIn" class="ppm-input" placeholder="0" oninput="setPPM(this.value)" pattern="\d*">
+        </div>
+        <div class="mode-row">
+            <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO</button>
+            <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="foot-h">Reference</div>
+        監修：ビューティフルカーズ<br>製造：グリーンライフ<br>
+        <div class="foot-h">Information</div>
+        本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>
+        <div class="foot-h">Terms of Use</div>
+        数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
+        Version 1.1.0<br>© 2026 missing link. All rights reserved.
     </div>
 </div>
 
 <script>
-    // 追加されたクリア関数
-    function clr() { 
-        d.in = 0; 
-        up(); 
+    let d = JSON.parse(localStorage.getItem('pwMasterV4')) || { ppm: null, m: 'PRO', used: 0, in: 0, logs: {} };
+    const COST_PER_RESIN = 6000; 
+
+    function setPPM(val) {
+        d.ppm = val === "" ? null : parseInt(val);
+        up();
     }
-    
-    // 既存のadd関数も維持
-    function add(v) { 
-        d.in = Math.max(0, d.in + v); 
-        up(); 
+
+    function up() {
+        const pLine = document.getElementById('pLine');
+        const hSec = document.getElementById('hSec');
+        const saveBtn = document.getElementById('saveBtn');
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        const monthUsed = d.logs[monthKey] || 0;
+
+        if (d.ppm !== null) document.getElementById('ppmIn').value = d.ppm;
+
+        // リセット
+        pLine.classList.remove('yellow', 'red');
+        hSec.classList.remove('warn-yellow', 'warn-red');
+
+        if (d.ppm === null || d.ppm === 0) {
+            document.getElementById('remL').innerHTML = '<span class="no-ppm-alert">PPMを入力</span>';
+            document.getElementById('remCount').innerText = '--';
+            pLine.style.width = "100%";
+            document.getElementById('costDisp').innerText = '0 円';
+        } else {
+            const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
+            const rem = Math.max(0, cap - d.used);
+            const ratio = rem / cap;
+
+            if (!pLine.classList.contains('reset-active')) pLine.style.width = (ratio * 100) + "%";
+            document.getElementById('remL').innerHTML = Math.floor(rem) + '<span class="unit-l">ℓ</span>';
+            document.getElementById('remCount').innerText = Math.floor(rem / 30);
+            
+            // 色判定
+            if (ratio < 0.1) {
+                pLine.classList.add('red');
+                hSec.classList.add('warn-red');
+            } else if (ratio < 0.3) {
+                pLine.classList.add('yellow');
+                hSec.classList.add('warn-yellow');
+            }
+
+            const monthlyCost = Math.round((monthUsed / cap) * COST_PER_RESIN);
+            document.getElementById('costDisp').innerText = monthlyCost.toLocaleString() + ' 円';
+        }
+        
+        document.getElementById('totalUsed').innerText = d.used + ' ℓ';
+        document.getElementById('monthUsed').innerText = monthUsed + ' ℓ';
+        document.getElementById('inVal').innerText = d.in;
+        saveBtn.innerText = d.in > 0 ? `${d.in}ℓ の使用を記録` : '記録を保存';
+        document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
+        document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
+        localStorage.setItem('pwMasterV4', JSON.stringify(d));
     }
+
+    const resetBtn = document.getElementById('resetBtn');
+    const pLineRef = document.getElementById('pLine');
+    let longClickTimer;
+
+    const startReset = (e) => {
+        e.preventDefault();
+        pLineRef.classList.add('resetting');
+        setTimeout(() => { pLineRef.classList.add('reset-active'); }, 10);
+        longClickTimer = setTimeout(() => {
+            if(confirm("樹脂の使用記録をすべてリセットしますか？")) { d.used = 0; d.logs = {}; d.in = 0; }
+            cancelReset();
+        }, 1510);
+    };
+
+    const cancelReset = () => {
+        clearTimeout(longClickTimer);
+        pLineRef.classList.remove('resetting', 'reset-active');
+        up();
+    };
+
+    resetBtn.addEventListener('mousedown', startReset);
+    window.addEventListener('mouseup', cancelReset);
+    resetBtn.addEventListener('touchstart', startReset, {passive: false});
+    resetBtn.addEventListener('touchend', cancelReset);
+
+    function clr() { d.in = 0; up(); }
+    function add(v) { d.in = Math.max(0, d.in + v); up(); }
+    function mode(m) { d.m = m; up(); }
+    function save() { 
+        if (!d.ppm) { alert("先にPPMを入力してください"); return; }
+        if (d.in === 0) return;
+        const monthKey = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+        d.used += d.in; d.logs[monthKey] = (d.logs[monthKey] || 0) + d.in;
+        d.in = 0; up();
+    }
+    function showDetail() {
+        if (!d.ppm) return;
+        const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
+        const rem = cap - d.used;
+        alert(`【樹脂コンディション】\nモード: ${d.m} / 原水: ${d.ppm}ppm\n理論寿命: ${cap.toFixed(1)}ℓ\n現在残量: ${rem.toFixed(2)}ℓ`);
+    }
+    up();
 </script>
+</body>
+</html>
