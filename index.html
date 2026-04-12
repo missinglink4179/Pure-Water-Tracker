@@ -30,74 +30,57 @@
         .container { width: 100%; max-width: 380px; }
         .top-title { font-size: 12px; color: var(--text-sub); text-align: center; margin-bottom: 25px; }
         
+        /* メイン表示エリア */
         .header-section { 
-            text-align: center; margin-bottom: 25px; padding: 20px 10px; border-radius: 24px; transition: background 0.5s ease;
+            text-align: center; margin-bottom: 20px; padding: 20px 10px; border-radius: 24px; transition: background 0.5s ease;
         }
         .header-section.warning { background: radial-gradient(circle, var(--alert-bg) 0%, transparent 80%); }
 
         .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
-        .main-val { font-size: 64px; font-weight: 800; line-height: 1; margin-bottom: 10px; cursor: pointer; }
+        .main-val { font-size: 64px; font-weight: 800; line-height: 1; margin-bottom: 15px; cursor: pointer; }
         .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
         
+        /* 改善：意味のないバーを廃止し、スッキリしたボタンに */
         .btn-detail {
-            width: 100%; background: none; border: 1px solid var(--accent-blue);
-            color: var(--accent-blue); padding: 10px; border-radius: 8px;
-            font-size: 12px; margin-bottom: 20px; cursor: pointer;
+            background: none; border: 1px solid #3a3a3c;
+            color: var(--text-sub); padding: 8px 16px; border-radius: 20px;
+            font-size: 11px; cursor: pointer; transition: all 0.2s;
+            margin-bottom: 10px;
         }
+        .btn-detail:active { background: #3a3a3c; color: #fff; }
 
-        /* バーの基本形 */
-        .progress-container { height: 4px; background: #333; width: 100%; border-radius: 2px; margin: 15px 0; overflow: hidden; position: relative; }
+        .progress-container { height: 4px; background: #333; width: 100%; border-radius: 2px; margin: 20px 0; overflow: hidden; position: relative; }
         .progress-line { height: 100%; background: var(--accent-green); width: 100%; transition: width 0.3s ease, background 0.3s; }
         .progress-line.warning { background: var(--accent-red); }
         
-        /* リセットアニメーション：青いバーが0から100%へ伸びる */
-        .progress-line.resetting { 
-            background: var(--accent-blue); 
-            width: 0%; 
-        }
-        .progress-line.reset-active {
-            width: 100% !important;
-            transition: width 1.5s linear !important;
-        }
+        .progress-line.resetting { background: var(--accent-blue); width: 0%; }
+        .progress-line.reset-active { width: 100% !important; transition: width 1.5s linear !important; }
 
         .sub-stats { display: flex; justify-content: space-around; font-size: 12px; color: var(--text-sub); margin-bottom: 25px; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; }
         .card-full { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
         
+        /* 入力エリア */
         .input-box { background: var(--card-bg); padding: 30px 20px; border-radius: 20px; margin-bottom: 15px; }
         .counter-row { display: flex; justify-content: center; align-items: center; gap: 45px; margin-bottom: 30px; }
         .btn-round { width: 50px; height: 50px; border-radius: 50%; border: none; background: #3a3a3c; color: white; font-size: 26px; cursor: pointer; }
         .current-disp { font-size: 52px; font-weight: bold; color: var(--accent-green); }
         .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .btn-q { 
-            background: #2c2c2e; border: none; padding: 14px; border-radius: 10px; color: white; font-weight: 600; font-size: 13px; 
-            cursor: pointer;
-            touch-action: none;
-        }
+        .btn-q { background: #2c2c2e; border: none; padding: 14px; border-radius: 10px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; touch-action: none; }
         
         .btn-save { width: 100%; background: var(--accent-green); color: white; padding: 20px; border-radius: 18px; border: none; font-size: 18px; font-weight: bold; margin-bottom: 15px; cursor: pointer; }
+        .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; user-select: none; cursor: pointer; touch-action: none; }
         
-        /* 赤いリセットボタンのスタイル */
-        .btn-reset { 
-            width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; 
-            font-size: 11px; margin-bottom: 25px; user-select: none; cursor: pointer;
-            touch-action: none; /* ブラウザのジェスチャーを無効化して確実に反応させる */
-        }
-        
+        /* 設定エリア */
         .settings-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 10px; }
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2c2c2e; }
-        
-        .ppm-input {
-            background: none; border: none; color: var(--accent-green);
-            font-weight: bold; font-size: 16px; text-align: right; width: 80px;
-            font-family: inherit;
-        }
-
+        .ppm-input { background: none; border: none; color: var(--accent-green); font-weight: bold; font-size: 16px; text-align: right; width: 80px; font-family: inherit; }
         .mode-row { display: flex; gap: 8px; margin-top: 15px; }
         .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; cursor: pointer; }
         .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
         
+        /* 権利関係：完全固定 */
         .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.8; padding-bottom: 100px; }
         .foot-h { font-weight: bold; color: #777; margin-top: 15px; }
     </style>
@@ -110,7 +93,7 @@
     <div id="hSec" class="header-section">
         <div class="label-xs">交換まであと</div>
         <div class="main-val" id="remL" onclick="showDetail()">--<span class="unit-l">ℓ</span></div>
-        <button class="btn-detail" onclick="showDetail()">詳細データを表示</button>
+        <button class="btn-detail" onclick="showDetail()">コンディション詳細</button>
         <div class="progress-container">
             <div class="progress-line" id="pLine"></div>
         </div>
@@ -205,7 +188,6 @@
             const rem = Math.max(0, cap - d.used);
             const ratio = rem / cap;
 
-            // 通常時の幅更新
             if (!pLine.classList.contains('reset-active')) {
                 pLine.style.width = (ratio * 100) + "%";
             }
@@ -230,42 +212,33 @@
         localStorage.setItem('pwMasterV4', JSON.stringify(d));
     }
 
-    // --- 長押しリセット機能 (修正版) ---
     const resetBtn = document.getElementById('resetBtn');
     const pLineRef = document.getElementById('pLine');
     let longClickTimer;
 
     const startReset = (e) => {
         e.preventDefault();
-        // アニメーション用クラスを付与
         pLineRef.classList.add('resetting');
-        // ブラウザの再描画を待ってからアニメーション開始クラスを付与
-        setTimeout(() => {
-            pLineRef.classList.add('reset-active');
-        }, 10);
-
+        setTimeout(() => { pLineRef.classList.add('reset-active'); }, 10);
         longClickTimer = setTimeout(() => {
             if(confirm("樹脂の使用記録をすべてリセットしますか？")) {
                 d.used = 0; d.logs = {}; d.in = 0;
             }
             cancelReset();
-        }, 1510); // 1.5秒
+        }, 1510);
     };
 
     const cancelReset = () => {
         clearTimeout(longClickTimer);
         pLineRef.classList.remove('resetting');
         pLineRef.classList.remove('reset-active');
-        up(); // 元の残量バーに戻す
+        up();
     };
 
-    // マウスイベント
     resetBtn.addEventListener('mousedown', startReset);
     window.addEventListener('mouseup', cancelReset);
-    // タッチイベント (モバイルでの反応を確実に)
     resetBtn.addEventListener('touchstart', startReset, {passive: false});
     resetBtn.addEventListener('touchend', cancelReset);
-    resetBtn.addEventListener('touchcancel', cancelReset);
 
     function showDetail() {
         if (!d.ppm) { alert("PPMを設定してください"); return; }
@@ -277,7 +250,7 @@
             const mCost = Math.round((d.logs[k] / cap) * COST_PER_RESIN);
             logTxt += `・${k}: ${d.logs[k]}ℓ (約${mCost}円)\n`;
         });
-        alert(`【詳細データ】\nモード: ${d.m}\n原水硬度: ${d.ppm}ppm\n理論寿命: ${cap.toFixed(1)}ℓ\n現在残量: ${rem.toFixed(2)}ℓ\n\n【月別履歴・樹脂費用】\n${logTxt || "データなし"}`);
+        alert(`【樹脂コンディション】\nモード: ${d.m} / 原水: ${d.ppm}ppm\n------------------\n理論上の総量: ${cap.toFixed(1)}ℓ\n現在の残量: ${rem.toFixed(2)}ℓ\n\n【月別履歴・樹脂費用目安】\n${logTxt || "データなし"}`);
     }
 
     function add(v) { d.in = Math.max(0, d.in + v); up(); }
