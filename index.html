@@ -24,8 +24,6 @@
         .top-title { font-size: 12px; color: var(--text-sub); text-align: center; margin-bottom: 25px; }
         .header-section { text-align: center; margin-bottom: 25px; }
         .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
-        
-        /* メイン数値：クリックで詳細ポップアップ */
         .main-val { font-size: 64px; font-weight: 800; line-height: 1; margin-bottom: 10px; cursor: pointer; }
         .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
         
@@ -71,7 +69,7 @@
     <div class="header-section">
         <div class="label-xs">交換まであと</div>
         <div class="main-val" id="remL" onclick="showDetail()">--<span class="unit-l">ℓ</span></div>
-        <button class="btn-detail" onclick="alert('詳細データ機能は開発中です')">詳細データを表示</button>
+        <button class="btn-detail" onclick="showDetail()">詳細データを表示</button>
         <div class="progress-line" id="pLine"></div>
     </div>
 
@@ -166,12 +164,15 @@
         localStorage.setItem('pwMasterV4', JSON.stringify(d));
     }
 
-    // 数値クリック時の詳細ポップアップ
+    // 詳細表示（メイン数値、詳細ボタン両方から呼び出される）
     function showDetail() {
-        if (d.ppm === null) { alert("PPMを設定してください"); return; }
+        if (d.ppm === null) { 
+            alert("PPMが設定されていません。先に水道水硬度を入力してください。"); 
+            return; 
+        }
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         const rem = cap - d.used;
-        alert(`【詳細データ】\n現在の設定: ${d.m} モード\n原水硬度: ${d.ppm} ppm\n理論寿命: ${cap.toFixed(1)} ℓ\n使用済み: ${d.used} ℓ\n正確な残量: ${rem.toFixed(2)} ℓ`);
+        alert(`【現在のデータ状態】\n・モード：${d.m}\n・設定PPM：${d.ppm} ppm\n・理論上の総容量：${cap.toFixed(1)} ℓ\n・これまでの使用量：${d.used} ℓ\n・正確な残り：${rem.toFixed(2)} ℓ`);
     }
 
     function add(v) { d.in = Math.max(0, d.in + v); up(); }
