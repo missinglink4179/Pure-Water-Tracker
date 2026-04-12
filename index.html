@@ -4,39 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pure Water Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #121212;
-            --container-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --accent-green: #2ecc71;
-            --accent-red: #e74c3c;
-            --card-bg: #2a2a2a;
+            --bg-color: #000000;
+            --container-bg: #1a1a1a;
+            --text-color: #ffffff;
+            --accent-green: #28a745;
+            --accent-blue: #007bff;
         }
         body {
-            font-family: -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0; padding: 20px;
-            display: flex; flex-direction: column; align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color); color: var(--text-color);
+            margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
-        /* 写真のデザインを再現したスタイルをここに維持 */
+        .header {
+            width: 100%; background-color: var(--accent-green); padding: 12px 0;
+            text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 100;
+        }
+        .container {
+            width: 90%; max-width: 400px; margin-top: 20px;
+            background-color: var(--container-bg); padding: 20px; border-radius: 15px;
+        }
+        .mode-selector {
+            display: flex; gap: 10px; margin-bottom: 20px;
+        }
+        .mode-btn {
+            flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #444;
+            background: #2a2a2a; color: #888; cursor: pointer; font-weight: bold;
+        }
+        .mode-btn.active {
+            background: var(--accent-blue); color: white; border-color: var(--accent-blue);
+        }
+        .btn-reset {
+            background-color: #333; color: white; padding: 5px 15px;
+            font-size: 12px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px;
+        }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; color: #ccc; }
+        input {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #444;
+            background: #2a2a2a; color: white; box-sizing: border-box; font-size: 18px; text-align: center;
+        }
+        .btn-record {
+            width: 100%; padding: 16px; background-color: var(--accent-blue);
+            color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 18px; cursor: pointer;
+        }
+        .result-display {
+            margin-top: 25px; text-align: center; padding: 15px; background: #222; border-radius: 12px;
+        }
+        .chart-container { margin-top: 25px; position: relative; height: 250px; width: 100%; }
+        
+        /* 権利表記（フッター） */
         .footer-section {
-            text-align: center; font-size: 10px; color: #888; margin-top: 40px; line-height: 1.6;
+            text-align: center; font-size: 11px; color: #888; margin-top: 50px;
+            line-height: 1.7; padding-bottom: 60px;
         }
-        .footer-title { font-weight: bold; margin-bottom: 5px; color: #aaa; }
+        .footer-title { font-weight: bold; margin-top: 15px; margin-bottom: 4px; color: #aaa; text-decoration: underline; }
+        hr { border: 0; border-top: 1px solid #333; margin: 25px auto; width: 85%; }
     </style>
 </head>
 <body>
+
+<div class="header">記録する</div>
+
+<div class="container">
+    <button class="btn-reset" onclick="startResetTimer()">樹脂リセット</button>
+
+    <div class="mode-selector">
+        <button id="btn-pro" class="mode-btn active" onclick="setMode('PRO')">PRO</button>
+        <button id="btn-just" class="mode-btn" onclick="setMode('JUST')">JUST</button>
+    </div>
+    
+    <div class="input-group">
+        <label>原水PPMを入力</label>
+        <input type="number" id="ppmInput" placeholder="0" inputmode="numeric">
+    </div>
+    
+    <button class="btn-record" onclick="calculateAndRecord()">記録する</button>
+
+    <div class="result-display">
+        <div id="remainingText" style="font-size: 22px; font-weight: bold; color: var(--accent-green);">残り: --- L</div>
+        <div id="totalUsedText" style="font-size: 14px; color: #aaa; margin-top: 8px;">累計使用量: 0 L</div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="usageChart"></canvas>
+    </div>
+
     <div class="footer-section">
         <div class="footer-title">Reference</div>
         監修：ビューティフルカーズ<br>
-        製造：グリーンライフ<br><br>
+        製造：グリーンライフ<br>
 
         <div class="footer-title">Information</div>
         本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした<br>
         個人開発の非公式管理ツールです。<br>
-        ※製造・監修元各社様とは一切関係ありません。<br><br>
+        ※製造・監修元各社様とは一切関係ありません。<br>
 
         <div class="footer-title">Terms of Use</div>
         ・本アプリは非営利目的で制作・公開されています。<br>
@@ -44,9 +108,82 @@
         ・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>
         ・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
         ・無断転載・再配布、および商用利用を固く禁じます。<br>
-        <hr style="border: 0.5px solid #333; width: 80%; margin: 20px auto;">
+        
+        <hr>
         Version 1.0.0<br>
         © 2026 missing link. All rights reserved.
     </div>
+</div>
+
+<script>
+    // --- アプリのロジック ---
+    let appState = JSON.parse(localStorage.getItem('pureWaterTrackerData')) || {
+        totalUsed: 0,
+        mode: 'PRO',
+        capacityPRO: 1800,
+        capacityJUST: 900
+    };
+
+    const ctx = document.getElementById('usageChart').getContext('2d');
+    let usageChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['使用済み', '残り'],
+            datasets: [{
+                data: [0, 100],
+                backgroundColor: ['#007bff', '#333'],
+                borderWidth: 0
+            }]
+        },
+        options: { cutout: '80%', plugins: { legend: { display: false } } }
+    });
+
+    function setMode(mode) {
+        appState.mode = mode;
+        document.getElementById('btn-pro').classList.toggle('active', mode === 'PRO');
+        document.getElementById('btn-just').classList.toggle('active', mode === 'JUST');
+        saveData();
+        updateUI();
+    }
+
+    function updateUI() {
+        const capacity = appState.mode === 'PRO' ? appState.capacityPRO : appState.capacityJUST;
+        const remaining = Math.max(0, capacity - appState.totalUsed);
+        
+        document.getElementById('remainingText').innerText = `残り: ${remaining.toLocaleString()} L`;
+        document.getElementById('totalUsedText').innerText = `累計使用量: ${appState.totalUsed.toLocaleString()} L`;
+        
+        usageChart.data.datasets[0].data = [appState.totalUsed, remaining];
+        usageChart.update();
+    }
+
+    function calculateAndRecord() {
+        const ppm = parseFloat(document.getElementById('ppmInput').value);
+        if (!ppm || ppm <= 0) return alert("PPMを入力してください");
+
+        // PPMに基づいた計算ロジック（ここにお客様独自の計算式を適用）
+        const waterUsed = 30; // 仮の消費量
+        appState.totalUsed += waterUsed;
+        
+        saveData();
+        updateUI();
+        document.getElementById('ppmInput').value = '';
+    }
+
+    function saveData() {
+        localStorage.setItem('pureWaterTrackerData', JSON.stringify(appState));
+    }
+
+    function startResetTimer() {
+        if (confirm("全ての記録をリセットしますか？")) {
+            appState.totalUsed = 0;
+            saveData();
+            updateUI();
+        }
+    }
+
+    // 初回起動
+    setMode(appState.mode);
+</script>
 </body>
 </html>
