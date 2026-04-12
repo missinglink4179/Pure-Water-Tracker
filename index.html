@@ -13,6 +13,7 @@
             --accent-blue: #0a84ff;
             --text-main: #ffffff;
             --text-sub: #8e8e93;
+            --alert-bg: rgba(255, 69, 58, 0.15); /* 警告時の淡い赤 */
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
@@ -22,10 +23,20 @@
         }
         .container { width: 100%; max-width: 380px; }
         .top-title { font-size: 12px; color: var(--text-sub); text-align: center; margin-bottom: 25px; }
-        .header-section { text-align: center; margin-bottom: 25px; }
-        .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
         
-        /* 数値クリックで詳細ポップアップ */
+        /* ヘッダーセクション：警告時に背景を赤く淡くする */
+        .header-section { 
+            text-align: center; 
+            margin-bottom: 25px; 
+            padding: 20px 10px; 
+            border-radius: 24px; 
+            transition: background 0.5s ease;
+        }
+        .header-section.warning {
+            background: radial-gradient(circle, var(--alert-bg) 0%, transparent 80%);
+        }
+
+        .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
         .main-val { font-size: 64px; font-weight: 800; line-height: 1; margin-bottom: 10px; cursor: pointer; }
         .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
         
@@ -68,7 +79,7 @@
 <div class="container">
     <div class="top-title">pure-water-tracker</div>
     
-    <div class="header-section">
+    <div id="hSec" class="header-section">
         <div class="label-xs">交換まであと</div>
         <div class="main-val" id="remL" onclick="showDetail()">--<span class="unit-l">ℓ</span></div>
         <button class="btn-detail" onclick="showDetail()">詳細データを表示</button>
@@ -139,6 +150,7 @@
 
     function up() {
         const pLine = document.getElementById('pLine');
+        const hSec = document.getElementById('hSec');
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const monthUsed = d.logs[monthKey] || 0;
@@ -148,6 +160,7 @@
             document.getElementById('remCount').innerText = '--';
             document.getElementById('dispPPM').innerText = '数値を入力';
             pLine.classList.remove('warning');
+            hSec.classList.remove('warning');
             document.getElementById('costDisp').innerText = '0 円';
         } else {
             const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
@@ -158,8 +171,14 @@
             document.getElementById('remCount').innerText = Math.floor(rem / 30);
             document.getElementById('dispPPM').innerText = d.ppm;
 
-            if (ratio < 0.1) pLine.classList.add('warning');
-            else pLine.classList.remove('warning');
+            // 10%以下でバーと背景を警告色にする
+            if (ratio < 0.1) {
+                pLine.classList.add('warning');
+                hSec.classList.add('warning');
+            } else {
+                pLine.classList.remove('warning');
+                hSec.classList.remove('warning');
+            }
 
             const monthlyCost = Math.round((monthUsed / cap) * COST_PER_RESIN);
             document.getElementById('costDisp').innerText = monthlyCost.toLocaleString() + ' 円';
