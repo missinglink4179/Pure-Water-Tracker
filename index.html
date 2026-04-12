@@ -26,9 +26,7 @@
         .main-val { font-size: 64px; font-weight: 800; line-height: 1; }
         .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
         
-        /* バーの基本色 */
         .progress-line { height: 4px; background: var(--accent-green); width: 100%; border-radius: 2px; margin: 20px 0; transition: background 0.3s; }
-        /* 警告時のクラス */
         .progress-line.warning { background: var(--accent-red); }
 
         .sub-stats { display: flex; justify-content: space-around; font-size: 12px; color: var(--text-sub); }
@@ -61,7 +59,10 @@
         <div class="label-xs">交換まであと</div>
         <div class="main-val" id="remL">--<span class="unit-l">ℓ</span></div>
         <div class="progress-line" id="pLine"></div>
-        <div class="sub-stats"><span>目安：<span id="remCount">--</span> 回</span><span>寿命予測：7/18頃(仮)</span></div>
+        <div class="sub-stats">
+            <span>洗車回数：あと <span id="remCount">--</span> 回分</span>
+            <span>寿命予測：7/18頃(仮)</span>
+        </div>
     </div>
     <div class="stats-grid">
         <div class="card"><div class="label-xs">累計使用量</div><div id="totalUsed">0 ℓ</div></div>
@@ -133,7 +134,6 @@
             document.getElementById('remCount').innerText = Math.floor(rem / 30);
             document.getElementById('dispPPM').innerText = d.ppm;
 
-            // 残り10%を切ったらバーを赤くする
             if (ratio < 0.1) {
                 pLine.classList.add('warning');
             } else {
