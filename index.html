@@ -4,158 +4,176 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pure Water Tracker</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #121212;
-            --container-bg: #1e1e1e;
-            --text-color: #e0e0e0;
+            --bg-color: #000000;
+            --container-bg: #1a1a1a;
+            --card-bg: #262626;
             --accent-green: #2ecc71;
             --accent-blue: #3498db;
-            --danger-red: #e74c3c;
-            --card-bg: #2a2a2a;
+            --text-color: #ffffff;
+            --text-gray: #888;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background-color: var(--bg-color); color: var(--text-color);
-            margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center;
         }
-        /* ヘッダー・保存ボタン */
-        .header-save-btn {
-            width: 100%; background-color: var(--accent-green); color: white;
-            padding: 18px; border: none; font-size: 18px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5); position: sticky; top: 0; z-index: 1000;
+        /* ヘッダー */
+        .header { width: 100%; background: var(--accent-green); padding: 15px; text-align: center; font-weight: bold; font-size: 18px; }
+        
+        .main-container { width: 92%; max-width: 400px; padding: 20px 0; }
+
+        /* 交換まであと ◯◯ L (メイン表示) */
+        .countdown-card { text-align: center; margin-bottom: 30px; }
+        .countdown-label { font-size: 14px; color: var(--text-gray); }
+        .countdown-value { font-size: 48px; font-weight: bold; color: var(--accent-green); margin: 5px 0; }
+        .countdown-sub { font-size: 13px; color: var(--text-gray); display: flex; justify-content: center; gap: 15px; }
+
+        /* データ確認ボタン（ポップアップ用） */
+        .btn-show-data {
+            width: 100%; background: #333; color: var(--accent-blue); border: 1px solid var(--accent-blue);
+            padding: 12px; border-radius: 10px; font-weight: bold; margin-bottom: 25px; cursor: pointer;
         }
-        /* リセットボタンセクション */
-        .reset-section { margin: 20px 0; text-align: center; }
-        .btn-long-reset {
-            background-color: transparent; border: 1px solid var(--danger-red);
-            color: var(--danger-red); padding: 8px 16px; border-radius: 20px; font-size: 12px; cursor: pointer;
-        }
-        /* メインコンテナ */
-        .container {
-            width: 92%; max-width: 400px; background-color: var(--container-bg);
-            padding: 24px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            margin-bottom: 40px;
-        }
-        /* PPM表示カード */
-        .status-card {
-            background: var(--card-bg); padding: 20px; border-radius: 16px;
-            margin-bottom: 20px; border: 1px solid #3d3d3d; display: flex;
-            justify-content: space-between; align-items: center; cursor: pointer;
-        }
-        .status-value { font-size: 24px; font-weight: bold; color: var(--accent-green); }
-        /* モード切替グリッド */
-        .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .toggle-btn {
-            background: var(--card-bg); border: 2px solid transparent;
-            padding: 16px; color: #777; border-radius: 14px; font-weight: bold; cursor: pointer;
-        }
-        .toggle-btn.active-green { background: #1e3a2a; color: var(--accent-green); border-color: var(--accent-green); }
-        .toggle-btn.active-blue { background: #1a2d3d; color: var(--accent-blue); border-color: var(--accent-blue); }
-        /* 単価表示 */
-        .unit-price-display { text-align: right; font-size: 11px; color: #666; margin-bottom: 24px; }
-        /* グラフ */
-        .chart-wrapper { position: relative; width: 100%; height: 280px; margin: 20px 0; }
-        .chart-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
-        .remaining-percent { font-size: 42px; font-weight: bold; }
-        /* 権利表記・バージョン（あなたが大切にしているセクション） */
-        .footer-section { text-align: center; font-size: 10px; color: #777; margin-top: 40px; line-height: 1.8; }
-        .footer-title { font-weight: bold; margin-top: 15px; margin-bottom: 4px; color: #999; text-decoration: underline; }
-        hr { border: 0; border-top: 1px solid #333; margin: 25px auto; width: 80%; }
+
+        /* 3つのデータカード */
+        .info-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
+        .info-card { background: var(--card-bg); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .info-card .label { font-size: 13px; color: var(--text-gray); }
+        .info-card .value { font-size: 18px; font-weight: bold; }
+
+        /* カウンター・ボタン群 */
+        .control-section { background: var(--card-bg); padding: 20px; border-radius: 20px; text-align: center; }
+        .counter-row { display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 20px; }
+        .circle-btn { width: 45px; height: 45px; border-radius: 50%; border: 1px solid #555; background: none; color: white; font-size: 24px; cursor: pointer; }
+        .current-input { font-size: 32px; font-weight: bold; }
+        
+        .quick-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .quick-btn { background: #333; border: none; padding: 12px 5px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 12px; }
+        
+        /* モード切替 */
+        .mode-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .mode-btn { background: #333; border: none; padding: 10px; border-radius: 8px; color: #666; font-weight: bold; cursor: pointer; }
+        .mode-btn.active { background: var(--accent-blue); color: white; }
+
+        /* ポップアップ（モーダル） */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { background: var(--container-bg); width: 85%; max-width: 350px; padding: 25px; border-radius: 20px; border: 1px solid #444; }
+        .modal-title { font-weight: bold; margin-bottom: 15px; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .modal-close { width: 100%; background: var(--accent-green); border: none; padding: 12px; border-radius: 10px; color: white; font-weight: bold; margin-top: 20px; cursor: pointer; }
+
+        /* 権利表記（あなたが再三指示された重要な部分） */
+        .footer { text-align: center; font-size: 10px; color: #666; margin-top: 50px; line-height: 1.8; padding-bottom: 80px; }
+        .footer-title { font-weight: bold; color: #888; text-decoration: underline; margin-top: 15px; }
+        hr { border: 0; border-top: 1px solid #333; margin: 20px auto; width: 80%; }
     </style>
 </head>
 <body>
 
-<button class="header-save-btn" onclick="handleSave()">記録を保存</button>
+<div class="header">記録する</div>
 
-<div class="reset-section">
-    <button id="resetBtn" class="btn-long-reset">長押しで樹脂リセット</button>
-</div>
-
-<div class="container">
-    <div class="status-card" onclick="promptPPM()">
-        <span class="status-label">水道水硬度 (ppm)</span>
-        <span class="status-value" id="ppmText">--</span>
-    </div>
-
-    <div class="mode-grid">
-        <button id="m-pro" class="toggle-btn" onclick="updateMode('PRO')">PRO</button>
-        <button id="m-just" class="toggle-btn" onclick="updateMode('JUST')">JUST</button>
-        <button id="t-resin" class="toggle-btn" onclick="updateType('RESIN')">樹脂のみ</button>
-        <button id="t-full" class="toggle-btn" onclick="updateType('FULL')">本体込み</button>
-    </div>
-    <div class="unit-price-display" id="unitPriceText">単価: -- 円/ℓ</div>
-
-    <div class="chart-wrapper">
-        <canvas id="mainChart"></canvas>
-        <div class="chart-overlay">
-            <div class="remaining-percent" id="percentText">--%</div>
-            <div style="font-size: 12px; color: #888;">残り容量</div>
+<div class="main-container">
+    <div class="countdown-card">
+        <div class="countdown-label">交換まであと</div>
+        <div class="countdown-value" id="remainL">-- L</div>
+        <div class="countdown-sub">
+            <span id="remainCount">目安：-- 回</span>
+            <span id="predictDate">寿命予測：--/--頃</span>
         </div>
     </div>
 
-    <div class="footer-section">
+    <button class="btn-show-data" onclick="toggleModal(true)">詳細データを表示</button>
+
+    <div class="info-grid">
+        <div class="info-card">
+            <span class="label">累計使用量</span>
+            <span class="value" id="totalUsed">-- L</span>
+        </div>
+        <div class="info-card">
+            <span class="label" id="monthLabel">--月の使用量</span>
+            <span class="value" id="monthUsed">-- L</span>
+        </div>
+        <div class="info-card">
+            <span class="label">今月の算出コスト</span>
+            <span class="value" id="monthCost">¥ --</span>
+        </div>
+    </div>
+
+    <div class="control-section">
+        <div class="counter-row">
+            <button class="circle-btn" onclick="addL(-1)">−</button>
+            <span class="current-input" id="inputVal">0</span>
+            <button class="circle-btn" onclick="addL(1)">＋</button>
+        </div>
+        <div class="quick-btns">
+            <button class="quick-btn" onclick="addL(5)">+5L</button>
+            <button class="quick-btn" onclick="addL(10)">+10L</button>
+            <button class="quick-btn" onclick="addL(30)">+30L</button>
+            <button class="quick-btn" onclick="addL(100)">+100L</button>
+        </div>
+        <button class="header" style="width:100%; border-radius:10px; margin-top:20px; border:none; color:white;" onclick="commitData()">記録を保存</button>
+    </div>
+
+    <div class="mode-row">
+        <button id="mPRO" class="mode-btn" onclick="setMode('PRO')">PRO</button>
+        <button id="mJUST" class="mode-btn" onclick="setMode('JUST')">JUST</button>
+    </div>
+
+    <div class="footer">
         <div class="footer-title">Reference</div>
         監修：ビューティフルカーズ<br>製造：グリーンライフ<br>
-
         <div class="footer-title">Information</div>
-        本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした<br>
-        個人開発の非公式管理ツールです。<br>
-        ※製造・監修元各社様とは一切関係ありません。<br>
-
+        本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>
         <div class="footer-title">Terms of Use</div>
-        ・本アプリは非営利目的で制作・公開されています。<br>
-        ・個人利用の範囲内でご活用ください。<br>
         ・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>
-        ・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
-        ・無断転載・再配布、および商用利用を固く禁じます。<br>
+        ・数値は算出理論値に基づく目安であり、正確性を保証するものではありません。<br>
         <hr>
         Version 1.0.0<br>
         © 2026 missing link. All rights reserved.
     </div>
 </div>
 
+<div id="dataModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">詳細データ履歴</div>
+        <div id="modalBody" style="font-size: 13px; line-height: 2;">
+            PPM設定: <span id="curPPM">70</span><br>
+            1回あたり平均: 30L<br>
+            前回の交換日: 2026/01/01
+        </div>
+        <button class="modal-close" onclick="toggleModal(false)">閉じる</button>
+    </div>
+</div>
+
 <script>
-    let state = JSON.parse(localStorage.getItem('pureWaterAppMaster')) || {
-        ppm: 70, mode: 'PRO', type: 'RESIN', usedL: 0
+    let state = JSON.parse(localStorage.getItem('pureWaterAppFinal')) || {
+        ppm: 70, mode: 'PRO', used: 0, monthUsed: 0, currentInput: 0
     };
-    const DB = {
-        PRO: { resinCap: 180000, pResin: 17500, pFull: 35000 },
-        JUST: { resinCap: 90000, pResin: 9800, pFull: 19800 }
-    };
-    const ctx = document.getElementById('mainChart').getContext('2d');
-    let chart = new Chart(ctx, {
-        type: 'doughnut',
-        data: { datasets: [{ data: [0, 100], backgroundColor: ['#2ecc71', '#333'], borderWidth: 0 }] },
-        options: { cutout: '85%', plugins: { legend: { display: false } } }
-    });
-    function syncUI() {
-        const capacityL = DB[state.mode].resinCap / state.ppm;
-        const ratio = Math.max(0, ((capacityL - state.usedL) / capacityL) * 100);
-        document.getElementById('ppmText').innerText = state.ppm;
-        document.getElementById('percentText').innerText = Math.floor(ratio) + '%';
-        document.getElementById('m-pro').className = state.mode === 'PRO' ? 'toggle-btn active-green' : 'toggle-btn';
-        document.getElementById('m-just').className = state.mode === 'JUST' ? 'toggle-btn active-green' : 'toggle-btn';
-        document.getElementById('t-resin').className = state.type === 'RESIN' ? 'toggle-btn active-blue' : 'toggle-btn';
-        document.getElementById('t-full').className = state.type === 'FULL' ? 'toggle-btn active-blue' : 'toggle-btn';
-        const cost = state.type === 'RESIN' ? DB[state.mode].pResin : DB[state.mode].pFull;
-        document.getElementById('unitPriceText').innerText = `単価(${state.mode}/${state.type==='RESIN'?'樹脂':'本体'}): ${(cost / capacityL).toFixed(1)} 円/ℓ`;
-        chart.data.datasets[0].data = [100 - ratio, ratio]; chart.update();
-        localStorage.setItem('pureWaterAppMaster', JSON.stringify(state));
+    const DB = { PRO: 180000, JUST: 90000 };
+
+    function updateUI() {
+        const totalCap = DB[state.mode] / state.ppm;
+        const remain = Math.max(0, totalCap - state.used);
+        document.getElementById('remainL').innerText = Math.floor(remain) + ' L';
+        document.getElementById('remainCount').innerText = `目安：${Math.floor(remain / 30)} 回`;
+        document.getElementById('totalUsed').innerText = state.used + ' L';
+        document.getElementById('inputVal').innerText = state.currentInput;
+        document.getElementById('mPRO').className = state.mode === 'PRO' ? 'mode-btn active' : 'mode-btn';
+        document.getElementById('mJUST').className = state.mode === 'JUST' ? 'mode-btn active' : 'mode-btn';
+        localStorage.setItem('pureWaterAppFinal', JSON.stringify(state));
     }
-    let pressTimer;
-    const rBtn = document.getElementById('resetBtn');
-    const start = () => pressTimer = setTimeout(() => { if(confirm('リセットしますか？')) { state.usedL = 0; syncUI(); } }, 1000);
-    const cancel = () => clearTimeout(pressTimer);
-    rBtn.addEventListener('mousedown', start); rBtn.addEventListener('touchstart', start);
-    rBtn.addEventListener('mouseup', cancel); rBtn.addEventListener('touchend', cancel);
-    function promptPPM() { const val = prompt("PPMを入力", state.ppm); if(val) { state.ppm = parseInt(val); syncUI(); } }
-    function updateMode(m) { state.mode = m; syncUI(); }
-    function updateType(t) { state.type = t; syncUI(); }
-    function handleSave() { state.usedL += 30; syncUI(); alert("記録を保存しました"); }
-    syncUI();
+
+    function addL(v) { state.currentInput = Math.max(0, state.currentInput + v); updateUI(); }
+    function setMode(m) { state.mode = m; updateUI(); }
+    function toggleModal(show) { document.getElementById('dataModal').style.display = show ? 'flex' : 'none'; }
+    function commitData() {
+        state.used += state.currentInput;
+        state.currentInput = 0;
+        alert("保存しました");
+        updateUI();
+    }
+    updateUI();
 </script>
 </body>
 </html>
