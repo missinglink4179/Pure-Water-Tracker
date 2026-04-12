@@ -10,6 +10,7 @@
             --card-bg: #1c1c1e;
             --accent-green: #34c759;
             --accent-red: #ff453a;
+            --accent-blue: #0a84ff;
             --text-main: #ffffff;
             --text-sub: #8e8e93;
         }
@@ -21,31 +22,42 @@
         }
         .container { width: 100%; max-width: 380px; }
         .top-title { font-size: 12px; color: var(--text-sub); text-align: center; margin-bottom: 25px; }
-        .header-section { text-align: center; margin-bottom: 30px; }
+        .header-section { text-align: center; margin-bottom: 25px; }
         .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
-        .main-val { font-size: 64px; font-weight: 800; line-height: 1; }
+        
+        /* メイン数値：クリックで詳細ポップアップ */
+        .main-val { font-size: 64px; font-weight: 800; line-height: 1; margin-bottom: 10px; cursor: pointer; }
         .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
         
-        .progress-line { height: 4px; background: var(--accent-green); width: 100%; border-radius: 2px; margin: 20px 0; transition: background 0.3s; }
+        .btn-detail {
+            width: 100%; background: none; border: 1px solid var(--accent-blue);
+            color: var(--accent-blue); padding: 10px; border-radius: 8px;
+            font-size: 12px; margin-bottom: 20px; cursor: pointer;
+        }
+
+        .progress-line { height: 4px; background: var(--accent-green); width: 100%; border-radius: 2px; margin: 15px 0; transition: background 0.3s; }
         .progress-line.warning { background: var(--accent-red); }
 
-        .sub-stats { display: flex; justify-content: space-around; font-size: 12px; color: var(--text-sub); }
+        .sub-stats { display: flex; justify-content: space-around; font-size: 12px; color: var(--text-sub); margin-bottom: 25px; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; }
         .card-full { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        
         .input-box { background: var(--card-bg); padding: 30px 20px; border-radius: 20px; margin-bottom: 15px; }
         .counter-row { display: flex; justify-content: center; align-items: center; gap: 45px; margin-bottom: 30px; }
         .btn-round { width: 50px; height: 50px; border-radius: 50%; border: none; background: #3a3a3c; color: white; font-size: 26px; }
         .current-disp { font-size: 52px; font-weight: bold; color: var(--accent-green); }
         .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .btn-q { background: #2c2c2e; border: none; padding: 14px; border-radius: 10px; color: white; font-weight: 600; font-size: 13px; }
+        
         .btn-save { width: 100%; background: var(--accent-green); color: white; padding: 20px; border-radius: 18px; border: none; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
         .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; width: 100%; }
+        
         .settings-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 10px; }
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2c2c2e; cursor: pointer; }
         .mode-row { display: flex; gap: 8px; margin-top: 15px; }
         .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; }
-        .btn-m.active { background: var(--accent-green); color: white; }
+        .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
         
         .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.8; padding-bottom: 100px; }
         .foot-h { font-weight: bold; color: #777; margin-top: 15px; }
@@ -55,20 +67,25 @@
 
 <div class="container">
     <div class="top-title">pure-water-tracker</div>
+    
     <div class="header-section">
         <div class="label-xs">交換まであと</div>
-        <div class="main-val" id="remL">--<span class="unit-l">ℓ</span></div>
+        <div class="main-val" id="remL" onclick="showDetail()">--<span class="unit-l">ℓ</span></div>
+        <button class="btn-detail" onclick="alert('詳細データ機能は開発中です')">詳細データを表示</button>
         <div class="progress-line" id="pLine"></div>
-        <div class="sub-stats">
-            <span>洗車回数：あと <span id="remCount">--</span> 回分</span>
-            <span>寿命予測：7/18頃(仮)</span>
-        </div>
     </div>
+
+    <div class="sub-stats">
+        <span>洗車回数：あと <span id="remCount">--</span> 回分</span>
+        <span>寿命予測：7/18頃(仮)</span>
+    </div>
+
     <div class="stats-grid">
         <div class="card"><div class="label-xs">累計使用量</div><div id="totalUsed">0 ℓ</div></div>
         <div class="card"><div class="label-xs">04月の使用量</div><div id="monthUsed">0 ℓ</div></div>
     </div>
     <div class="card-full"><div class="label-xs">今月の算出コスト</div><div id="costDisp">0 円</div></div>
+
     <div class="input-box">
         <div class="counter-row">
             <button class="btn-round" onclick="add(-1)">−</button>
@@ -84,6 +101,7 @@
             <button class="btn-q" onclick="add(100)">+100ℓ</button>
         </div>
     </div>
+
     <button class="btn-save" onclick="save()">記録を保存</button>
     <button class="btn-reset">長押しで樹脂リセット</button>
     
@@ -146,6 +164,14 @@
         document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
         document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
         localStorage.setItem('pwMasterV4', JSON.stringify(d));
+    }
+
+    // 数値クリック時の詳細ポップアップ
+    function showDetail() {
+        if (d.ppm === null) { alert("PPMを設定してください"); return; }
+        const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
+        const rem = cap - d.used;
+        alert(`【詳細データ】\n現在の設定: ${d.m} モード\n原水硬度: ${d.ppm} ppm\n理論寿命: ${cap.toFixed(1)} ℓ\n使用済み: ${d.used} ℓ\n正確な残量: ${rem.toFixed(2)} ℓ`);
     }
 
     function add(v) { d.in = Math.max(0, d.in + v); up(); }
