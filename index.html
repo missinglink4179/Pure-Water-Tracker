@@ -28,8 +28,8 @@
         .progress-line { height: 4px; background: var(--accent-green); width: 100%; border-radius: 2px; margin: 20px 0; }
         .sub-stats { display: flex; justify-content: space-around; font-size: 12px; color: var(--text-sub); }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; }
-        .card-full { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 25px; cursor: pointer; }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; }
+        .card-full { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
         .input-box { background: var(--card-bg); padding: 30px 20px; border-radius: 20px; margin-bottom: 15px; }
         .counter-row { display: flex; justify-content: center; align-items: center; gap: 45px; margin-bottom: 30px; }
         .btn-round { width: 50px; height: 50px; border-radius: 50%; border: none; background: #3a3a3c; color: white; font-size: 26px; }
@@ -37,12 +37,14 @@
         .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .btn-q { background: #2c2c2e; border: none; padding: 14px; border-radius: 10px; color: white; font-weight: 600; font-size: 13px; }
         .btn-save { width: 100%; background: var(--accent-green); color: white; padding: 20px; border-radius: 18px; border: none; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
-        .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; }
-        .settings-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 35px; }
+        .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; width: 100%; }
+        .settings-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 10px; }
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2c2c2e; cursor: pointer; }
         .mode-row { display: flex; gap: 8px; margin-top: 15px; }
         .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; }
         .btn-m.active { background: var(--accent-green); color: white; }
+        
+        /* フッター表記の固定 */
         .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.8; padding-bottom: 100px; }
         .foot-h { font-weight: bold; color: #777; margin-top: 15px; }
     </style>
@@ -79,6 +81,7 @@
     </div>
     <button class="btn-save" onclick="save()">記録を保存</button>
     <button class="btn-reset">長押しで樹脂リセット</button>
+    
     <div class="settings-box">
         <div class="setting-item" onclick="askPPM()">
             <span class="label-xs" style="color:#fff; font-size:12px;">水道水硬度 (ppm)</span>
@@ -89,20 +92,32 @@
             <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST</button>
         </div>
     </div>
+
     <div class="footer">
-        <div class="foot-h">Reference</div>監修：ビューティフルカーズ<br>製造：グリーンライフ<br>
-        <div class="foot-h">Information</div>本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>※製造・監修元各社様とは一切関係ありません。<br>
+        <div class="foot-h">Reference</div>
+        監修：ビューティフルカーズ<br>
+        製造：グリーンライフ<br>
+        
+        <div class="foot-h">Information</div>
+        本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>
+        ※製造・監修元各社様とは一切関係ありません。<br>
+        
         <div class="foot-h">Terms of Use</div>
-        ・本アプリは非営利目的で制作・公開されています。<br>・個人利用の範囲内でご活用ください。<br>
+        ・本アプリは非営利目的で制作・公開されています。<br>
+        ・個人利用の範囲内でご活用ください。<br>
         ・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>
         ・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
         ・無断転載・再配布、および商用利用を固く禁じます。<br>
-        <hr style="border:0; border-top:1px solid #222; margin:15px 0;">Version 1.0.0<br>© 2026 missing link. All rights reserved.
+        
+        <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
+        Version 1.0.0<br>
+        © 2026 missing link. All rights reserved.
     </div>
 </div>
 
 <script>
     let d = JSON.parse(localStorage.getItem('pwMasterV4')) || { ppm: null, m: 'PRO', used: 0, in: 0 };
+
     function up() {
         if (d.ppm === null) {
             document.getElementById('remL').innerHTML = '--<span class="unit-l">ℓ</span>';
@@ -121,12 +136,15 @@
         document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
         localStorage.setItem('pwMasterV4', JSON.stringify(d));
     }
+
     function add(v) { d.in = Math.max(0, d.in + v); up(); }
     function mode(m) { d.m = m; up(); }
+    
     function askPPM() { 
-        const p = prompt("原水PPMを入力してください", d.ppm || ""); 
+        const p = prompt("原水PPMを入力してください", ""); 
         if(p !== null && p !== "") { d.ppm = parseInt(p); up(); } 
     }
+
     function save() { 
         if (d.ppm === null) { alert("先にPPMを入力してください"); return; }
         d.used += d.in; d.in = 0; up(); alert("記録を保存しました"); 
