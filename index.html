@@ -24,6 +24,8 @@
         .top-title { font-size: 12px; color: var(--text-sub); text-align: center; margin-bottom: 25px; }
         .header-section { text-align: center; margin-bottom: 25px; }
         .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
+        
+        /* 数値クリックで詳細ポップアップ */
         .main-val { font-size: 64px; font-weight: 800; line-height: 1; margin-bottom: 10px; cursor: pointer; }
         .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
         
@@ -132,15 +134,21 @@
 </div>
 
 <script>
-    let d = JSON.parse(localStorage.getItem('pwMasterV4')) || { ppm: null, m: 'PRO', used: 0, in: 0 };
+    let d = JSON.parse(localStorage.getItem('pwMasterV4')) || { ppm: null, m: 'PRO', used: 0, in: 0, logs: {} };
+    const COST_PER_RESIN = 6000; 
 
     function up() {
         const pLine = document.getElementById('pLine');
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        const monthUsed = d.logs[monthKey] || 0;
+
         if (d.ppm === null) {
             document.getElementById('remL').innerHTML = '--<span class="unit-l">ℓ</span>';
             document.getElementById('remCount').innerText = '--';
             document.getElementById('dispPPM').innerText = '数値を入力';
             pLine.classList.remove('warning');
+            document.getElementById('costDisp').innerText = '0 円';
         } else {
             const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
             const rem = Math.max(0, cap - d.used);
@@ -150,29 +158,32 @@
             document.getElementById('remCount').innerText = Math.floor(rem / 30);
             document.getElementById('dispPPM').innerText = d.ppm;
 
-            if (ratio < 0.1) {
-                pLine.classList.add('warning');
-            } else {
-                pLine.classList.remove('warning');
-            }
+            if (ratio < 0.1) pLine.classList.add('warning');
+            else pLine.classList.remove('warning');
+
+            const monthlyCost = Math.round((monthUsed / cap) * COST_PER_RESIN);
+            document.getElementById('costDisp').innerText = monthlyCost.toLocaleString() + ' 円';
         }
+        
         document.getElementById('totalUsed').innerText = d.used + ' ℓ';
-        document.getElementById('monthUsed').innerText = d.used + ' ℓ';
+        document.getElementById('monthUsed').innerText = monthUsed + ' ℓ';
         document.getElementById('inVal').innerText = d.in;
         document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
         document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
         localStorage.setItem('pwMasterV4', JSON.stringify(d));
     }
 
-    // 詳細表示（メイン数値、詳細ボタン両方から呼び出される）
     function showDetail() {
-        if (d.ppm === null) { 
-            alert("PPMが設定されていません。先に水道水硬度を入力してください。"); 
-            return; 
-        }
+        if (d.ppm === null) { alert("PPMを設定してください"); return; }
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         const rem = cap - d.used;
-        alert(`【現在のデータ状態】\n・モード：${d.m}\n・設定PPM：${d.ppm} ppm\n・理論上の総容量：${cap.toFixed(1)} ℓ\n・これまでの使用量：${d.used} ℓ\n・正確な残り：${rem.toFixed(2)} ℓ`);
+        let logTxt = "";
+        const keys = Object.keys(d.logs).sort().reverse();
+        keys.forEach(k => {
+            const mCost = Math.round((d.logs[k] / cap) * COST_PER_RESIN);
+            logTxt += `・${k}: ${d.logs[k]}ℓ (約${mCost}円)\n`;
+        });
+        alert(`【詳細データ】\nモード: ${d.m}\n原水硬度: ${d.ppm}ppm\n理論寿命: ${cap.toFixed(1)}ℓ\n現在残量: ${rem.toFixed(2)}ℓ\n\n【月別履歴・樹脂費用】\n${logTxt || "データなし"}`);
     }
 
     function add(v) { d.in = Math.max(0, d.in + v); up(); }
@@ -183,7 +194,13 @@
     }
     function save() { 
         if (d.ppm === null) { alert("先にPPMを入力してください"); return; }
-        d.used += d.in; d.in = 0; up(); alert("記録を保存しました"); 
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        d.used += d.in;
+        d.logs[monthKey] = (d.logs[monthKey] || 0) + d.in;
+        d.in = 0;
+        up();
+        alert("記録を保存しました"); 
     }
     up();
 </script>
