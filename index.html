@@ -25,7 +25,12 @@
         .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
         .main-val { font-size: 64px; font-weight: 800; line-height: 1; }
         .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
-        .progress-line { height: 4px; background: var(--accent-green); width: 100%; border-radius: 2px; margin: 20px 0; }
+        
+        /* バーの基本色 */
+        .progress-line { height: 4px; background: var(--accent-green); width: 100%; border-radius: 2px; margin: 20px 0; transition: background 0.3s; }
+        /* 警告時のクラス */
+        .progress-line.warning { background: var(--accent-red); }
+
         .sub-stats { display: flex; justify-content: space-around; font-size: 12px; color: var(--text-sub); }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; }
@@ -44,7 +49,6 @@
         .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; }
         .btn-m.active { background: var(--accent-green); color: white; }
         
-        /* フッター表記の固定 */
         .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.8; padding-bottom: 100px; }
         .foot-h { font-weight: bold; color: #777; margin-top: 15px; }
     </style>
@@ -56,14 +60,14 @@
     <div class="header-section">
         <div class="label-xs">交換まであと</div>
         <div class="main-val" id="remL">--<span class="unit-l">ℓ</span></div>
-        <div class="progress-line"></div>
+        <div class="progress-line" id="pLine"></div>
         <div class="sub-stats"><span>目安：<span id="remCount">--</span> 回</span><span>寿命予測：7/18頃(仮)</span></div>
     </div>
     <div class="stats-grid">
         <div class="card"><div class="label-xs">累計使用量</div><div id="totalUsed">0 ℓ</div></div>
-        <div class="card"><div class="label-xs">04月の使用量</div><div>0 ℓ</div></div>
+        <div class="card"><div class="label-xs">04月の使用量</div><div id="monthUsed">0 ℓ</div></div>
     </div>
-    <div class="card-full"><div class="label-xs">今月の算出コスト</div><div>0 円</div></div>
+    <div class="card-full"><div class="label-xs">今月の算出コスト</div><div id="costDisp">0 円</div></div>
     <div class="input-box">
         <div class="counter-row">
             <button class="btn-round" onclick="add(-1)">−</button>
@@ -95,23 +99,18 @@
 
     <div class="footer">
         <div class="foot-h">Reference</div>
-        監修：ビューティフルカーズ<br>
-        製造：グリーンライフ<br>
-        
+        監修：ビューティフルカーズ<br>製造：グリーンライフ<br>
         <div class="foot-h">Information</div>
         本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>
         ※製造・監修元各社様とは一切関係ありません。<br>
-        
         <div class="foot-h">Terms of Use</div>
         ・本アプリは非営利目的で制作・公開されています。<br>
         ・個人利用の範囲内でご活用ください。<br>
         ・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>
         ・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
         ・無断転載・再配布、および商用利用を固く禁じます。<br>
-        
         <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
-        Version 1.0.0<br>
-        © 2026 missing link. All rights reserved.
+        Version 1.0.0<br>© 2026 missing link. All rights reserved.
     </div>
 </div>
 
@@ -119,18 +118,30 @@
     let d = JSON.parse(localStorage.getItem('pwMasterV4')) || { ppm: null, m: 'PRO', used: 0, in: 0 };
 
     function up() {
+        const pLine = document.getElementById('pLine');
         if (d.ppm === null) {
             document.getElementById('remL').innerHTML = '--<span class="unit-l">ℓ</span>';
             document.getElementById('remCount').innerText = '--';
             document.getElementById('dispPPM').innerText = '数値を入力';
+            pLine.classList.remove('warning');
         } else {
             const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
             const rem = Math.max(0, cap - d.used);
+            const ratio = rem / cap;
+
             document.getElementById('remL').innerHTML = Math.floor(rem) + '<span class="unit-l">ℓ</span>';
             document.getElementById('remCount').innerText = Math.floor(rem / 30);
             document.getElementById('dispPPM').innerText = d.ppm;
+
+            // 残り10%を切ったらバーを赤くする
+            if (ratio < 0.1) {
+                pLine.classList.add('warning');
+            } else {
+                pLine.classList.remove('warning');
+            }
         }
         document.getElementById('totalUsed').innerText = d.used + ' ℓ';
+        document.getElementById('monthUsed').innerText = d.used + ' ℓ';
         document.getElementById('inVal').innerText = d.in;
         document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
         document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
@@ -139,12 +150,10 @@
 
     function add(v) { d.in = Math.max(0, d.in + v); up(); }
     function mode(m) { d.m = m; up(); }
-    
     function askPPM() { 
         const p = prompt("原水PPMを入力してください", ""); 
         if(p !== null && p !== "") { d.ppm = parseInt(p); up(); } 
     }
-
     function save() { 
         if (d.ppm === null) { alert("先にPPMを入力してください"); return; }
         d.used += d.in; d.in = 0; up(); alert("記録を保存しました"); 
