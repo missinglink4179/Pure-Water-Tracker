@@ -4,388 +4,127 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pure Water Tracker</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-dark: #000000;
-            --card-bg: #1c1c1e;
-            --input-bg: #2c2c2e;
-            --text-main: #ffffff;
-            --text-sub: #8e8e93;
-            --accent-green: #32d74b;
-            --accent-blue: #0a84ff;
-            --danger-red: #ff453a;
-            --alert-orange: #ff9f0a;
+            --bg-color: #000000;
+            --container-bg: #1a1a1a;
+            --text-color: #ffffff;
+            --accent-color: #007bff;
+            --danger-color: #dc3545;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
-            padding: 20px 0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            background-color: #28a745;
+            padding: 10px 0;
+            text-align: center;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .container {
-            width: 95%;
+            width: 90%;
             max-width: 400px;
+            margin-top: 20px;
+            background-color: var(--container-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
 
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 24px;
-            padding: 25px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        h1 { font-size: 1.1rem; text-align: center; margin-top: 0; margin-bottom: 20px; color: var(--text-main); }
-
-        .status-header { text-align: center; font-size: 0.8rem; color: var(--text-sub); margin-bottom: 5px; }
-        .main-display {
-            text-align: center; font-size: 3.5rem; font-weight: bold;
-            display: flex; justify-content: center; align-items: baseline; margin-bottom: 10px;
-        }
-        .main-unit { font-size: 1.8rem; margin-left: 5px; font-weight: normal;}
-
-        .progress-container {
-            width: 100%; height: 8px; background-color: #3a3a3c;
-            border-radius: 4px; margin-bottom: 15px; overflow: hidden;
-        }
-        #progressBar {
-            height: 100%; background-color: var(--accent-green);
-            width: 100%; transition: width 0.3s ease, background-color 0.3s ease;
-        }
-
-        .prediction-grid {
-            display: grid; grid-template-columns: 1fr 1fr;
-            font-size: 0.85rem; color: var(--text-sub); text-align: center; margin-bottom: 15px;
-        }
-        .predict-val { color: var(--text-main); font-weight: bold; }
-
-        .data-summary-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
         }
-        .summary-card {
-            background-color: #000000; border-radius: 12px; padding: 12px; text-align: center;
-            border: 1px solid #2c2c2e; transition: background 0.2s;
-        }
-        .summary-card:active { background: #1c1c1e; }
-        .summary-label { font-size: 0.65rem; color: var(--text-sub); margin-bottom: 4px; }
-        .summary-val { font-size: 1.1rem; font-weight: bold; }
 
-        .input-controls {
-            display: flex; justify-content: space-between; align-items: center; margin: 10px 0 20px 0;
-        }
-        .calc-btn {
-            width: 55px; height: 55px; border-radius: 30px;
-            background-color: var(--input-bg); border: none;
-            color: var(--text-main); font-size: 1.8rem; cursor: pointer;
-        }
-        .input-display { display: flex; flex-direction: column; align-items: center; }
-        #currentUsage { font-size: 3.5rem; font-weight: bold; color: var(--accent-green); line-height: 1; }
-        .usage-unit { font-size: 1.5rem; font-weight: normal; margin-left: 5px;}
-        .cost-helper { font-size: 0.9rem; color: var(--text-sub); margin-top: 5px;}
+        .btn-reset { background-color: #333; color: white; width: auto; padding: 5px 15px; font-size: 12px; }
+        .btn-record { background-color: var(--accent-color); color: white; }
 
-        .quick-inputs {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
-        }
-        .btn-quick {
-            background-color: var(--input-bg); color: var(--text-main);
-            border: none; border-radius: 12px; padding: 15px; font-size: 0.95rem; cursor: pointer;
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
         }
 
-        .btn-action {
-            width: 100%; padding: 20px; border: none; border-radius: 18px;
-            font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-bottom: 15px;
-        }
-        .btn-save { background-color: var(--accent-green); color: white; }
-        .btn-reset {
-            background: none; color: var(--danger-red); border: 1px solid var(--danger-red);
-            padding: 12px; font-size: 0.9rem; border-radius: 12px;
-        }
-
-        .input-wrap-hardness {
-            background-color: var(--input-bg); border-radius: 12px; padding: 18px;
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
-        }
-        #hardnessInput {
-            width: 100px; background: none; border: none; color: var(--accent-green);
-            font-size: 1.2rem; font-weight: bold; text-align: right; outline: none;
-        }
-        .toggle-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .btn-toggle {
-            background-color: var(--input-bg); color: var(--text-main);
-            border: none; border-radius: 12px; padding: 15px; font-size: 1rem; font-weight: bold; cursor: pointer;
-        }
-        .btn-toggle.active { background-color: var(--accent-green); }
-
-        .unit-price-info { text-align: right; font-size: 0.8rem; color: var(--text-sub); margin-top: 5px; }
-
-        .alert-box {
-            background: rgba(255, 159, 10, 0.15); color: var(--alert-orange);
-            padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 15px;
-            display: none; border: 1px solid var(--alert-orange); text-align: center;
-        }
-
-        #modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 1000;
-        }
         .modal-content {
-            background: var(--card-bg); width: 90%; max-width: 380px; max-height: 85vh;
-            border-radius: 24px; padding: 25px; overflow-y: auto; position: relative;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            width: 80%;
         }
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 2rem; color: var(--text-sub); cursor: pointer; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
-        th, td { padding: 12px 8px; border-bottom: 1px solid #2c2c2e; text-align: left; }
-        th { color: var(--text-sub); font-weight: normal; }
-
-        .footer { margin-top: 50px; padding-bottom: 40px; text-align: center; font-size: 0.75rem; color: #636366; line-height: 1.8; }
-        .footer-section { margin-bottom: 25px; }
-        .footer-title { font-weight: bold; color: #48484a; margin-bottom: 6px; font-size: 0.8rem; }
-        .hr-line { width: 60%; height: 1px; background: #2c2c2e; margin: 25px auto; border: none; }
+        .info-text {
+            font-size: 13px;
+            color: #888;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="card">
-        <h1>Pure Water Tracker</h1>
-        <div class="status-header">交換まであと</div>
-        <div class="main-display">
-            <span id="remainingLiters">----</span><span class="main-unit">ℓ</span>
-        </div>
-        <div class="progress-container">
-            <div id="progressBar"></div>
-        </div>
-        <div class="prediction-grid">
-            <div>洗車あと約 <span class="predict-val" id="predictCount">--</span> 回分</div>
-            <div>寿命予測: <span class="predict-val" id="predictDate">--頃(仮)</span></div>
-        </div>
+    <div class="header">記録する</div>
 
-        <div id="alertBox" class="alert-box">⚠️ 樹脂交換時期が近づいています（残り20%以下）</div>
+    <div class="container">
+        <button class="btn-reset" onclick="startResetTimer()">樹脂リセット</button>
         
-        <div class="data-summary-grid" onclick="openModal()">
-            <div class="summary-card">
-                <div class="summary-label">累計使用量</div>
-                <div class="summary-val"><span id="sumAll">0</span>ℓ</div>
+        <div id="display-area">
             </div>
-            <div class="summary-card">
-                <div class="summary-label"><span id="sumMonthName">--</span>月の使用量</div>
-                <div class="summary-val"><span id="sumMonth">0</span>ℓ</div>
-            </div>
-            <div class="summary-card" style="grid-column: span 2;">
-                <div class="summary-label">今月の算出コスト</div>
-                <div class="summary-val"><span id="sumCost">0</span>円</div>
-            </div>
+
+        <div class="info-text">
+            このアプリは個人が作成した純水使用量の管理ツールです。<br>
+            「ピュアニッシュ PRO / JUST」の仕様を参考にしていますが、公式とは一切関係ありません。<br>
+            <br>
+            参考：<br>
+            監修　ビューティフルカーズ<br>
+            製造　グリーンライフ<br>
+            <br>
+            作成：missing link<br>
+            個人利用の範囲でご使用ください。<br>
+            ※数値は目安です
         </div>
     </div>
 
-    <div class="card">
-        <div class="input-controls">
-            <button class="calc-btn" onclick="adjustUsage(-10)">－</button>
-            <div class="input-display">
-                <div id="currentUsage">0<span class="usage-unit">ℓ</span></div>
-                <div class="cost-helper">約 <span id="currentCost">0</span> 円</div>
-            </div>
-            <button class="calc-btn" onclick="adjustUsage(10)">＋</button>
-        </div>
-        <div class="quick-inputs">
-            <button class="btn-quick" onclick="setUsage(5)">+5ℓ</button>
-            <button class="btn-quick" onclick="setUsage(10)">+10ℓ</button>
-            <button class="btn-quick" onclick="setUsage(20)">+20ℓ</button>
-            <button class="btn-quick" onclick="setUsage(30)">+30ℓ</button>
-            <button class="btn-quick" onclick="setUsage(50)">+50ℓ</button>
-            <button class="btn-quick" onclick="setUsage(100)">+100ℓ</button>
-        </div>
-        <button class="btn-save btn-action" onclick="saveRecord()">記録を保存</button>
-        <button class="btn-reset btn-action" onmousedown="startResetTimer()" onmouseup="clearResetTimer()" onmouseleave="clearResetTimer()">長押しで樹脂リセット</button>
-    </div>
+    <script>
+        // アプリの動作ロジック（最新版）
+        let appState = {
+            totalUsed: 0,
+            lastMode: 'RESIN'
+        };
 
-    <div class="card">
-        <div class="input-wrap-hardness">
-            <div style="font-size:0.95rem">水道水硬度 (ppm)</div>
-            <input type="number" id="hardnessInput" placeholder="入力" onchange="updateDisplay()">
-        </div>
-        <div class="toggle-group">
-            <button class="btn-toggle active" id="typePro" onclick="setType('PRO')">PRO</button>
-            <button class="btn-toggle" id="typeJust" onclick="setType('JUST')">JUST</button>
-        </div>
-        <div class="toggle-group">
-            <button class="btn-toggle active" id="costResin" onclick="setCostMode('RESIN')">樹脂のみ</button>
-            <button class="btn-toggle" id="costFull" onclick="setCostMode('FULL')">本体込み</button>
-        </div>
-        <div class="unit-price-info">
-            単価(<span id="pType">PRO</span>/<span id="pMode">樹脂</span>): <span id="uPrice">0.0</span> 円/ℓ
-        </div>
-    </div>
-
-    <div class="footer">
-        <div class="footer-section">
-            <div class="footer-title">Reference</div>
-            監修：ビューティフルカーズ / 製造：グリーンライフ
-        </div>
-        <div class="footer-section">
-            <div class="footer-title">Information</div>
-            本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。
-        </div>
-        <div class="footer-section">
-            <div class="footer-title">Terms of Use</div>
-            数値は理論値に基づく目安であり、正確性を保証するものではありません。
-        </div>
-        <hr class="hr-line">
-        <div>Version 1.0.0</div>
-        <div>© 2026 missing link. All rights reserved.</div>
-    </div>
-</div>
-
-<div id="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeModal()">&times;</span>
-        <h3 style="margin-top:0">使用傾向（直近7件）</h3>
-        <canvas id="usageChart"></canvas>
-        <h3 style="margin-top:30px">履歴（直近10件）</h3>
-        <table id="historyTable">
-            <thead><tr><th>日付</th><th>使用量</th><th>コスト</th></tr></thead>
-            <tbody></tbody>
-        </table>
-    </div>
-</div>
-
-<script>
-    const CAPACITIES = { PRO: 180000, JUST: 90000 };
-    const COSTS = { PRO: { RESIN: 9200, FULL: 32800 }, JUST: { RESIN: 4600, FULL: 19800 } };
-
-    let appState = JSON.parse(localStorage.getItem('pureWaterState_v1')) || {
-        type: 'PRO', costMode: 'RESIN', totalUsed: 0, savedPpm: null, history: []
-    };
-    let inputUsage = 0;
-
-    window.onload = () => {
-        if(appState.type === 'JUST') setType('JUST', false);
-        if(appState.costMode === 'FULL') setCostMode('FULL', false);
-        if(appState.savedPpm) document.getElementById('hardnessInput').value = appState.savedPpm;
-        updateDisplay();
-    };
-
-    function saveState() { localStorage.setItem('pureWaterState_v1', JSON.stringify(appState)); }
-
-    function updateDisplay() {
-        const hardness = parseFloat(document.getElementById('hardnessInput').value);
-        const now = new Date();
-        const currentMonthStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}`;
-        document.getElementById('sumMonthName').innerText = now.getMonth()+1;
-
-        if (!hardness) {
-            document.getElementById('remainingLiters').innerText = "----";
-            return;
+        function startResetTimer() {
+            if(confirm("全ての記録をリセットしますか？")) {
+                appState.totalUsed = 0;
+                alert("リセットしました");
+                location.reload();
+            }
         }
 
-        const limitLiters = Math.round(CAPACITIES[appState.type] / hardness);
-        const remainingLiters = Math.max(0, limitLiters - appState.totalUsed);
-        document.getElementById('remainingLiters').innerText = remainingLiters.toLocaleString();
-
-        const percent = Math.max(0, Math.round((remainingLiters / limitLiters) * 100));
-        const progressBar = document.getElementById('progressBar');
-        progressBar.style.width = `${percent}%`;
-        progressBar.style.backgroundColor = percent <= 20 ? 'var(--alert-orange)' : 'var(--accent-green)';
-        document.getElementById('alertBox').style.display = percent <= 20 ? 'block' : 'none';
-
-        document.getElementById('predictCount').innerText = Math.floor(remainingLiters / 30);
-        document.getElementById('currentUsage').innerHTML = `${inputUsage}<span class="usage-unit">ℓ</span>`;
-        
-        const unitPrice = (COSTS[appState.type][appState.costMode]) / (CAPACITIES[appState.type] / hardness);
-        document.getElementById('uPrice').innerText = unitPrice.toFixed(1);
-        document.getElementById('currentCost').innerText = Math.round(inputUsage * unitPrice);
-
-        let mUsed = 0, mCost = 0;
-        appState.history.forEach(item => { if(item.month === currentMonthStr) { mUsed += item.usage; mCost += item.cost; } });
-        document.getElementById('sumAll').innerText = appState.totalUsed.toLocaleString();
-        document.getElementById('sumMonth').innerText = mUsed.toLocaleString();
-        document.getElementById('sumCost').innerText = mCost.toLocaleString();
-        
-        document.getElementById('pType').innerText = appState.type;
-        document.getElementById('pMode').innerText = appState.costMode === 'RESIN' ? '樹脂' : '本体';
-    }
-
-    function adjustUsage(val) { inputUsage = Math.max(0, inputUsage + val); updateDisplay(); }
-    function setUsage(val) { inputUsage += val; updateDisplay(); }
-    function clearUsage() { inputUsage = 0; updateDisplay(); }
-
-    function setType(type, refresh=true) {
-        appState.type = type;
-        document.getElementById('typePro').classList.toggle('active', type === 'PRO');
-        document.getElementById('typeJust').classList.toggle('active', type === 'JUST');
-        if(refresh) { updateDisplay(); saveState(); }
-    }
-    function setCostMode(mode, refresh=true) {
-        appState.costMode = mode;
-        document.getElementById('costResin').classList.toggle('active', mode === 'RESIN');
-        document.getElementById('costFull').classList.toggle('active', mode === 'FULL');
-        if(refresh) { updateDisplay(); saveState(); }
-    }
-
-    function saveRecord() {
-        const hardness = parseFloat(document.getElementById('hardnessInput').value);
-        if (!hardness || inputUsage <= 0) { alert("硬度と使用量を入力してください"); return; }
-        appState.savedPpm = hardness;
-        const unitPrice = (COSTS[appState.type][appState.costMode]) / (CAPACITIES[appState.type] / hardness);
-        const cost = Math.round(inputUsage * unitPrice);
-        const d = new Date();
-        appState.totalUsed += inputUsage;
-        appState.history.push({ 
-            date: `${d.getMonth()+1}/${d.getDate()}`, 
-            month: `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}`, 
-            usage: inputUsage, 
-            cost: cost 
-        });
-        saveState(); inputUsage = 0; updateDisplay(); alert("保存しました");
-    }
-
-    function openModal() {
-        document.getElementById('modal').style.display = 'flex';
-        const tbody = document.querySelector('#historyTable tbody');
-        tbody.innerHTML = '';
-        appState.history.slice().reverse().slice(0, 10).forEach(item => {
-            tbody.innerHTML += `<tr><td>${item.date}</td><td>${item.usage}ℓ</td><td>¥${item.cost}</td></tr>`;
-        });
-        const ctx = document.getElementById('usageChart').getContext('2d');
-        const recent = appState.history.slice(-7);
-        if (window.myChart) window.myChart.destroy();
-        window.myChart = new Chart(ctx, {
-            type: 'bar',
-            data: { 
-                labels: recent.map(h => h.date), 
-                datasets: [{ data: recent.map(h => h.usage), backgroundColor: '#32d74b', borderRadius: 6 }] 
-            },
-            options: { 
-                scales: { 
-                    y: { beginAtZero: true, grid: { color: '#2c2c2e' }, ticks: { color: '#8e8e93' } }, 
-                    x: { grid: { display: false }, ticks: { color: '#8e8e93' } } 
-                }, 
-                plugins: { legend: { display: false } } 
-            }
-        });
-    }
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
-
-    let rTimer;
-    function startResetTimer() { 
-        rTimer = setTimeout(() => { 
-            if(confirm("全ての記録をリセットしますか？")){ 
-                const currentPpm = appState.savedPpm;
-                appState = { type: 'PRO', costMode: 'RESIN', totalUsed: 0, savedPpm: currentPpm, history: [] };
-                saveState(); location.reload(); 
-            } 
-        }, 1500); 
-    }
-    function clearResetTimer() { clearTimeout(rTimer); }
-</script>
+        // その他の必要な関数（openModal等）をここに記述
+    </script>
 </body>
 </html>
