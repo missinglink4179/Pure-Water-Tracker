@@ -13,7 +13,6 @@
             --accent: #007aff;
             --danger: #ff3b30;
             --border: #333333;
-            --success: #34c759;
         }
 
         body {
@@ -52,76 +51,29 @@
             gap: 12px;
         }
 
-        /* 水道水硬度エリア（画像準拠） */
-        .hardness-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .hardness-value { color: var(--success); font-size: 1.4rem; font-weight: bold; }
-
-        /* PRO / JUST 切り替え（画像準拠） */
-        .model-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .model-btn {
-            background: #222;
-            border: 1px solid var(--border);
-            color: var(--text-sub);
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .model-btn.active {
-            background: var(--success);
-            color: white;
-            border: none;
-        }
-
         .input-group {
             margin-top: 20px;
+            display: flex;
+            gap: 8px;
         }
 
         input {
-            width: 100%;
+            flex: 1;
             background: #222;
             border: 1px solid var(--border);
             color: white;
             padding: 12px;
             border-radius: 8px;
             font-size: 1rem;
-            margin-bottom: 10px;
-            box-sizing: border-box;
         }
 
-        /* 記録を保存（画像準拠） */
-        .save-btn {
-            background: var(--success);
+        button {
+            background: var(--accent);
             color: white;
             border: none;
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 12px;
-        }
-
-        /* 長押しで樹脂リセット（画像準拠） */
-        .reset-btn-long {
-            background: transparent;
-            color: var(--danger);
-            border: 1px solid var(--danger);
-            width: 100%;
-            padding: 10px;
+            padding: 12px 20px;
             border-radius: 8px;
-            font-size: 0.8rem;
-            margin-bottom: 30px;
+            font-weight: bold;
             cursor: pointer;
         }
 
@@ -129,8 +81,10 @@
             display: flex;
             justify-content: space-between;
             align-items: baseline;
+            margin-top: 20px;
             margin-bottom: 8px;
         }
+
         .history-title { font-size: 0.9rem; color: var(--text-sub); }
         .history-caption { font-size: 0.7rem; color: #555; }
 
@@ -140,6 +94,7 @@
             border: 1px solid var(--border);
             overflow: hidden;
         }
+
         .list-item {
             padding: 12px 16px;
             border-bottom: 1px solid var(--border);
@@ -147,25 +102,38 @@
             justify-content: space-between;
             font-size: 0.9rem;
         }
+
         .list-item:last-child { border-bottom: none; }
         .date { color: var(--text-sub); }
 
-        /* 権利関係セクション（画像と100%一致） */
+        .reset-btn {
+            margin-top: 30px;
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+
+        /* 権利関係セクション */
         .info-section {
-            margin-top: 60px;
+            margin-top: 40px;
             text-align: center;
             font-size: 0.75rem;
             color: var(--text-sub);
-            line-height: 1.8;
-            width: 100%;
+            line-height: 1.6;
         }
-        .info-title { color: var(--text-sub); font-weight: bold; margin-top: 24px; margin-bottom: 4px; display: block; }
-        .footer-credit { margin-top: 40px; padding-bottom: 60px; color: #444; }
+        .info-section b { color: var(--text-sub); display: block; margin-top: 15px; margin-bottom: 2px; }
+        .footer-credit { margin-top: 30px; padding-bottom: 40px; font-size: 0.7rem; color: #444; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <h1>Pure Water Tracker</h1>
+
     <div class="card">
         <div class="label">推定残容量</div>
         <div class="value" id="remainingResin">--<span class="unit">L</span></div>
@@ -182,40 +150,29 @@
         </div>
     </div>
 
-    <div class="card">
-        <div class="hardness-card">
-            <span class="label" style="margin:0">水道水硬度 (ppm)</span>
-            <span class="hardness-value">70</span>
-        </div>
-        <div class="model-selector">
-            <button class="model-btn active">PRO</button>
-            <button class="model-btn">JUST</button>
-        </div>
-    </div>
-
     <div class="input-group">
         <input type="number" id="usageInput" placeholder="今回の使用量 (L)" inputmode="decimal">
-        <button class="save-btn" onclick="addUsage()">記録を保存</button>
+        <button onclick="addUsage()">記録を保存</button>
     </div>
 
-    <button class="reset-btn-long">長押しで樹脂リセット</button>
-
     <div class="history-header">
-        <span class="history-title">洗車履歴</span>
-        <span class="history-caption">最新10件を表示</span>
+        <div class="history-title">洗車履歴</div>
+        <div class="history-caption">最新10件を表示</div>
     </div>
     <div class="list" id="historyList"></div>
 
+    <button class="reset-btn" onclick="resetResin()">長押しで樹脂リセット</button>
+
     <div class="info-section">
-        <span class="info-title">Reference</span>
+        <b>Reference</b>
         監修：ビューティフルカーズ<br>
         製造：グリーンライフ
 
-        <span class="info-title">Information</span>
+        <b>Information</b>
         本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>
         ※製造・監修元各社様とは一切関係ありません。
 
-        <span class="info-title">Terms of Use</span>
+        <b>Terms of Use</b>
         ・本アプリは非営利目的で制作・公開されています。<br>
         ・個人利用の範囲内でご活用ください。<br>
         ・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>
@@ -231,6 +188,7 @@
 
 <script>
     const RESIN_CAPACITY = 1800; 
+
     let state = JSON.parse(localStorage.getItem('waterTrackerState')) || {
         totalUsage: 0,
         history: [],
@@ -261,7 +219,6 @@
         save();
     }
 
-    // 寿命予測ロジックの実装
     function calculatePredictDate(remaining, avg) {
         if (!avg || avg <= 0 || remaining <= 0) return "--/--";
         const dailyAvg = avg / 30;
@@ -291,6 +248,14 @@
                 <span class="amount">${item.amount} L</span>
             </div>
         `).join('');
+    }
+
+    function resetResin() {
+        if (confirm('イオン交換樹脂をリセットしますか？')) {
+            state.totalUsage = 0;
+            state.history = [];
+            save();
+        }
     }
 
     render();
