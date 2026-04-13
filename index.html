@@ -285,7 +285,7 @@
     let longClickTimer;
 
     const startReset = (e) => {
-        e.preventDefault();
+        if (e.type === 'touchstart') e.preventDefault();
         mainValWrap.classList.add('resetting');
         setTimeout(() => { mainValWrap.classList.add('reset-active'); }, 10);
         vib(10);
@@ -293,6 +293,7 @@
             vib([50, 30, 50]);
             if(confirm("樹脂の使用記録をすべてリセットしますか？")) { 
                 d.used = 0; d.logs = {}; d.in = 0; d.history = []; 
+                save();
             }
             cancelReset();
         }, 1000);
@@ -305,9 +306,10 @@
     };
 
     resetBtn.addEventListener('mousedown', startReset);
-    window.addEventListener('mouseup', cancelReset);
     resetBtn.addEventListener('touchstart', startReset, {passive: false});
-    resetBtn.addEventListener('touchend', cancelReset);
+    window.addEventListener('mouseup', cancelReset);
+    window.addEventListener('touchend', cancelReset);
+    window.addEventListener('touchcancel', cancelReset);
 
     function clr() { d.in = 0; vib(5); up(); }
     function add(v) { d.in = Math.max(0, d.in + v); vib(5); up(); }
@@ -315,7 +317,7 @@
     
     function save() { 
         if (!d.ppm) { alert("先にPPMを入力してください"); return; }
-        if (d.in === 0) return;
+        if (d.in === 0 && d.used !== 0) return; // リセット時以外で入力0なら何もしない
         
         vib(30);
         const now = new Date();
@@ -326,11 +328,13 @@
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         const cost = Math.round((d.in / cap) * COST_PER_RESIN);
         if(!d.history) d.history = [];
-        d.history.unshift({ date: dateStr, amt: d.in, cost: cost });
-        if(d.history.length > 10) d.history.pop();
+        if (d.in > 0) {
+            d.history.unshift({ date: dateStr, amt: d.in, cost: cost });
+            if(d.history.length > 10) d.history.pop();
+        }
 
         d.used += d.in; 
-        d.logs[monthKey] = (d.logs[monthKey] || 0) + d.in;
+        if (d.in > 0) d.logs[monthKey] = (d.logs[monthKey] || 0) + d.in;
         d.in = 0; 
         up();
     }
