@@ -2,376 +2,397 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>pure-water-tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Pure Water Tracker</title>
     <style>
         :root {
-            --bg-color: #0c0c0c;
+            --bg-color: #000000;
             --card-bg: #1c1c1e;
-            --accent-green: #34c759;
-            --accent-yellow: #ffcc00;
-            --accent-red: #ff453a;
-            --accent-blue: #0a84ff;
             --text-main: #ffffff;
             --text-sub: #8e8e93;
-            --alert-deep-red: #2a0a0a;
+            --accent-green: #30d158;
+            --accent-yellow: #ffd60a;
+            --accent-red: #ff453a;
+            --accent-blue: #0a84ff;
+            --glass: rgba(255, 255, 255, 0.05);
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; touch-action: manipulation; }
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; transition: background-color 0.8s ease; }
-        
-        /* 背景アラート状態 */
-        body.alert-red { background-color: var(--alert-deep-red); }
 
-        .container { width: 100%; max-width: 380px; }
-        .top-title { font-size: 12px; color: var(--text-sub); text-align: center; margin-bottom: 25px; }
-        
-        .header-section { text-align: center; margin-bottom: 20px; padding: 20px 10px; border-radius: 24px; }
-
-        .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
-        
-        .main-val-wrap { position: relative; display: inline-block; margin-bottom: 15px; cursor: pointer; }
-        .main-val { font-size: 64px; font-weight: 800; line-height: 1; transition: color 0.3s; }
-        .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
-        .no-ppm-alert { font-size: 24px; color: var(--text-sub); font-weight: bold; }
-
-        .main-val-wrap::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 0%;
-            height: 4px;
-            background-color: var(--accent-blue);
-            border-radius: 2px;
-            transition: width 0s linear;
-            opacity: 0;
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
-        .main-val-wrap.resetting .main-val { color: var(--accent-blue) !important; }
-        .main-val-wrap.resetting::after { opacity: 1; }
-        .main-val-wrap.reset-active::after { width: 100%; transition: width 1.0s linear; }
 
-        .btn-detail { background: none; border: 1px solid #3a3a3c; color: var(--text-sub); padding: 8px 16px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.2s; margin-bottom: 10px; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+            margin: 0;
+            padding: 20px;
+            padding-top: calc(20px + env(safe-area-inset-top));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-        .sub-stats { display: flex; justify-content: space-around; font-size: 12px; color: var(--text-sub); margin-bottom: 25px; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; }
-        .card-full { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
-        
-        .input-box { background: var(--card-bg); padding: 25px 20px; border-radius: 20px; margin-bottom: 15px; }
-        .input-title { font-size: 11px; color: var(--accent-green); font-weight: bold; text-align: center; margin-bottom: 15px; }
-        .counter-row { display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 15px; }
-        .btn-round { width: 50px; height: 50px; border-radius: 50%; border: none; background: #3a3a3c; color: white; font-size: 26px; cursor: pointer; }
-        .current-disp { font-size: 52px; font-weight: bold; }
-        
-        .btn-clear { background: #3a3a3c; color: var(--text-sub); border: none; padding: 6px 16px; border-radius: 20px; font-size: 11px; cursor: pointer; display: block; margin: 0 auto 20px; }
+        .container {
+            width: 100%;
+            max-width: 420px;
+        }
 
-        .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .btn-q { background: #2c2c2e; border: none; padding: 14px 5px; border-radius: 10px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; touch-action: none; }
-        
-        .btn-save { width: 100%; background: var(--accent-green); color: white; padding: 22px; border-radius: 18px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 15px; cursor: pointer; transition: all 0.2s; -webkit-appearance: none; }
-        .btn-save:active { transform: scale(0.98); opacity: 0.8; }
-        
-        .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; user-select: none; cursor: pointer; touch-action: none; }
-        
-        .settings-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 10px; }
-        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2c2c2e; }
-        .ppm-input { background: none; border: none; color: var(--accent-green); font-weight: bold; font-size: 16px; text-align: right; width: 80px; }
-        .mode-row { display: flex; gap: 8px; margin-top: 15px; }
-        .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; cursor: pointer; }
-        .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
-        
-        /* ポップアップ用スタイル */
-        #modalOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
-        .modal-content { background: #1c1c1e; width:100%; max-width:350px; max-height:80vh; border-radius:24px; padding:25px; overflow-y:auto; border: 1px solid #3a3a3c; }
-        .modal-h { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--accent-blue); text-align: center; }
-        .modal-section { margin-bottom: 20px; }
-        .modal-label { font-size: 11px; color: var(--text-sub); margin-bottom: 8px; border-left: 3px solid var(--accent-blue); padding-left: 8px; }
-        .history-item { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #2c2c2e; }
-        .logic-box { font-size: 11px; color: var(--text-sub); background: #111; padding: 10px; border-radius: 8px; line-height: 1.5; }
-        .btn-close { width:100%; background: #3a3a3c; border:none; color:white; padding:12px; border-radius:12px; margin-top:10px; font-weight:bold; }
+        /* メインディスプレイ表示エリア */
+        .main-card {
+            background: linear-gradient(145deg, #2c2c2e, #1c1c1e);
+            border-radius: 28px;
+            padding: 30px 20px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: border-top 0.5s ease;
+        }
 
-        .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.8; padding-bottom: 100px; }
-        .foot-h { font-weight: bold; color: #777; margin-top: 15px; }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            background: var(--glass);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .remaining-value {
+            font-size: 54px;
+            font-weight: 800;
+            margin: 10px 0;
+            letter-spacing: -1px;
+        }
+
+        .unit {
+            font-size: 20px;
+            color: var(--text-sub);
+            margin-left: 4px;
+        }
+
+        .sub-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        /* 入力エリア・操作ボタン */
+        .input-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .ppm-input-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="number"] {
+            width: 120px;
+            background: #2c2c2e;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: var(--accent-green);
+            padding: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .type-btn {
+            background: #3a3a3c;
+            color: var(--text-sub);
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .type-btn.active {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .btn-save-main {
+            width: 100%;
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .btn-quick {
+            background: var(--glass);
+            color: var(--text-main);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 5px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* リセットボタン（赤枠スタイル） */
+        .btn-reset-outline {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            border-radius: 16px;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        /* フッター（画像に基づき完全再現） */
+        .footer {
+            margin-top: 40px;
+            padding-bottom: 60px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-sub);
+            line-height: 1.7;
+            width: 100%;
+        }
+
+        .footer-section {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .footer-title {
+            font-weight: bold;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #333;
+            margin: 24px 0;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="top-title">pure-water-tracker</div>
-    
-    <div id="hSec" class="header-section">
-        <div class="label-xs">交換まであと</div>
-        <div class="main-val-wrap" id="mainValWrap" onclick="showDetail()">
-            <span class="main-val" id="remL"><span class="no-ppm-alert">PPMを入力</span></span>
+    <div class="main-card" id="display-card">
+        <div class="status-badge">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text">PPMを入力してください</span>
         </div>
-        <button class="btn-detail" onclick="showDetail()">コンディション詳細</button>
-    </div>
-
-    <div class="sub-stats">
-        <span>洗車回数：あと <span id="remCount">--</span> 回分</span>
-        <span id="predictDate">寿命予測：--/--頃</span>
-    </div>
-
-    <div class="stats-grid">
-        <div class="card"><div class="label-xs">累計使用量</div><div id="totalUsed">0 ℓ</div></div>
-        <div class="card"><div class="label-xs">今月の使用量</div><div id="monthUsed">0 ℓ</div></div>
-    </div>
-    <div class="card-full"><div class="label-xs">今月の算出コスト</div><div id="costDisp">0 円</div></div>
-
-    <div class="input-box">
-        <div class="input-title">今回の洗車使用量</div>
-        <div class="counter-row">
-            <button class="btn-round" onclick="add(-1)">−</button>
-            <div class="current-disp"><span id="inVal">0</span><span style="font-size:24px; margin-left:4px; color:var(--text-sub);">ℓ</span></div>
-            <button class="btn-round" onclick="add(1)">＋</button>
-        </div>
-        <button class="btn-clear" onclick="clr()">入力をリセット</button>
-        <div class="quick-grid">
-            <button class="btn-q" onclick="add(5)">+5ℓ</button>
-            <button class="btn-q" onclick="add(10)">+10ℓ</button>
-            <button class="btn-q" onclick="add(20)">+20ℓ</button>
-            <button class="btn-q" onclick="add(30)">+30ℓ</button>
-            <button class="btn-q" onclick="add(50)">+50ℓ</button>
-            <button class="btn-q" onclick="add(100)">+100ℓ</button>
+        <div class="remaining-value"><span id="rem-val">---</span><span class="unit">L</span></div>
+        <div class="sub-stats">
+            <div>累計使用: <span id="total-used">0</span>L</div>
+            <div>残量: <span id="rem-percent">--</span>%</div>
         </div>
     </div>
 
-    <button class="btn-save" id="saveBtn" onclick="save()">記録を保存</button>
-    <button id="resetBtn" class="btn-reset">長押しで樹脂リセット</button>
-    
-    <div class="settings-box">
-        <div class="setting-item">
-            <span class="label-xs" style="color:#fff; font-size:12px;">水道水硬度 (ppm)</span>
-            <input type="number" id="ppmIn" class="ppm-input" placeholder="0" oninput="setPPM(this.value)" pattern="\d*">
+    <button class="btn-save-main" onclick="addWater(10)">記録を保存 (+10L)</button>
+
+    <div class="input-card">
+        <div class="ppm-input-row">
+            <span>水道水硬度 (ppm)</span>
+            <input type="number" id="ppm-input" value="70" inputmode="numeric">
         </div>
-        <div class="mode-row">
-            <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO</button>
-            <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST</button>
+        <div class="type-selector">
+            <button class="type-btn active">PRO</button>
+            <button class="type-btn">JUST</button>
+        </div>
+        <div class="quick-actions">
+            <button class="btn-quick" onclick="addWater(5)">+5L</button>
+            <button class="btn-quick" onclick="addWater(10)">+10L</button>
+            <button class="btn-quick" onclick="addWater(50)">+50L</button>
+            <button class="btn-quick" onclick="addWater(100)">+100L</button>
         </div>
     </div>
+
+    <button class="btn-reset-outline" id="reset-btn">長押しで樹脂リセット</button>
 
     <div class="footer">
-        <div class="foot-h">Reference</div>
-        監修：ビューティフルカーズ<br>製造：グリーンライフ<br>
-        <div class="foot-h">Information</div>
-        本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>
-        ※製造・監修元各社様とは一切関係ありません。<br>
-        <div class="foot-h">Terms of Use</div>
-        ・本アプリは非営利目的で制作・公開されています。<br>
-        ・個人利用の範囲内でご活用ください。<br>
-        ・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>
-        ・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
-        ・無断転載・再配布、および商用利用を固く禁じます。<br>
-        <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
-        Version 1.0.0<br>© 2026 missing link. All rights reserved.
-    </div>
-</div>
-
-<div id="modalOverlay" onclick="closeDetail()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="modal-h">コンディション詳細</div>
-        
-        <div class="modal-section">
-            <div class="modal-label">直近10件の使用履歴</div>
-            <div id="historyList"></div>
+        <div class="footer-section">
+            <span class="footer-title">Reference</span>
+            監修：ビューティフルカーズ<br>
+            製造：グリーンライフ
         </div>
 
-        <div class="modal-section">
-            <div class="modal-label">月別サマリー</div>
-            <div id="monthSummaryList"></div>
+        <div class="footer-section">
+            <span class="footer-title">Information</span>
+            本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>
+            ※製造・監修元各社様とは一切関係ありません。
         </div>
 
-        <div class="modal-section">
-            <div class="modal-label">算出ロジックの根拠</div>
-            <div class="logic-box">
-                ・洗車1回あたりの想定使用量: 30ℓ<br>
-                ・樹脂寿命(ℓ) = 係数 / 水道水ppm<br>
-                　(PRO: 180,000 / JUST: 90,000)<br>
-                ・コスト = (月間使用量 / 総寿命) × 樹脂価格(6,000円)
-            </div>
+        <div class="footer-section">
+            <span class="footer-title">Terms of Use</span>
+            ・本アプリは非営利目的で制作・公開されています。<br>
+            ・個人利用の範囲内でご活用ください。<br>
+            ・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>
+            ・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
+            ・無断転載・再配布、および商用利用を固く禁じます。<br>
+            ・データは端末内にのみ保存され、外部への送信や収集は行われません。
         </div>
 
-        <button class="btn-close" onclick="closeDetail()">閉じる</button>
+        <hr>
+
+        <div class="footer-section">
+            Version 1.0.0<br>
+            &copy; 2026 missing link. All rights reserved.
+        </div>
     </div>
 </div>
 
 <script>
-    let d = JSON.parse(localStorage.getItem('pwMasterV4')) || { ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [] };
-    const COST_PER_RESIN = 6000; 
-
-    function vib(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
-
-    function setPPM(val) {
-        d.ppm = val === "" ? null : parseInt(val);
-        up();
-    }
-
-    // 寿命予測ロジック
-    function calculatePredictDate(remaining, avg) {
-        if (!avg || avg <= 0 || remaining <= 0) return "--/--";
-        const dailyAvg = avg / 30; // 月間平均から1日あたりの平均を算出
-        const daysRemaining = Math.floor(remaining / dailyAvg);
-        const targetDate = new Date();
-        targetDate.setDate(targetDate.getDate() + daysRemaining);
-        return `${targetDate.getMonth() + 1}/${targetDate.getDate()}`;
-    }
-
-    function up() {
-        const body = document.body;
-        const remL = document.getElementById('remL');
-        const saveBtn = document.getElementById('saveBtn');
-        const now = new Date();
-        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-        const monthUsed = d.logs[monthKey] || 0;
-
-        if (d.ppm !== null) document.getElementById('ppmIn').value = d.ppm;
-        remL.style.color = ''; 
-        body.classList.remove('alert-red');
-
-        if (d.ppm === null || d.ppm === 0) {
-            remL.innerHTML = '<span class="no-ppm-alert">PPMを入力</span>';
-            document.getElementById('remCount').innerText = '--';
-            document.getElementById('costDisp').innerText = '0 円';
-            document.getElementById('predictDate').innerText = '寿命予測：--/--頃';
-        } else {
-            const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
-            const rem = Math.max(0, cap - d.used);
-            const ratio = rem / cap;
-            remL.innerHTML = Math.floor(rem) + '<span class="unit-l">ℓ</span>';
-            document.getElementById('remCount').innerText = Math.floor(rem / 30);
-            
-            if (ratio < 0.1) {
-                remL.style.color = 'var(--accent-red)';
-                body.classList.add('alert-red');
-            } else if (ratio < 0.3) {
-                remL.style.color = 'var(--accent-yellow)';
-            } else {
-                remL.style.color = 'var(--accent-green)';
-            }
-            const monthlyCost = Math.round((monthUsed / cap) * COST_PER_RESIN);
-            document.getElementById('costDisp').innerText = monthlyCost.toLocaleString() + ' 円';
-
-            // 寿命予測日の更新
-            const months = Object.keys(d.logs);
-            let avgUsage = 0;
-            if (months.length > 0) {
-                const totalInLogs = Object.values(d.logs).reduce((a, b) => a + b, 0);
-                avgUsage = totalInLogs / months.length;
-            }
-            document.getElementById('predictDate').innerText = `寿命予測：${calculatePredictDate(rem, avgUsage)}頃`;
-        }
-        
-        document.getElementById('totalUsed').innerText = d.used + ' ℓ';
-        document.getElementById('monthUsed').innerText = monthUsed + ' ℓ';
-        document.getElementById('inVal').innerText = d.in;
-        
-        if (d.in > 0) {
-            saveBtn.innerText = `${d.in}ℓ の使用を記録`;
-            saveBtn.style.opacity = "1";
-            saveBtn.style.pointerEvents = "auto";
-        } else {
-            saveBtn.innerText = '数値を入力してください';
-            saveBtn.style.opacity = "0.3";
-            saveBtn.style.pointerEvents = "none";
-        }
-
-        document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
-        document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
-        localStorage.setItem('pwMasterV4', JSON.stringify(d));
-    }
-
-    const resetBtn = document.getElementById('resetBtn');
-    const mainValWrap = document.getElementById('mainValWrap');
-    let longClickTimer;
-
-    const startReset = (e) => {
-        if (e.type === 'touchstart') e.preventDefault();
-        mainValWrap.classList.add('resetting');
-        setTimeout(() => { mainValWrap.classList.add('reset-active'); }, 10);
-        vib(10);
-        longClickTimer = setTimeout(() => {
-            vib([50, 30, 50]);
-            if(confirm("樹脂の使用記録をすべてリセットしますか？")) { 
-                d.used = 0; d.logs = {}; d.in = 0; d.history = []; 
-                save();
-            }
-            cancelReset();
-        }, 1000);
-    };
-
-    const cancelReset = () => {
-        clearTimeout(longClickTimer);
-        mainValWrap.classList.remove('resetting', 'reset-active');
-        up();
-    };
-
-    resetBtn.addEventListener('mousedown', startReset);
-    resetBtn.addEventListener('touchstart', startReset, {passive: false});
-    window.addEventListener('mouseup', cancelReset);
-    window.addEventListener('touchend', cancelReset);
-    window.addEventListener('touchcancel', cancelReset);
-
-    function clr() { d.in = 0; vib(5); up(); }
-    function add(v) { d.in = Math.max(0, d.in + v); vib(5); up(); }
-    function mode(m) { d.m = m; vib(10); up(); }
+    // --- マスターロジック ---
+    const CAPACITY_COEFF = 18000;
     
-    function save() { 
-        if (!d.ppm) { alert("先にPPMを入力してください"); return; }
-        if (d.in === 0 && d.used !== 0) return; // リセット時以外で入力0なら何もしない
+    let db = JSON.parse(localStorage.getItem('pwt_master_data')) || {
+        used: 0,
+        lastPpm: 70
+    };
+
+    const ppmInput = document.getElementById('ppm-input');
+    if(db.lastPpm) ppmInput.value = db.lastPpm;
+
+    function refresh() {
+        const ppm = parseFloat(ppmInput.value);
         
-        vib(30);
-        const now = new Date();
-        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-        const dateStr = `${now.getMonth()+1}/${now.getDate()}`;
-        
-        // 履歴追加
-        const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
-        const cost = Math.round((d.in / cap) * COST_PER_RESIN);
-        if(!d.history) d.history = [];
-        if (d.in > 0) {
-            d.history.unshift({ date: dateStr, amt: d.in, cost: cost });
-            if(d.history.length > 10) d.history.pop();
+        // 改善点：ppm=0などの無効値ガード
+        if (!ppm || ppm <= 0) {
+            document.getElementById('rem-val').innerText = "---";
+            document.getElementById('status-text').innerText = "PPMを入力してください";
+            document.getElementById('status-dot').style.backgroundColor = "var(--text-sub)";
+            return;
         }
 
-        d.used += d.in; 
-        if (d.in > 0) d.logs[monthKey] = (d.logs[monthKey] || 0) + d.in;
-        d.in = 0; 
-        up();
+        const totalCap = CAPACITY_COEFF / ppm;
+        const remaining = Math.max(0, totalCap - db.used);
+        const percent = (remaining / totalCap) * 100;
+
+        document.getElementById('rem-val').innerText = Math.floor(remaining).toLocaleString();
+        document.getElementById('total-used').innerText = Math.floor(db.used).toLocaleString();
+        document.getElementById('rem-percent').innerText = Math.floor(percent);
+
+        // ステータスUI更新
+        const dot = document.getElementById('status-dot');
+        const card = document.getElementById('display-card');
+        const text = document.getElementById('status-text');
+
+        if (percent > 20) {
+            text.innerText = "残量良好";
+            dot.style.backgroundColor = "var(--accent-green)";
+            card.style.borderTop = "4px solid var(--accent-green)";
+        } else if (percent > 0) {
+            text.innerText = "まもなく交換";
+            dot.style.backgroundColor = "var(--accent-yellow)";
+            card.style.borderTop = "4px solid var(--accent-yellow)";
+        } else {
+            text.innerText = "交換時期";
+            dot.style.backgroundColor = "var(--accent-red)";
+            card.style.borderTop = "4px solid var(--accent-red)";
+        }
     }
 
-    function showDetail() {
-        if (!d.ppm) return;
-        const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
-        
-        // 履歴描画
-        const histDiv = document.getElementById('historyList');
-        histDiv.innerHTML = d.history && d.history.length ? '' : '<div style="font-size:12px;color:#555;">履歴なし</div>';
-        (d.history || []).forEach(h => {
-            histDiv.innerHTML += `<div class="history-item"><span>${h.date}</span><span>${h.amt}ℓ</span><span>${h.cost}円</span></div>`;
-        });
-
-        // 月別サマリー描画
-        const summaryDiv = document.getElementById('monthSummaryList');
-        summaryDiv.innerHTML = '';
-        Object.keys(d.logs).sort().reverse().slice(0, 3).forEach(key => {
-            const mUsed = d.logs[key];
-            const mCost = Math.round((mUsed / cap) * COST_PER_RESIN);
-            summaryDiv.innerHTML += `<div class="history-item"><span>${key}</span><span>${mUsed}ℓ</span><span>${mCost}円</span></div>`;
-        });
-
-        document.getElementById('modalOverlay').style.display = 'flex';
-        vib(10);
+    function addWater(amount) {
+        const ppm = parseFloat(ppmInput.value);
+        if (!ppm || ppm <= 0) {
+            alert("水道水硬度 (ppm) を入力してください。");
+            return;
+        }
+        db.used += amount;
+        db.lastPpm = ppm;
+        save();
+        refresh();
+        if (window.navigator.vibrate) window.navigator.vibrate(10);
     }
 
-    function closeDetail() {
-        document.getElementById('modalOverlay').style.display = 'none';
+    function save() {
+        localStorage.setItem('pwt_master_data', JSON.stringify(db));
     }
 
-    up();
+    // --- 長押しリセット（バグ修正済み順序） ---
+    let timer;
+    const resetBtn = document.getElementById('reset-btn');
+
+    function handleReset() {
+        if(confirm("樹脂交換を記録し、使用量をリセットしますか？")) {
+            db.used = 0;
+            save(); // 先に保存
+            refresh(); // その後表示更新
+            if (window.navigator.vibrate) window.navigator.vibrate([50, 30, 50]);
+        }
+    }
+
+    resetBtn.addEventListener('mousedown', () => timer = setTimeout(handleReset, 1000));
+    resetBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        timer = setTimeout(handleReset, 1000);
+    });
+    resetBtn.addEventListener('mouseup', () => clearTimeout(timer));
+    resetBtn.addEventListener('touchend', () => clearTimeout(timer));
+
+    ppmInput.addEventListener('input', refresh);
+    
+    // 初期起動
+    refresh();
 </script>
-<p style="font-size: 10px; color: gray; text-align: center; margin-top: 20px;">
-  ※本アプリでは、予測精度の向上とユーザー様への還元を目的として、匿名化された使用データ（ppm・生成量のみ）を統計的に収集しています。
-</p>
 
 </body>
 </html>
