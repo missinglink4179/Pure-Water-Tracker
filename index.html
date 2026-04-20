@@ -143,8 +143,8 @@
             <input type="number" id="ppmIn" class="ppm-input" placeholder="0" oninput="setPPM(this.value)" pattern="\d*">
         </div>
         <div class="mode-row">
-            <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO (3個)</button>
-            <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST (2個)</button>
+            <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO</button>
+            <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST</button>
         </div>
     </div>
 
@@ -185,7 +185,7 @@
                 ・洗車1回あたりの想定使用量: <span id="avgUsageDisp">30</span>ℓ<br>
                 ・樹脂寿命(ℓ) = 係数 / 水道水ppm<br>
                 　(PRO: 180,000 / JUST: 90,000)<br>
-                ・コスト = (月間使用量 / 総寿命) × 1セット価格(<span id="setPriceDisp">12,980</span>円)
+                ・コスト = (月間使用量 / 総寿命) × 樹脂価格(4,327円)
             </div>
         </div>
 
@@ -195,10 +195,7 @@
 
 <script>
     let d = JSON.parse(localStorage.getItem('pwMasterV4')) || { ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [] };
-
-    function getSetPrice() {
-        return d.m === 'PRO' ? 12980 : 8653;
-    }
+    const COST_PER_RESIN = 4327; 
 
     function vib(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
 
@@ -209,7 +206,7 @@
 
     function calculatePredictDate(remaining, avg) {
         if (!avg || avg <= 0 || remaining <= 0) return "--/--";
-        const dailyAvg = avg / 30;
+        const dailyAvg = avg / 30; 
         const daysRemaining = Math.floor(remaining / dailyAvg);
         const targetDate = new Date();
         targetDate.setDate(targetDate.getDate() + daysRemaining);
@@ -223,7 +220,6 @@
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const monthUsed = d.logs[monthKey] || 0;
-        const setPrice = getSetPrice();
 
         if (d.ppm !== null) document.getElementById('ppmIn').value = d.ppm;
         remL.style.color = ''; 
@@ -257,7 +253,7 @@
             } else {
                 remL.style.color = 'var(--accent-green)';
             }
-            const monthlyCost = Math.round((monthUsed / cap) * setPrice);
+            const monthlyCost = Math.round((monthUsed / cap) * COST_PER_RESIN);
             document.getElementById('costDisp').innerText = monthlyCost.toLocaleString() + ' 円';
             document.getElementById('predictDate').innerText = `寿命予測：${calculatePredictDate(rem, avgUsage)}頃`;
         }
@@ -326,8 +322,7 @@
         const dateStr = `${now.getMonth()+1}/${now.getDate()}`;
         
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
-        const setPrice = getSetPrice();
-        const cost = Math.round((d.in / cap) * setPrice);
+        const cost = Math.round((d.in / cap) * COST_PER_RESIN);
         if(!d.history) d.history = [];
         if (d.in > 0) {
             d.history.unshift({ date: dateStr, amt: d.in, cost: cost });
@@ -343,7 +338,6 @@
     function showDetail() {
         if (!d.ppm) return;
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
-        const setPrice = getSetPrice();
         
         const months = Object.keys(d.logs);
         let avgUsage = 30;
@@ -352,7 +346,6 @@
             avgUsage = Math.round(totalInLogs / months.length);
         }
         document.getElementById('avgUsageDisp').innerText = avgUsage;
-        document.getElementById('setPriceDisp').innerText = setPrice.toLocaleString();
 
         const histDiv = document.getElementById('historyList');
         histDiv.innerHTML = d.history && d.history.length ? '' : '<div style="font-size:12px;color:#555;">履歴なし</div>';
@@ -364,7 +357,7 @@
         summaryDiv.innerHTML = '';
         Object.keys(d.logs).sort().reverse().slice(0, 12).forEach(key => {
             const mUsed = d.logs[key];
-            const mCost = Math.round((mUsed / cap) * setPrice);
+            const mCost = Math.round((mUsed / cap) * COST_PER_RESIN);
             summaryDiv.innerHTML += `<div class="history-item"><span>${key}</span><span>${mUsed}ℓ</span><span>${mCost}円</span></div>`;
         });
 
@@ -378,9 +371,6 @@
 
     up();
 </script>
-<p style="font-size: 10px; color: gray; text-align: center; margin-top: 20px;">
-  ※本アプリでは、予測精度の向上とユーザー様への還元を目的として、匿名化された使用データ（ppm・生成量のみ）を統計的に収集しています。
-</p>
 
 </body>
 </html>
