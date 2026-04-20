@@ -184,7 +184,7 @@
         <div class="modal-section">
             <div class="modal-label">算出ロジックの根拠</div>
             <div class="logic-box">
-                ・洗車1回あたりの想定使用量: 30ℓ<br>
+                ・洗車1回あたりの想定使用量: <span id="avgUsageDisp">30</span>ℓ<br>
                 ・樹脂寿命(ℓ) = 係数 / 水道水ppm<br>
                 　(PRO: 180,000 / JUST: 90,000)<br>
                 ・コスト = (月間使用量 / 総寿命) × 樹脂価格(4,327円)
@@ -238,7 +238,16 @@
             const rem = Math.max(0, cap - d.used);
             const ratio = rem / cap;
             remL.innerHTML = Math.floor(rem) + '<span class="unit-l">ℓ</span>';
-            document.getElementById('remCount').innerText = Math.floor(rem / 30);
+            
+            // 平均使用量の取得（根拠の表記用にも使用）
+            const months = Object.keys(d.logs);
+            let avgUsage = 30; // デフォルト
+            if (months.length > 0) {
+                const totalInLogs = Object.values(d.logs).reduce((a, b) => a + b, 0);
+                avgUsage = Math.round(totalInLogs / months.length);
+            }
+            
+            document.getElementById('remCount').innerText = Math.floor(rem / avgUsage);
             
             if (ratio < 0.1) {
                 remL.style.color = 'var(--accent-red)';
@@ -252,12 +261,6 @@
             document.getElementById('costDisp').innerText = monthlyCost.toLocaleString() + ' 円';
 
             // 寿命予測日の更新
-            const months = Object.keys(d.logs);
-            let avgUsage = 0;
-            if (months.length > 0) {
-                const totalInLogs = Object.values(d.logs).reduce((a, b) => a + b, 0);
-                avgUsage = totalInLogs / months.length;
-            }
             document.getElementById('predictDate').innerText = `寿命予測：${calculatePredictDate(rem, avgUsage)}頃`;
         }
         
@@ -343,6 +346,15 @@
         if (!d.ppm) return;
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         
+        // 平均使用量を算出して表記に反映
+        const months = Object.keys(d.logs);
+        let avgUsage = 30;
+        if (months.length > 0) {
+            const totalInLogs = Object.values(d.logs).reduce((a, b) => a + b, 0);
+            avgUsage = Math.round(totalInLogs / months.length);
+        }
+        document.getElementById('avgUsageDisp').innerText = avgUsage;
+
         // 履歴描画
         const histDiv = document.getElementById('historyList');
         histDiv.innerHTML = d.history && d.history.length ? '' : '<div style="font-size:12px;color:#555;">履歴なし</div>';
