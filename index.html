@@ -195,7 +195,15 @@
 </div>
 
 <script>
-    let d = JSON.parse(localStorage.getItem('pwMasterV4')) || { ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [] };
+    // データ初期化
+    let d = JSON.parse(localStorage.getItem('pwMasterV4')) || { 
+        ppm: null, 
+        m: 'PRO', 
+        used: 0, 
+        in: 0, 
+        logs: {}, 
+        history: [] 
+    };
 
     function vib(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
 
@@ -220,7 +228,6 @@
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const monthUsed = d.logs[monthKey] || 0;
-        
         const currentResinPrice = (d.m === 'PRO' ? 12980 : 9878);
 
         if (d.ppm !== null) document.getElementById('ppmIn').value = d.ppm;
@@ -316,13 +323,10 @@
     
     function save() { 
         if (!d.ppm) { alert("先にPPMを入力してください"); return; }
-        if (d.in === 0 && d.used !== 0) return; 
-        
         vib(30);
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const dateStr = `${now.getMonth()+1}/${now.getDate()}`;
-        
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         const currentResinPrice = (d.m === 'PRO' ? 12980 : 9878);
         const cost = Math.round((d.in / cap) * currentResinPrice);
@@ -348,4 +352,34 @@
         const months = Object.keys(d.logs);
         let avgUsage = 30;
         if (months.length > 0) {
-            const totalInLogs = Object.values(d.logs).reduce
+            const totalInLogs = Object.values(d.logs).reduce((a, b) => a + b, 0);
+            avgUsage = Math.round(totalInLogs / months.length);
+        }
+        document.getElementById('avgUsageDisp').innerText = avgUsage;
+
+        const histDiv = document.getElementById('historyList');
+        histDiv.innerHTML = d.history && d.history.length ? '' : '<div style="font-size:12px;color:#555;">履歴なし</div>';
+        (d.history || []).forEach(h => {
+            histDiv.innerHTML += `<div class="history-item"><span>${h.date}</span><span>${h.amt}ℓ</span><span>${h.cost}円</span></div>`;
+        });
+
+        const summaryDiv = document.getElementById('monthSummaryList');
+        summaryDiv.innerHTML = '';
+        Object.keys(d.logs).sort().reverse().slice(0, 12).forEach(key => {
+            const mUsed = d.logs[key];
+            const mCost = Math.round((mUsed / cap) * currentResinPrice);
+            summaryDiv.innerHTML += `<div class="history-item"><span>${key}</span><span>${mUsed}ℓ</span><span>${mCost}円</span></div>`;
+        });
+
+        document.getElementById('modalOverlay').style.display = 'flex';
+        vib(10);
+    }
+
+    function closeDetail() {
+        document.getElementById('modalOverlay').style.display = 'none';
+    }
+
+    up();
+</script>
+</body>
+</html>
