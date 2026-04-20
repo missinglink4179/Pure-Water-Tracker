@@ -73,6 +73,9 @@
         .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; user-select: none; cursor: pointer; touch-action: none; }
         
         .settings-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 10px; }
+        /* 設定エリアのタイトル用のスタイルを追加 */
+        .settings-title { font-size: 11px; color: var(--accent-green); font-weight: bold; text-align: center; margin-bottom: 15px; }
+        
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2c2c2e; }
         .ppm-input { background: none; border: none; color: var(--accent-green); font-weight: bold; font-size: 16px; text-align: right; width: 80px; }
         .mode-row { display: flex; gap: 8px; margin-top: 15px; }
@@ -138,6 +141,7 @@
     <button id="resetBtn" class="btn-reset">長押しで樹脂リセット</button>
     
     <div class="settings-box">
+        <div class="settings-title">設定・樹脂モード</div>
         <div class="setting-item">
             <span class="label-xs" style="color:#fff; font-size:12px;">水道水硬度 (ppm)</span>
             <input type="number" id="ppmIn" class="ppm-input" placeholder="0" oninput="setPPM(this.value)" pattern="\d*">
