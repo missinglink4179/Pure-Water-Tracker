@@ -19,7 +19,6 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; touch-action: manipulation; }
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; transition: background-color 0.8s ease; }
         
-        /* 背景アラート状態 */
         body.alert-red { background-color: var(--alert-deep-red); }
 
         .container { width: 100%; max-width: 380px; }
@@ -68,8 +67,8 @@
         .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .btn-q { background: #2c2c2e; border: none; padding: 14px 5px; border-radius: 10px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; touch-action: none; }
         
-        .btn-save { width: 100%; background: var(--accent-green); color: white; padding: 22px; border-radius: 18px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 15px; cursor: pointer; transition: all 0.2s; -webkit-appearance: none; }
-        .btn-save:active { transform: scale(0.98); opacity: 0.8; }
+        .btn-save { width: 100%; display: block; background: var(--accent-green); color: white; padding: 22px; border-radius: 18px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 15px; cursor: pointer; transition: all 0.1s; -webkit-appearance: none; touch-action: manipulation; }
+        .btn-save:active { transform: scale(0.97); opacity: 0.9; }
         
         .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; user-select: none; cursor: pointer; touch-action: none; }
         
@@ -80,7 +79,6 @@
         .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; cursor: pointer; }
         .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
         
-        /* ポップアップ用スタイル */
         #modalOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
         .modal-content { background: #1c1c1e; width:100%; max-width:350px; max-height:80vh; border-radius:24px; padding:25px; overflow-y:auto; border: 1px solid #3a3a3c; }
         .modal-h { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--accent-blue); text-align: center; }
@@ -136,7 +134,7 @@
         </div>
     </div>
 
-    <button class="btn-save" id="saveBtn" onclick="save()">記録を保存</button>
+    <button class="btn-save" id="saveBtn" onclick="save()">数値を入力してください</button>
     <button id="resetBtn" class="btn-reset">長押しで樹脂リセット</button>
     
     <div class="settings-box">
@@ -145,8 +143,8 @@
             <input type="number" id="ppmIn" class="ppm-input" placeholder="0" oninput="setPPM(this.value)" pattern="\d*">
         </div>
         <div class="mode-row">
-            <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO</button>
-            <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST</button>
+            <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO (3個)</button>
+            <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST (2個)</button>
         </div>
     </div>
 
@@ -187,7 +185,7 @@
                 ・洗車1回あたりの想定使用量: <span id="avgUsageDisp">30</span>ℓ<br>
                 ・樹脂寿命(ℓ) = 係数 / 水道水ppm<br>
                 　(PRO: 180,000 / JUST: 90,000)<br>
-                ・コスト = (月間使用量 / 総寿命) × 樹脂価格(4,327円)
+                ・コスト = (月間使用量 / 総寿命) × 1セット価格(<span id="setPriceDisp">12,980</span>円)
             </div>
         </div>
 
@@ -197,7 +195,10 @@
 
 <script>
     let d = JSON.parse(localStorage.getItem('pwMasterV4')) || { ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [] };
-    const COST_PER_RESIN = 4327; 
+
+    function getSetPrice() {
+        return d.m === 'PRO' ? 12980 : 8653;
+    }
 
     function vib(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
 
@@ -206,10 +207,9 @@
         up();
     }
 
-    // 寿命予測ロジック
     function calculatePredictDate(remaining, avg) {
         if (!avg || avg <= 0 || remaining <= 0) return "--/--";
-        const dailyAvg = avg / 30; // 月間平均から1日あたりの平均を算出
+        const dailyAvg = avg / 30;
         const daysRemaining = Math.floor(remaining / dailyAvg);
         const targetDate = new Date();
         targetDate.setDate(targetDate.getDate() + daysRemaining);
@@ -223,6 +223,7 @@
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const monthUsed = d.logs[monthKey] || 0;
+        const setPrice = getSetPrice();
 
         if (d.ppm !== null) document.getElementById('ppmIn').value = d.ppm;
         remL.style.color = ''; 
@@ -239,9 +240,8 @@
             const ratio = rem / cap;
             remL.innerHTML = Math.floor(rem) + '<span class="unit-l">ℓ</span>';
             
-            // 平均使用量の取得（根拠の表記用にも使用）
             const months = Object.keys(d.logs);
-            let avgUsage = 30; // デフォルト
+            let avgUsage = 30; 
             if (months.length > 0) {
                 const totalInLogs = Object.values(d.logs).reduce((a, b) => a + b, 0);
                 avgUsage = Math.round(totalInLogs / months.length);
@@ -257,10 +257,8 @@
             } else {
                 remL.style.color = 'var(--accent-green)';
             }
-            const monthlyCost = Math.round((monthUsed / cap) * COST_PER_RESIN);
+            const monthlyCost = Math.round((monthUsed / cap) * setPrice);
             document.getElementById('costDisp').innerText = monthlyCost.toLocaleString() + ' 円';
-
-            // 寿命予測日の更新
             document.getElementById('predictDate').innerText = `寿命予測：${calculatePredictDate(rem, avgUsage)}頃`;
         }
         
@@ -320,16 +318,16 @@
     
     function save() { 
         if (!d.ppm) { alert("先にPPMを入力してください"); return; }
-        if (d.in === 0 && d.used !== 0) return; // リセット時以外で入力0なら何もしない
+        if (d.in === 0 && d.used !== 0) return; 
         
         vib(30);
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const dateStr = `${now.getMonth()+1}/${now.getDate()}`;
         
-        // 履歴追加
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
-        const cost = Math.round((d.in / cap) * COST_PER_RESIN);
+        const setPrice = getSetPrice();
+        const cost = Math.round((d.in / cap) * setPrice);
         if(!d.history) d.history = [];
         if (d.in > 0) {
             d.history.unshift({ date: dateStr, amt: d.in, cost: cost });
@@ -345,8 +343,8 @@
     function showDetail() {
         if (!d.ppm) return;
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
+        const setPrice = getSetPrice();
         
-        // 平均使用量を算出して表記に反映
         const months = Object.keys(d.logs);
         let avgUsage = 30;
         if (months.length > 0) {
@@ -354,20 +352,19 @@
             avgUsage = Math.round(totalInLogs / months.length);
         }
         document.getElementById('avgUsageDisp').innerText = avgUsage;
+        document.getElementById('setPriceDisp').innerText = setPrice.toLocaleString();
 
-        // 履歴描画
         const histDiv = document.getElementById('historyList');
         histDiv.innerHTML = d.history && d.history.length ? '' : '<div style="font-size:12px;color:#555;">履歴なし</div>';
         (d.history || []).forEach(h => {
             histDiv.innerHTML += `<div class="history-item"><span>${h.date}</span><span>${h.amt}ℓ</span><span>${h.cost}円</span></div>`;
         });
 
-        // 月別サマリー描画 (最大12ヶ月分)
         const summaryDiv = document.getElementById('monthSummaryList');
         summaryDiv.innerHTML = '';
         Object.keys(d.logs).sort().reverse().slice(0, 12).forEach(key => {
             const mUsed = d.logs[key];
-            const mCost = Math.round((mUsed / cap) * COST_PER_RESIN);
+            const mCost = Math.round((mUsed / cap) * setPrice);
             summaryDiv.innerHTML += `<div class="history-item"><span>${key}</span><span>${mUsed}ℓ</span><span>${mCost}円</span></div>`;
         });
 
