@@ -23,15 +23,13 @@
         .top-title span { color: var(--accent-blue); }
         .top-sub { font-size: 9px; color: var(--text-sub); text-align: center; margin-bottom: 25px; font-weight: 500; letter-spacing: 1px; }
         
-        .header-section { text-align: center; margin-bottom: 20px; min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
-        .tutorial-box { background: rgba(10, 132, 255, 0.05); border: 1px dashed rgba(10, 132, 255, 0.5); padding: 20px; border-radius: 24px; width: 100%; text-align: left; }
-        .step-row { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; font-size: 13px; font-weight: 600; }
-        .step-num { background: var(--accent-blue); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; min-width: 45px; text-align: center; }
-        .step-active { color: var(--accent-yellow); border-bottom: 1px solid var(--accent-yellow); }
+        /* 動的アラート */
+        .alert-msg { font-size: 12px; font-weight: 800; color: var(--accent-red); margin-bottom: 15px; display: none; text-align: center; animation: blink 1s infinite; }
+        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.4;} 100% {opacity: 1;} }
 
-        .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
-        .main-val-wrap { position: relative; display: inline-block; margin-bottom: 15px; cursor: pointer; }
-        .main-val { font-size: 64px; font-weight: 800; line-height: 1; }
+        .header-section { text-align: center; margin-bottom: 20px; min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
+        .main-val-wrap { position: relative; cursor: pointer; }
+        .main-val { font-size: 68px; font-weight: 800; line-height: 1; }
         .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
         
         .sub-stats { display: flex; justify-content: space-around; font-size: 11px; color: var(--text-sub); margin-bottom: 25px; width: 100%; }
@@ -43,48 +41,33 @@
         .input-title { font-size: 11px; color: var(--accent-green); font-weight: bold; text-align: center; margin-bottom: 15px; }
         .counter-row { display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 15px; }
         .btn-round { width: 50px; height: 50px; border-radius: 50%; border: none; background: #3a3a3c; color: white; font-size: 26px; }
-        .current-disp { font-size: 52px; font-weight: bold; }
+        .current-disp { font-size: 52px; font-weight: bold; width: 100px; text-align: center; }
         .btn-clear { background: #3a3a3c; color: var(--text-sub); border: none; padding: 6px 16px; border-radius: 20px; font-size: 11px; display: block; margin: 0 auto 20px; }
-        .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .btn-q { background: #2c2c2e; border: none; padding: 14px 5px; border-radius: 10px; color: white; font-weight: 600; font-size: 12px; }
         
-        .btn-save { width: 100%; background: var(--accent-green); color: white; padding: 22px; border-radius: 18px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 10px; }
-        .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; cursor: pointer; }
+        .btn-save { width: 100%; background: var(--accent-green); color: white; padding: 22px; border-radius: 18px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(52, 199, 89, 0.3); }
+        .btn-reset { width: 100%; background: none; border: 1px solid #331111; color: #662222; padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; }
         
         .settings-box { background: var(--card-bg); padding: 25px 20px; border-radius: 20px; width: 100%; margin-bottom: 30px; }
-        .setting-item { display: flex; justify-content: space-between; align-items: flex-end; padding: 12px 0; border-bottom: 1px solid #2c2c2e; margin-bottom: 10px; }
-        .ppm-input { background: none; border: none; color: var(--accent-green); font-weight: bold; font-size: 20px; text-align: right; width: 80px; }
-        .mode-row { display: flex; gap: 8px; margin-top: 5px; }
-        .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; font-size: 13px; border: 1px solid transparent; }
-        .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; }
+        .ppm-input { background: none; border: none; color: var(--accent-green); font-weight: bold; font-size: 24px; text-align: right; width: 100px; border-bottom: 1px solid #3a3a3c; }
 
-        .reference-section { margin-top: 20px; text-align: center; width: 100%; }
-        .info-title { font-size: 11px; font-weight: 800; color: #8e8e93; margin: 25px 0 10px; letter-spacing: 1px; }
-        .info-text { font-size: 9px; color: #555; line-height: 1.8; text-align: center; margin-bottom: 10px; }
-        .terms-list { text-align: left; font-size: 9px; color: #555; line-height: 1.8; padding: 0 15px; list-style: none; margin: 0; }
-        .ref-label { font-size: 11px; font-weight: 800; color: #8e8e93; margin: 30px 0 8px; letter-spacing: 1px; }
-        .ref-val { font-size: 10px; color: #666; margin-bottom: 15px; line-height: 1.5; }
-        .footer-version { font-size: 10px; color: #444; margin-top: 30px; margin-bottom: 5px; }
-        .footer-copy { font-size: 9px; color: #333; margin-bottom: 40px; }
-        .survey-note { font-size: 8px; color: #333; text-align: center; margin-bottom: 80px; padding: 0 20px; line-height: 1.4; }
-
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
         .modal-content { background: #1c1c1e; width:100%; max-width:360px; border-radius:24px; padding:25px; border: 1px solid #3a3a3c; overflow-y: auto; max-height: 90vh; }
-        .detail-title { color: var(--accent-blue); text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 25px; }
-        .detail-label { font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .detail-label { font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 8px; margin-bottom: 12px; margin-top: 20px; }
         .detail-label::before { content: ""; width: 3px; height: 14px; background: var(--accent-blue); border-radius: 2px; }
-        .chart-box { background: #141414; border-radius: 12px; padding: 25px 20px; text-align: center; color: #555; font-size: 13px; margin-bottom: 25px; }
-        
-        /* 履歴リスト（1件ずつの表示用） */
-        .log-item-card { background: #2c2c2e; border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .log-date { font-size: 14px; font-weight: 500; color: var(--text-main); flex: 1.5; }
-        .log-amt { font-size: 14px; font-weight: bold; color: var(--accent-green); flex: 1; text-align: center; }
-        .log-cost { font-size: 14px; font-weight: bold; color: var(--text-main); flex: 1.2; text-align: right; }
-        .btn-del-mini { background: rgba(255,69,58,0.1); border: none; color: var(--accent-red); font-size: 10px; padding: 6px 10px; border-radius: 6px; margin-left: 10px; }
 
-        .logic-card { background: #141414; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
-        .logic-item { font-size: 13px; color: var(--text-sub); margin-bottom: 10px; line-height: 1.6; }
-        .blue-text { color: var(--accent-blue); font-weight: 500; }
+        .chart-container { background: #141414; border-radius: 12px; padding: 40px 15px 15px; height: 180px; display: flex; align-items: flex-end; gap: 8px; position: relative; margin-bottom: 20px; }
+        .avg-line { position: absolute; left: 0; width: 100%; border-top: 1px dashed #fff; z-index: 10; opacity: 0.6; pointer-events: none; }
+        .avg-label { position: absolute; right: 5px; color: #fff; font-size: 9px; font-weight: bold; transform: translateY(-120%); }
+        .bar { flex: 1; background: var(--accent-blue); min-height: 2px; border-radius: 4px 4px 0 0; position: relative; z-index: 2; }
+        .bar.over { background: var(--accent-red); box-shadow: 0 0 10px rgba(255, 69, 58, 0.5); }
+
+        .summary-card { background: #2c2c2e; border-radius: 12px; padding: 18px 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .summary-date { font-size: 15px; font-weight: 500; }
+        .summary-val { font-size: 14px; font-weight: bold; color: var(--accent-green); }
+        .btn-del-mini { background: rgba(255,69,58,0.1); border: none; color: var(--accent-red); font-size: 10px; padding: 6px 12px; border-radius: 6px; }
+
+        .footer-version { font-size: 10px; color: #333; text-align: center; margin-top: 30px; margin-bottom: 80px; }
     </style>
 </head>
 <body>
@@ -92,6 +75,8 @@
 <div class="container">
     <div class="top-title">PURE WATER <span>TRACKER.</span></div>
     <div class="top-sub">ULTIMATE RESIN MANAGEMENT TOOL</div>
+
+    <div id="alertArea" class="alert-msg">⚠️ 異常消費を検知：平均を大きく逸脱 🔥</div>
 
     <div class="header-section" id="headerSection"></div>
 
@@ -110,180 +95,106 @@
             <div class="current-disp"><span id="inVal">0</span><span style="font-size:24px; margin-left:4px; color:var(--text-sub);">ℓ</span></div>
             <button class="btn-round" onclick="add(1)">＋</button>
         </div>
-        <button class="btn-clear" onclick="clr()">入力をリセット</button>
-        <div class="quick-grid">
-            <button class="btn-q" onclick="add(5)">+5ℓ</button><button class="btn-q" onclick="add(10)">+10ℓ</button><button class="btn-q" onclick="add(20)">+20ℓ</button>
-            <button class="btn-q" onclick="add(30)">+30ℓ</button><button class="btn-q" onclick="add(50)">+50ℓ</button><button class="btn-q" onclick="add(100)">+100ℓ</button>
-        </div>
+        <button class="btn-clear" onclick="clr()">リセット</button>
     </div>
 
-    <button class="btn-save" id="saveBtn" onclick="save()">数値を入力してください</button>
-    <button id="resetBtn" class="btn-reset">長押しで樹脂リセット</button>
+    <button class="btn-save" id="saveBtn" onclick="save()">記録を保存</button>
+    <button id="resetBtn" class="btn-reset">長押しで全履歴を消去</button>
     
     <div class="settings-box">
         <div class="setting-item">
-            <div>
-                <span id="step1Label" class="label-xs" style="color:#fff; font-size:12px;">STEP1：水道水硬度 (ppm)</span><br>
-                <span style="font-size:9px; color:var(--accent-yellow);">※水質が寿命を決定します</span>
-            </div>
+            <span class="label-xs" style="color:var(--text-main); margin:0;">水道水硬度 (ppm)</span>
             <input type="number" id="ppmIn" class="ppm-input" placeholder="0" oninput="setPPM(this.value)">
-        </div>
-        <div class="mode-row">
-            <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO (3個)</button>
-            <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST (2個)</button>
         </div>
     </div>
 
-    <div class="reference-section">
-        <div class="info-title">Information</div>
-        <div class="info-text">本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>※製造・監修元各社様とは一切関係ありません。</div>
-        <div class="info-title">Terms of Use</div>
-        <ul class="terms-list">
-            <li>・本アプリは非営利目的で制作・公開されています。</li>
-            <li>・個人利用の範囲内でご活用ください。</li>
-            <li>・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。</li>
-            <li>・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。</li>
-            <li>・無断転載・再配布、および商用利用を固く禁じます。</li>
-        </ul>
-        <div class="ref-label">Reference</div>
-        <div class="ref-val">監修：ビューティフルカーズ<br>製造：グリーンライフ</div>
-        <div class="footer-version">Version 1.0.1</div>
-        <div class="footer-copy">© 2026 missing link. All rights reserved.</div>
-        <div class="survey-note">※本アプリでは、予測精度の向上とユーザー様への還元を目的として、匿名化された使用データ（ppm・生成量のみ）を統計的に収集しています。</div>
-    </div>
+    <div class="footer-version">Version 1.0.1</div>
 </div>
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeDetail()">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="detail-title">コンディション詳細</div>
-        <div class="detail-label" id="chartLabel">直近10件の使用傾向</div>
-        <div class="chart-box" id="chartBox">履歴を解析中</div>
-        <div class="detail-label">直近10件の洗車履歴</div>
-        <div id="historyLogArea"></div>
-        <div class="detail-label">算出ロジックの根拠と診断</div>
-        <div class="logic-card" id="logicArea"></div>
-        <button style="width:100%; background:#3a3a3c; border:none; color:white; padding:18px; border-radius:18px; font-weight:bold;" onclick="closeDetail()">閉じる</button>
+        <div style="color:var(--accent-blue); text-align:center; font-weight:900; letter-spacing:1px; margin-bottom:20px;">CONDITION DETAIL</div>
+        <div class="detail-label">直近10件の使用傾向（白線：平均）</div>
+        <div class="chart-container" id="chartContainer"></div>
+        <div class="detail-label">月別サマリー</div>
+        <div id="monthlySummaryArea"></div>
+        <button style="width:100%; background:#3a3a3c; border:none; color:white; padding:18px; border-radius:18px; font-weight:bold; margin-top:30px;" onclick="closeDetail()">閉じる</button>
     </div>
 </div>
 
 <script>
-    const STORAGE_KEY = 'pwMasterV101F';
-    let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [] };
+    const STORAGE_KEY = 'pwMasterV101_Full';
+    let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { ppm: null, used: 0, in: 0, logs: {}, history: [] };
+
+    function getAvg() {
+        const recent = d.history.slice(0, 10);
+        return recent.length > 0 ? (recent.reduce((a,b)=>a+b.amt,0)/recent.length) : 30;
+    }
 
     function up() {
         const header = document.getElementById('headerSection');
-        const saveBtn = document.getElementById('saveBtn');
-        const step1 = document.getElementById('step1Label');
+        const alertArea = document.getElementById('alertArea');
+        const avg = getAvg();
         const now = new Date(), monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-        const resinPrice = (d.m === 'PRO' ? 12980 : 9878);
+
+        alertArea.style.display = (d.in > avg * 1.5 && d.in > 0) ? 'block' : 'none';
 
         if (!d.ppm) {
-            step1.innerText = "STEP1：水道水硬度 (ppm)";
-            header.innerHTML = `
-                <div class="tutorial-box">
-                    <div class="step-row"><span class="step-num">STEP 1</span> <span class="step-active">下部の設定でPPMを入力</span></div>
-                    <div class="step-row"><span class="step-num">STEP 2</span> <span>使用量をカウンターで入力</span></div>
-                    <div class="step-row"><span class="step-num">STEP 3</span> <span>「記録を保存」で更新</span></div>
-                </div>`;
-            document.getElementById('remCount').innerText = "--";
-            document.getElementById('predictDate').innerText = "寿命予測：--/--頃";
-            document.getElementById('costDisp').innerText = "0 円";
+            header.innerHTML = `<div style="color:var(--accent-yellow); font-size:12px; border:1px dashed #443300; padding:20px; border-radius:15px;">PPMを設定して開始してください</div>`;
         } else {
-            step1.innerText = "水道水硬度 (ppm)";
-            const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
+            const cap = 180000 / d.ppm;
             const rem = Math.max(0, cap - d.used);
-            const avg = d.history.length > 0 ? (d.history.slice(0,10).reduce((a,b)=>a+b.amt,0)/Math.min(d.history.length, 10)) : 30;
-            
-            header.innerHTML = `<div class="label-xs">交換まであと</div><div class="main-val-wrap" onclick="showDetail()"><span class="main-val" id="remDisplay">${Math.floor(rem)}<span class="unit-l">ℓ</span></span></div><button style="background:none; border:1px solid #3a3a3c; color:var(--text-sub); padding:8px 16px; border-radius:20px; font-size:11px;" onclick="showDetail()">履歴・詳細を表示</button>`;
-            
-            const remDisp = document.getElementById('remDisplay');
-            remDisp.style.color = (rem/cap < 0.1) ? 'var(--accent-red)' : (rem/cap < 0.3) ? 'var(--accent-yellow)' : 'var(--accent-green)';
+            header.innerHTML = `<div class="label-xs">樹脂寿命まであと</div><div class="main-val-wrap" onclick="showDetail()"><span class="main-val" style="color:${rem/cap < 0.1 ? 'var(--accent-red)' : 'var(--accent-green)'}">${Math.floor(rem)}<span class="unit-l">ℓ</span></span></div><div style="font-size:10px; color:var(--text-sub); margin-top:10px; border-bottom:1px solid #333; padding-bottom:5px;">履歴・グラフを確認する</div>`;
             document.getElementById('remCount').innerText = Math.floor(rem / avg);
-            document.getElementById('costDisp').innerText = Math.round(((d.logs[monthKey]||0)/cap)*resinPrice).toLocaleString() + ' 円';
-            
-            const daysRem = Math.floor((rem/avg)*7); 
-            const t = new Date(); t.setDate(now.getDate()+daysRem);
+            document.getElementById('costDisp').innerText = Math.round(((d.logs[monthKey]||0)/cap)*12980).toLocaleString() + ' 円';
+            const t = new Date(); t.setDate(now.getDate() + Math.floor((rem/avg)*7));
             document.getElementById('predictDate').innerText = `寿命予測：${t.getMonth()+1}/${t.getDate()}頃`;
         }
-
         document.getElementById('ppmIn').value = d.ppm || "";
         document.getElementById('totalUsed').innerText = d.used + ' ℓ';
         document.getElementById('monthUsed').innerText = (d.logs[monthKey]||0) + ' ℓ';
         document.getElementById('inVal').innerText = d.in;
-        saveBtn.innerText = d.in > 0 ? `${d.in}ℓ の記録を保存` : '数値を入力してください';
-        saveBtn.style.opacity = (d.in > 0 && d.ppm) ? "1" : "0.3";
-        document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
-        document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
+        document.getElementById('inVal').style.color = (d.in > avg * 1.5) ? 'var(--accent-red)' : 'var(--text-main)';
         localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
     }
 
     function setPPM(v) { d.ppm = v===""?null:parseInt(v); up(); }
     function add(v) { d.in = Math.max(0, d.in+v); up(); }
     function clr() { d.in=0; up(); }
-    function mode(m) { d.m=m; up(); }
-    
     function save() {
         if (!d.ppm || d.in <= 0) return;
         const now = new Date(), monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}`;
-        // 1件ずつの履歴データを保持
         d.history.unshift({ ts: now.getTime(), amt: d.in });
-        d.used += d.in; 
-        d.logs[monthKey] = (d.logs[monthKey]||0) + d.in;
+        d.used += d.in; d.logs[monthKey] = (d.logs[monthKey]||0) + d.in;
         d.in = 0; up();
     }
-
-    function delLog(index) {
-        if(confirm(`この履歴を削除しますか？`)) {
-            const item = d.history[index];
-            const dt = new Date(item.ts);
-            const mKey = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2, '0')}`;
-            d.used -= item.amt;
-            d.logs[mKey] -= item.amt;
-            d.history.splice(index, 1);
-            up(); showDetail();
-        }
-    }
+    function delMonth(key) { if(confirm(`${key}の月別データを消去しますか？`)) { delete d.logs[key]; up(); showDetail(); } }
 
     function showDetail() {
-        const capTotal = (d.m === 'PRO' ? 180000 : 90000), resinPrice = (d.m === 'PRO' ? 12980 : 9878);
-        const cap = capTotal / (d.ppm || 1), perL = resinPrice / cap;
-        const avg = d.history.length > 0 ? (d.history.slice(0,10).reduce((a,b)=>a+b.amt,0)/Math.min(d.history.length, 10)) : 0;
-
-        // 履歴を1件ずつ10件分出力
-        let logHTML = "";
-        d.history.slice(0, 10).forEach((item, index) => {
-            const dt = new Date(item.ts);
-            const dateStr = `${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
-            const cost = Math.round(item.amt * perL);
-            logHTML += `
-                <div class="log-item-card">
-                    <span class="log-date">${dateStr}</span>
-                    <span class="log-amt">${item.amt}ℓ</span>
-                    <span class="log-cost">${cost.toLocaleString()}円</span>
-                    <button class="btn-del-mini" onclick="delLog(${index})">削除</button>
-                </div>`;
+        const cap = (180000 / (d.ppm || 1));
+        const recent = d.history.slice(0, 10).reverse(); 
+        const avg = getAvg();
+        const maxVal = Math.max(...recent.map(i=>i.amt), avg * 2, 50);
+        const chart = document.getElementById('chartContainer');
+        const avgPos = (avg / maxVal) * 100;
+        chart.innerHTML = `<div class="avg-line" style="bottom: ${avgPos}%;"><span class="avg-label">AVG ${avg.toFixed(0)}ℓ</span></div>`;
+        recent.forEach(item => {
+            const h = (item.amt / maxVal) * 100;
+            chart.innerHTML += `<div class="bar ${item.amt > avg * 1.5 ? 'over' : ''}" style="height:${Math.max(2, h)}%"></div>`;
         });
-        document.getElementById('historyLogArea').innerHTML = logHTML || '<div style="text-align:center; color:#555; padding:20px;">履歴なし</div>';
-
-        document.getElementById('logicArea').innerHTML = `
-            <div class="logic-item">・イオン交換容量：${capTotal.toLocaleString()} (ppm・ℓ)</div>
-            <div class="logic-item">・算出寿命：${Math.floor(cap).toLocaleString()} ℓ (水質 ${d.ppm}ppm)</div>
-            <div class="logic-item">・樹脂価格：${resinPrice.toLocaleString()} 円 / 1ℓ単価：約 ${perL.toFixed(1)}円</div>
-            <div class="logic-item blue-text" style="margin-top:10px;">・直近10件平均：${avg > 0 ? avg.toFixed(1) : "--"} ℓ</div>
-            <div class="logic-item blue-text">・1回コスト目安：${avg > 0 ? Math.round(avg * perL).toLocaleString() : "--"} 円</div>`;
-
-        document.getElementById('chartLabel').innerText = `直近${Math.min(d.history.length, 10)}件の使用傾向`;
-        document.getElementById('chartBox').innerText = d.history.length > 0 ? `データを蓄積中（白線：平均 ${avg.toFixed(1)}ℓ）` : "履歴なし";
+        let sumHTML = "";
+        Object.keys(d.logs).sort().reverse().forEach(key => {
+            sumHTML += `<div class="summary-card"><span class="summary-date">${key}</span><div><span class="summary-val" style="margin-right:15px;">${d.logs[key]}ℓ</span><button class="btn-del-mini" onclick="delMonth('${key}')">消去</button></div></div>`;
+        });
+        document.getElementById('monthlySummaryArea').innerHTML = sumHTML || 'NO DATA';
         document.getElementById('modalOverlay').style.display='flex';
     }
-    
     function closeDetail() { document.getElementById('modalOverlay').style.display='none'; }
 
     let longTimer;
     const rb = document.getElementById('resetBtn');
-    rb.addEventListener('touchstart', (e) => { e.preventDefault(); longTimer = setTimeout(() => { if(confirm("累計記録をリセット？")){ d.used=0; d.history=[]; d.logs={}; up(); } }, 1000); });
+    rb.addEventListener('touchstart', (e) => { longTimer = setTimeout(() => { if(confirm("全履歴を消去しますか？")){ d.used=0; d.history=[]; d.logs={}; up(); } }, 1000); });
     rb.addEventListener('touchend', () => clearTimeout(longTimer));
-
     up();
 </script>
 </body>
