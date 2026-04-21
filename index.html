@@ -47,15 +47,15 @@
         .btn-save { width: 100%; display: block; background: var(--accent-green); color: white; padding: 22px; border-radius: 18px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 15px; cursor: pointer; transition: all 0.1s; -webkit-appearance: none; touch-action: manipulation; }
         .btn-save:active { transform: scale(0.97); opacity: 0.9; }
         .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; user-select: none; cursor: pointer; touch-action: none; }
-        .settings-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 10px; }
-        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2c2c2e; }
+        .settings-box { background: var(--card-bg); padding: 25px 20px; border-radius: 20px; margin-top: 10px; }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2c2c2e; margin-bottom: 10px; }
         .ppm-input { background: none; border: none; color: var(--accent-green); font-weight: bold; font-size: 16px; text-align: right; width: 80px; }
-        .mode-row { display: flex; gap: 8px; margin-top: 15px; }
-        .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; cursor: pointer; }
+        .mode-row { display: flex; gap: 8px; margin-top: 5px; }
+        .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; cursor: pointer; font-size: 13px; }
         .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
         .backup-section { margin-top: 25px; border-top: 1px dashed #3a3a3c; padding-top: 20px; }
-        .backup-label { font-size: 11px; color: var(--accent-blue); font-weight: bold; text-align: center; margin-bottom: 10px; }
-        .backup-guide { font-size: 9px; color: #666; line-height: 1.4; margin-bottom: 12px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; }
+        .backup-label { font-size: 11px; color: var(--accent-blue); font-weight: bold; text-align: center; margin-bottom: 15px; }
+        .backup-guide { font-size: 9px; color: #666; line-height: 1.4; margin-bottom: 12px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; text-align: left; }
         .backup-row { display: flex; gap: 8px; }
         .btn-b { flex: 1; background: #2c2c2e; border: 1px solid #3a3a3c; padding: 12px 5px; border-radius: 10px; color: #aaa; font-size: 10px; font-weight: bold; cursor: pointer; }
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
@@ -113,9 +113,17 @@
     </div>
     <button class="btn-save" id="saveBtn" onclick="save()">数値を入力してください</button>
     <button id="resetBtn" class="btn-reset">長押しで樹脂リセット</button>
+    
     <div class="settings-box">
-        <div class="setting-item"><span class="label-xs" style="color:#fff; font-size:12px;">水道水硬度 (ppm)</span><input type="number" id="ppmIn" class="ppm-input" placeholder="0" oninput="setPPM(this.value)" pattern="\d*"></div>
-        <div class="mode-row"><button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO (3個)</button><button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST (2個)</button></div>
+        <div class="input-title" style="margin-bottom:20px;">設定</div>
+        <div class="setting-item">
+            <span class="label-xs" style="color:#fff; font-size:12px; margin-bottom:0;">水道水硬度 (ppm)</span>
+            <input type="number" id="ppmIn" class="ppm-input" placeholder="0" oninput="setPPM(this.value)" pattern="\d*">
+        </div>
+        <div class="mode-row">
+            <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO (3個)</button>
+            <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST (2個)</button>
+        </div>
         <div class="backup-section">
             <div class="backup-label">データ移行・復元</div>
             <div class="backup-guide">機種変更時に記録をコードで引き継げます。書き出したコードをメモ等に保存し、新しい端末で読み込んでください。</div>
@@ -132,10 +140,10 @@
         <div class="info-text">・本アプリは非営利目的で制作・公開されています。<br>・個人利用の範囲内でご活用ください。<br>・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>・無断転載・再配布、および商用利用を固く禁じます。</div>
     </div>
 
-    <div class="footer">Version 1.0.4<br>© 2026 missing link. All rights reserved.</div>
+    <div class="footer">Version 1.0.1<br>© 2026 missing link. All rights reserved.</div>
 </div>
 
-<div id="modalOverlay" class="modal-overlay" onclick="closeDetail()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-h">コンディション詳細</div><div class="modal-section"><div class="modal-label-row"><div class="modal-label">直近10件の使用傾向</div><button class="btn-mini-reset" onclick="resetHistory()">履歴クリア</button></div><div id="historyList"></div></div><div class="modal-section"><div class="modal-label-row"><div class="modal-label">月別サマリー</div><button class="btn-mini-reset" onclick="resetSummary()">サマリークリア</button></div><div id="monthSummaryList"></div></div><div class="modal-section"><div class="modal-label">算出ロジック診断</div><div class="logic-box" id="adviceBox"></div></div><button class="btn-close" onclick="closeDetail()">閉じる</button></div></div>
+<div id="modalOverlay" class="modal-overlay" onclick="closeDetail()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-h">コンディション詳細</div><div class="modal-section"><div class="modal-label-row"><div class="modal-label">直近10件の使用傾向（白線：平均）</div><button class="btn-mini-reset" onclick="resetHistory()">履歴クリア</button></div><div id="historyList"></div></div><div class="modal-section"><div class="modal-label-row"><div class="modal-label">月別サマリー</div><button class="btn-mini-reset" onclick="resetSummary()">サマリークリア</button></div><div id="monthSummaryList"></div></div><div class="modal-section"><div class="modal-label">算出ロジックの根拠と診断</div><div class="logic-box" id="adviceBox"></div></div><button class="btn-close" onclick="closeDetail()">閉じる</button></div></div>
 <div id="transferModal" class="modal-overlay" onclick="closeTransferModal()"><div class="modal-content" onclick="event.stopPropagation()"><div id="transferTitle" class="modal-h"></div><div id="transferDesc" class="modal-desc"></div><textarea id="transferArea" class="data-textarea"></textarea><button id="transferActionBtn" class="btn-primary" onclick="handleTransferAction()"></button><button class="btn-close" onclick="closeTransferModal()">閉じる</button></div></div>
 
 <script>
@@ -204,7 +212,7 @@
             hList.innerHTML += `<div class="history-item"><div class="avg-guide-line"></div><div class="graph-bar-left" style="width:${barW}%; background:${c};"></div><div class="hist-main"><span>${h.date}</span><span style="font-weight:bold;">${h.amt}ℓ</span><span>${h.cost}円</span></div><div class="hist-sub" style="color:${c}">${txt}</div></div>`;
         });
         const sList = document.getElementById('monthSummaryList'), keys = Object.keys(d.logs).sort().reverse();
-        sList.innerHTML = keys.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">なし</div>';
+        sList.innerHTML = keys.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">サマリーなし</div>';
         keys.slice(0,12).forEach(k => { sList.innerHTML += `<div class="history-item"><div class="hist-main"><span>${k}</span><span>${d.logs[k]}ℓ</span><span>${Math.round((d.logs[k]/cap)*resinPrice)}円</span></div></div>`; });
         document.getElementById('adviceBox').innerHTML = `・直近平均: ${getRecentAvg()}ℓ<br>・平均間隔: ${Math.round(getAvgInterval()*10)/10}日<br>・コスト目安: ${resinPrice.toLocaleString()}円`;
         document.getElementById('modalOverlay').style.display = 'flex'; vib(10);
