@@ -75,7 +75,10 @@
         .btn-primary { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
         .logic-box { font-size: 11px; color: var(--text-sub); background: #111; padding: 12px; border-radius: 8px; line-height: 1.6; }
         .btn-close { width:100%; background: #3a3a3c; border:none; color:white; padding:12px; border-radius:12px; margin-top:10px; font-weight:bold; }
-        .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.8; padding-bottom: 100px; }
+        .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.6; padding-bottom: 50px; }
+        .info-section { max-width: 380px; text-align: center; margin-top: 40px; padding: 0 20px; }
+        .info-title { font-size: 11px; font-weight: bold; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .info-text { font-size: 10px; color: #666; line-height: 1.8; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -115,10 +118,21 @@
         <div class="mode-row"><button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO (3個)</button><button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST (2個)</button></div>
         <div class="backup-section">
             <div class="backup-label">データ移行・復元</div>
+            <div class="backup-guide">機種変更時に記録をコードで引き継げます。書き出したコードをメモ等に保存し、新しい端末で読み込んでください。</div>
             <div class="backup-row"><button class="btn-b" onclick="openTransferModal('export')">書き出し</button><button class="btn-b" onclick="openTransferModal('import')">読み込み</button></div>
         </div>
     </div>
-    <div class="footer">Version 1.0.3<br>© 2026 missing link.</div>
+
+    <div class="info-section">
+        <div class="info-title">Reference</div>
+        <div class="info-text">監修：ビューティフルカーズ<br>製造：グリーンライフ</div>
+        <div class="info-title">Information</div>
+        <div class="info-text">本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>※製造・監修元各社様とは一切関係ありません。</div>
+        <div class="info-title">Terms of Use</div>
+        <div class="info-text">・本アプリは非営利目的で制作・公開されています。<br>・個人利用の範囲内でご活用ください。<br>・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>・無断転載・再配布、および商用利用を固く禁じます。</div>
+    </div>
+
+    <div class="footer">Version 1.0.4<br>© 2026 missing link. All rights reserved.</div>
 </div>
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeDetail()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-h">コンディション詳細</div><div class="modal-section"><div class="modal-label-row"><div class="modal-label">直近10件の使用傾向</div><button class="btn-mini-reset" onclick="resetHistory()">履歴クリア</button></div><div id="historyList"></div></div><div class="modal-section"><div class="modal-label-row"><div class="modal-label">月別サマリー</div><button class="btn-mini-reset" onclick="resetSummary()">サマリークリア</button></div><div id="monthSummaryList"></div></div><div class="modal-section"><div class="modal-label">算出ロジック診断</div><div class="logic-box" id="adviceBox"></div></div><button class="btn-close" onclick="closeDetail()">閉じる</button></div></div>
@@ -144,7 +158,7 @@
             document.getElementById('remCount').innerText = Math.floor(rem / avg);
             if (ratio < 0.1) { remL.style.color = 'var(--accent-red)'; document.body.classList.add('alert-red'); } else if (ratio < 0.3) remL.style.color = 'var(--accent-yellow)'; else remL.style.color = 'var(--accent-green)';
             document.getElementById('costDisp').innerText = Math.round(((d.logs[monthKey]||0)/cap)*resinPrice).toLocaleString() + ' 円';
-            const daysRem = Math.floor((rem/avg)*getAvgInterval()); const t = new Date(); t.setDate(t.getDate()+daysRem);
+            const daysRem = Math.floor((rem/avg)*getAvgInterval()); const t = new Date(); t.setDate(now.getDate()+daysRem);
             document.getElementById('predictDate').innerText = `寿命予測：${t.getMonth()+1}/${t.getDate()}頃`;
         }
         document.getElementById('totalUsed').innerText = d.used + ' ℓ';
@@ -159,11 +173,10 @@
 
     function save() {
         if (!d.ppm || d.in <= 0) return; vib(30);
-        const now = new Date(); // 1つの変数を使い回す
+        const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}`;
         const resinPrice = (d.m==='PRO'?12980:9878), cap = (d.m==='PRO'?180000:90000)/d.ppm;
-        const avg = getRecentAvg();
-        const diff = d.in - avg;
+        const avg = getRecentAvg(); const diff = d.in - avg;
         let lv = d.in > avg*1.5 ? 'danger' : (d.in > avg*1.2 ? 'warn' : 'normal');
         d.history.unshift({ ts: now.getTime(), date: `${now.getMonth()+1}/${now.getDate()}`, amt: d.in, cost: Math.round((d.in/cap)*resinPrice), wasteL: Math.max(0, diff), diffL: Math.abs(diff), wasteCost: Math.round((Math.max(0, diff)/cap)*resinPrice), refAvg: avg, level: lv });
         if(d.history.length > 10) d.history.pop();
@@ -193,7 +206,7 @@
         const sList = document.getElementById('monthSummaryList'), keys = Object.keys(d.logs).sort().reverse();
         sList.innerHTML = keys.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">なし</div>';
         keys.slice(0,12).forEach(k => { sList.innerHTML += `<div class="history-item"><div class="hist-main"><span>${k}</span><span>${d.logs[k]}ℓ</span><span>${Math.round((d.logs[k]/cap)*resinPrice)}円</span></div></div>`; });
-        document.getElementById('adviceBox').innerHTML = `・直近平均: ${getRecentAvg()}ℓ<br>・洗車間隔: ${Math.round(getAvgInterval()*10)/10}日<br>・想定価格: ${resinPrice.toLocaleString()}円`;
+        document.getElementById('adviceBox').innerHTML = `・直近平均: ${getRecentAvg()}ℓ<br>・平均間隔: ${Math.round(getAvgInterval()*10)/10}日<br>・コスト目安: ${resinPrice.toLocaleString()}円`;
         document.getElementById('modalOverlay').style.display = 'flex'; vib(10);
     }
 
@@ -201,7 +214,7 @@
     function openTransferModal(m) {
         tMode = m; const area = document.getElementById('transferArea'), btn = document.getElementById('transferActionBtn'), title = document.getElementById('transferTitle'), desc = document.getElementById('transferDesc');
         if(m==='export'){
-            title.innerText='データ書き出し'; desc.innerText='コードをコピーして保存してください。'; area.value = btoa(unescape(encodeURIComponent(JSON.stringify(d)))); area.readOnly = true; btn.innerText = 'コピーする'; setTimeout(()=>area.select(), 100);
+            title.innerText='データ書き出し'; desc.innerText='コードをコピーして保存してください。機種変更時に引き継げます。'; area.value = btoa(unescape(encodeURIComponent(JSON.stringify(d)))); area.readOnly = true; btn.innerText = 'コピーする'; setTimeout(()=>area.select(), 100);
         } else {
             title.innerText='データ読み込み'; desc.innerText='保存したコードを貼り付けてください。'; area.value = ''; area.readOnly = false; btn.innerText = '復元する';
         }
