@@ -86,7 +86,8 @@
         .modal-h { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--accent-blue); text-align: center; }
         .modal-section { margin-bottom: 20px; }
         .modal-label { font-size: 11px; color: var(--text-sub); margin-bottom: 8px; border-left: 3px solid var(--accent-blue); padding-left: 8px; }
-        .history-item { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #2c2c2e; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #2c2c2e; }
+        .status-label { font-size: 9px; margin-left: 4px; padding: 1px 4px; border-radius: 4px; vertical-align: middle; }
         .logic-box { font-size: 11px; color: var(--text-sub); background: #111; padding: 10px; border-radius: 8px; line-height: 1.5; }
         .btn-close { width:100%; background: #3a3a3c; border:none; color:white; padding:12px; border-radius:12px; margin-top:10px; font-weight:bold; }
 
@@ -183,13 +184,12 @@
         </div>
 
         <div class="modal-section">
-            <div class="modal-label">算出ロジックの根拠</div>
-            <div class="logic-box">
+            <div class="modal-label">算出ロジックの根拠と診断</div>
+            <div class="logic-box" id="adviceBox">
                 ・洗車1回あたりの想定使用量: <span id="avgUsageDisp">30</span>ℓ<br>
                 ・樹脂寿命(ℓ) = 係数 / 水道水ppm<br>
                 　(PRO: 180,000 / JUST: 90,000)<br>
-                ・1回交換コスト: <span id="resinPriceDisp">--</span>円<br>
-                　(PRO 3個: 12,980円 / JUST 2個: 9,878円)
+                ・1回交換コスト: <span id="resinPriceDisp">--</span>円
             </div>
         </div>
 
@@ -299,8 +299,7 @@
         vib(10);
         longClickTimer = setTimeout(() => {
             vib([50, 30, 50]);
-            if(confirm("樹脂の使用記録のみをリセットしますか？（過去の履歴は維持されます）")) { 
-                // used（カウント量）と現在の入力値のみリセットし、logsやhistoryは維持する
+            if(confirm("樹脂の使用記録のみをリセットしますか？")) { 
                 d.used = 0; 
                 d.in = 0; 
                 up();
@@ -334,10 +333,17 @@
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         const currentResinPrice = (d.m === 'PRO' ? 12980 : 9878);
         const cost = Math.round((d.in / cap) * currentResinPrice);
+
+        let avgUsage = 30;
+        const months = Object.keys(d.logs);
+        if (months.length > 0) {
+            avgUsage = Math.round(Object.values(d.logs).reduce((a, b) => a + b, 0) / months.length);
+        }
         
         if(!d.history) d.history = [];
         if (d.in > 0) {
-            d.history.unshift({ date: dateStr, amt: d.in, cost: cost });
+            const isWaste = d.in > avgUsage * 1.3;
+            d.history.unshift({ date: dateStr, amt: d.in, cost: cost, waste: isWaste });
             if(d.history.length > 10) d.history.pop();
         }
 
@@ -351,21 +357,38 @@
         if (!d.ppm) return;
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         const currentResinPrice = (d.m === 'PRO' ? 12980 : 9878);
-        document.getElementById('resinPriceDisp').innerText = currentResinPrice.toLocaleString();
+        document.getElementById('resinPriceDisp').innerText = currentResinPrice.toLocaleString() + '円';
         
         const months = Object.keys(d.logs);
         let avgUsage = 30;
         if (months.length > 0) {
-            const totalInLogs = Object.values(d.logs).reduce((a, b) => a + b, 0);
-            avgUsage = Math.round(totalInLogs / months.length);
+            avgUsage = Math.round(Object.values(d.logs).reduce((a, b) => a + b, 0) / months.length);
         }
         document.getElementById('avgUsageDisp').innerText = avgUsage;
 
         const histDiv = document.getElementById('historyList');
         histDiv.innerHTML = d.history && d.history.length ? '' : '<div style="font-size:12px;color:#555;">履歴なし</div>';
+        
+        let hasWaste = false;
         (d.history || []).forEach(h => {
-            histDiv.innerHTML += `<div class="history-item"><span>${h.date}</span><span>${h.amt}ℓ</span><span>${h.cost}円</span></div>`;
+            let color = 'var(--text-main)';
+            let label = '';
+            if (h.waste) {
+                color = 'var(--accent-red)';
+                label = '<span class="status-label" style="background:rgba(255,69,58,0.2);color:var(--accent-red)">⚠️多め</span>';
+                hasWaste = true;
+            } else if (h.amt > avgUsage) {
+                color = 'var(--accent-yellow)';
+            }
+            histDiv.innerHTML += `<div class="history-item"><span>${h.date}</span><span style="color:${color}; font-weight:bold;">${h.amt}ℓ${label}</span><span>${h.cost}円</span></div>`;
         });
+
+        const adviceBox = document.getElementById('adviceBox');
+        let adviceHtml = `・洗車1回あたりの想定使用量: ${avgUsage}ℓ<br>・1回交換コスト: ${currentResinPrice.toLocaleString()}円`;
+        if (hasWaste) {
+            adviceHtml += `<div style="color:var(--accent-yellow); margin-top:8px; border-top:1px solid #333; padding-top:8px;">⚠️ 直近で水の使用量が多い回があります。節約を意識すると樹脂が長持ちします。</div>`;
+        }
+        adviceBox.innerHTML = adviceHtml;
 
         const summaryDiv = document.getElementById('monthSummaryList');
         summaryDiv.innerHTML = '';
@@ -379,13 +402,8 @@
         vib(10);
     }
 
-    function closeDetail() {
-        document.getElementById('modalOverlay').style.display = 'none';
-    }
-
+    function closeDetail() { document.getElementById('modalOverlay').style.display = 'none'; }
     up();
 </script>
 </body>
 </html>
-
-
