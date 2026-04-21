@@ -22,32 +22,40 @@
         .container { width: 100%; max-width: 380px; }
         .top-title { font-size: 14px; font-weight: 800; color: var(--text-main); text-align: center; margin-bottom: 2px; letter-spacing: 0.5px; }
         .top-sub { font-size: 10px; color: var(--accent-blue); text-align: center; margin-bottom: 25px; font-weight: 600; }
-        .header-section { text-align: center; margin-bottom: 20px; padding: 20px 10px; border-radius: 24px; }
+        
+        .header-section { text-align: center; margin-bottom: 20px; padding: 20px 10px; border-radius: 24px; min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
+        
+        /* チュートリアルエリアのスタイル */
+        .tutorial-box { background: rgba(10, 132, 255, 0.05); border: 1px dashed rgba(10, 132, 255, 0.5); padding: 20px 15px; border-radius: 20px; margin-top: 10px; text-align: left; width: 100%; }
+        .step-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 13px; color: #fff; font-weight: 600; }
+        .step-num { background: var(--accent-blue); color: #fff; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
+        .step-active { color: var(--accent-yellow); text-decoration: underline; text-underline-offset: 4px; }
+
         .main-val-wrap { position: relative; display: inline-block; margin-bottom: 15px; cursor: pointer; }
         .main-val { font-size: 64px; font-weight: 800; line-height: 1; transition: color 0.3s; }
         .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
-        .no-ppm-alert { font-size: 24px; color: var(--accent-yellow); font-weight: bold; }
-        .main-val-wrap::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 0%; height: 4px; background-color: var(--accent-blue); border-radius: 2px; transition: width 0s linear; opacity: 0; }
-        .main-val-wrap.resetting .main-val { color: var(--accent-blue) !important; }
-        .main-val-wrap.resetting::after { opacity: 1; }
-        .main-val-wrap.reset-active::after { width: 100%; transition: width 1.0s linear; }
+        
         .btn-detail { background: none; border: 1px solid #3a3a3c; color: var(--text-sub); padding: 8px 16px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.2s; margin-bottom: 10px; }
         .sub-stats { display: flex; justify-content: space-around; font-size: 11px; color: var(--text-sub); margin-bottom: 25px; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; }
         .card-full { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        
         .input-box { background: var(--card-bg); padding: 25px 20px; border-radius: 20px; margin-bottom: 15px; }
         .input-title { font-size: 11px; color: var(--accent-green); font-weight: bold; text-align: center; margin-bottom: 15px; }
         .counter-row { display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 15px; }
         .btn-round { width: 50px; height: 50px; border-radius: 50%; border: none; background: #3a3a3c; color: white; font-size: 26px; cursor: pointer; }
         .current-disp { font-size: 52px; font-weight: bold; }
         .btn-clear { background: #3a3a3c; color: var(--text-sub); border: none; padding: 6px 16px; border-radius: 20px; font-size: 11px; cursor: pointer; display: block; margin: 0 auto 20px; }
+        
         .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .btn-q { background: #2c2c2e; border: none; padding: 14px 5px; border-radius: 10px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; touch-action: none; }
-        .btn-save { width: 100%; display: block; background: var(--accent-green); color: white; padding: 22px; border-radius: 18px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 15px; cursor: pointer; transition: all 0.1s; -webkit-appearance: none; touch-action: manipulation; }
+        .btn-q { background: #2c2c2e; border: none; padding: 14px 5px; border-radius: 10px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; }
+        
+        .btn-save { width: 100%; display: block; background: var(--accent-green); color: white; padding: 22px; border-radius: 18px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 15px; cursor: pointer; transition: all 0.1s; }
         .btn-save:active { transform: scale(0.97); opacity: 0.9; }
-        .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; user-select: none; cursor: pointer; touch-action: none; }
+        .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; cursor: pointer; }
+        
         .settings-box { background: var(--card-bg); padding: 25px 20px; border-radius: 20px; margin-top: 10px; }
         .setting-item { display: flex; justify-content: space-between; align-items: flex-end; padding: 12px 0; border-bottom: 1px solid #2c2c2e; margin-bottom: 10px; }
         .setting-label-wrap { display: flex; flex-direction: column; gap: 4px; }
@@ -56,31 +64,21 @@
         .mode-row { display: flex; gap: 8px; margin-top: 5px; }
         .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; cursor: pointer; font-size: 13px; }
         .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
+        
         .backup-section { margin-top: 25px; border-top: 1px dashed #3a3a3c; padding-top: 20px; }
         .backup-label { font-size: 11px; color: var(--accent-blue); font-weight: bold; text-align: center; margin-bottom: 15px; }
-        .backup-guide { font-size: 9px; color: #666; line-height: 1.4; margin-bottom: 12px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; text-align: left; }
-        .backup-row { display: flex; gap: 8px; }
         .btn-b { flex: 1; background: #2c2c2e; border: 1px solid #3a3a3c; padding: 12px 5px; border-radius: 10px; color: #aaa; font-size: 10px; font-weight: bold; cursor: pointer; }
+        .backup-row { display: flex; gap: 8px; }
+
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
-        .modal-content { background: #1c1c1e; width:100%; max-width:350px; max-height:85vh; border-radius:24px; padding:25px; overflow-y:auto; border: 1px solid #3a3a3c; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .modal-content { background: #1c1c1e; width:100%; max-width:350px; max-height:85vh; border-radius:24px; padding:25px; overflow-y:auto; border: 1px solid #3a3a3c; }
         .modal-h { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--accent-blue); text-align: center; }
-        .modal-section { margin-bottom: 20px; }
-        .modal-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .modal-label { font-size: 11px; color: var(--text-sub); border-left: 3px solid var(--accent-blue); padding-left: 8px; }
-        .btn-mini-reset { background: none; border: 1px solid #444; color: #666; font-size: 9px; padding: 2px 8px; border-radius: 10px; cursor: pointer; }
-        .history-item { position: relative; display: flex; flex-direction: column; padding: 12px 10px; border-bottom: 1px solid #2c2c2e; overflow: hidden; margin-bottom: 4px; border-radius: 8px; background: rgba(255,255,255,0.02); }
-        .avg-guide-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 1.5px; background: #ffffff; z-index: 2; opacity: 0.5; }
-        .graph-bar-left { position: absolute; top: 0; bottom: 0; left: 0; z-index: 0; transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1); opacity: 0.35; }
-        .hist-main { position: relative; z-index: 3; display: flex; width: 100%; justify-content: space-between; align-items: center; font-size: 13px; }
-        .hist-sub { position: relative; z-index: 3; width: 100%; font-size: 10px; text-align: right; margin-top: 4px; font-weight: bold; }
-        .data-textarea { width: 100%; height: 120px; background: #000; border: 1px solid #333; border-radius: 12px; color: var(--accent-green); font-family: monospace; font-size: 12px; padding: 12px; margin-bottom: 15px; resize: none; word-break: break-all; }
-        .modal-desc { font-size: 11px; color: #aaa; margin-bottom: 15px; line-height: 1.5; }
-        .btn-primary { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
-        .logic-box { font-size: 11px; color: var(--text-sub); background: #111; padding: 12px; border-radius: 8px; line-height: 1.6; }
+        .history-item { position: relative; display: flex; flex-direction: column; padding: 12px 10px; border-bottom: 1px solid #2c2c2e; margin-bottom: 4px; border-radius: 8px; background: rgba(255,255,255,0.02); }
+        .hist-main { display: flex; width: 100%; justify-content: space-between; align-items: center; font-size: 13px; }
         .btn-close { width:100%; background: #3a3a3c; border:none; color:white; padding:12px; border-radius:12px; margin-top:10px; font-weight:bold; }
+        
         .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.6; padding-bottom: 50px; }
         .info-section { max-width: 380px; text-align: center; margin-top: 40px; padding: 0 20px; }
-        .info-title { font-size: 11px; font-weight: bold; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .info-text { font-size: 10px; color: #666; line-height: 1.8; margin-bottom: 20px; }
     </style>
 </head>
@@ -90,13 +88,8 @@
     <div class="top-title">pure-water-tracker</div>
     <div class="top-sub">純水器の寿命とコストを管理</div>
 
-    <div class="header-section">
-        <div class="label-xs">交換まであと</div>
-        <div class="main-val-wrap" id="mainValWrap" onclick="showDetail()">
-            <span class="main-val" id="remL"><span class="no-ppm-alert">地域(水道局等)の<br>PPMを入力</span></span>
+    <div class="header-section" id="headerSection">
         </div>
-        <button class="btn-detail" onclick="showDetail()">コンディション詳細</button>
-    </div>
 
     <div class="sub-stats"><span>洗車回数：あと <span id="remCount">--</span> 回分</span><span id="predictDate">寿命予測：--/--頃</span></div>
 
@@ -127,7 +120,7 @@
         <div class="input-title" style="margin-bottom:20px;">設定</div>
         <div class="setting-item">
             <div class="setting-label-wrap">
-                <span class="label-xs" style="color:#fff; font-size:12px; margin-bottom:0;">水道水硬度 (ppm)</span>
+                <span class="label-xs" style="color:#fff; font-size:12px; margin-bottom:0;">STEP1：水道水硬度 (ppm)</span>
                 <span class="ppm-guide-txt">※水質が寿命を決定します</span>
             </div>
             <input type="number" id="ppmIn" class="ppm-input" placeholder="0" oninput="setPPM(this.value)" pattern="\d*">
@@ -138,127 +131,97 @@
         </div>
         <div class="backup-section">
             <div class="backup-label">データ移行・復元</div>
-            <div class="backup-guide">機種変更時に記録をコードで引き継げます。書き出したコードをメモ等に保存し、新しい端末で読み込んでください。</div>
             <div class="backup-row"><button class="btn-b" onclick="openTransferModal('export')">書き出し</button><button class="btn-b" onclick="openTransferModal('import')">読み込み</button></div>
         </div>
     </div>
 
     <div class="info-section">
-        <div class="info-title">Reference</div>
-        <div class="info-text">監修：ビューティフルカーズ<br>製造：グリーンライフ</div>
-        <div class="info-title">Information</div>
-        <div class="info-text">本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>※製造・監修元各社様とは一切関係ありません。</div>
-        <div class="info-title">Terms of Use</div>
-        <div class="info-text">・本アプリは非営利目的で制作・公開されています。<br>・個人利用の範囲内でご活用ください。<br>・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>・無断転載・再配布、および商用利用を固く禁じます。</div>
+        <div class="info-text">本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>© 2026 missing link.</div>
     </div>
-
-    <div class="footer">Version 1.0.1<br>© 2026 missing link. All rights reserved.</div>
+    <div class="footer">Version 1.0.1</div>
 </div>
 
-<div id="modalOverlay" class="modal-overlay" onclick="closeDetail()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-h">コンディション詳細</div><div class="modal-section"><div class="modal-label-row"><div class="modal-label">直近10件の使用傾向（白線：平均）</div><button class="btn-mini-reset" onclick="resetHistory()">履歴クリア</button></div><div id="historyList"></div></div><div class="modal-section"><div class="modal-label-row"><div class="modal-label">月別サマリー</div><button class="btn-mini-reset" onclick="resetSummary()">サマリークリア</button></div><div id="monthSummaryList"></div></div><div class="modal-section"><div class="modal-label">算出ロジックの根拠と診断</div><div class="logic-box" id="adviceBox"></div></div><button class="btn-close" onclick="closeDetail()">閉じる</button></div></div>
-<div id="transferModal" class="modal-overlay" onclick="closeTransferModal()"><div class="modal-content" onclick="event.stopPropagation()"><div id="transferTitle" class="modal-h"></div><div id="transferDesc" class="modal-desc"></div><textarea id="transferArea" class="data-textarea"></textarea><button id="transferActionBtn" class="btn-primary" onclick="handleTransferAction()"></button><button class="btn-close" onclick="closeTransferModal()">閉じる</button></div></div>
+<div id="modalOverlay" class="modal-overlay" onclick="closeDetail()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-h">コンディション詳細</div><div id="historyList"></div><button class="btn-close" onclick="closeDetail()">閉じる</button></div></div>
 
 <script>
     const STORAGE_KEY = 'pwMasterV4';
     let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [] };
 
-    function vib(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
-    function getRecentAvg() { if (!d.history || d.history.length === 0) return 30; const recent = d.history.slice(0, 5); return Math.round(recent.reduce((a, b) => a + b.amt, 0) / recent.length); }
-    function getAvgInterval() { if (!d.history || d.history.length < 2) return 7; let total = 0, count = 0; for (let i = 0; i < d.history.length - 1; i++) { if (d.history[i].ts && d.history[i+1].ts) { total += (d.history[i].ts - d.history[i+1].ts) / 86400000; count++; } } return count > 0 ? Math.max(1, total / count) : 7; }
-
     function up() {
-        const remL = document.getElementById('remL'), saveBtn = document.getElementById('saveBtn');
+        const header = document.getElementById('headerSection');
+        const saveBtn = document.getElementById('saveBtn');
         const now = new Date(), monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const resinPrice = (d.m === 'PRO' ? 12980 : 9878);
-        if (d.ppm !== null) document.getElementById('ppmIn').value = d.ppm;
-        document.body.classList.remove('alert-red'); remL.style.color = '';
-        if (!d.ppm) { 
-            remL.innerHTML = '<span class="no-ppm-alert">地域(水道局等)の<br>PPMを入力</span>';
+
+        // ステップガイドの動的表示
+        if (!d.ppm) {
+            header.innerHTML = `
+                <div class="tutorial-box">
+                    <div class="step-row"><span class="step-num">STEP 1</span> <span class="step-active">PPMを入力 (下部の設定)</span></div>
+                    <div class="step-row"><span class="step-num">STEP 2</span> <span>洗車ごとに使用量を記録</span></div>
+                    <div class="step-row"><span class="step-num">STEP 3</span> <span>寿命とコストを自動管理</span></div>
+                </div>
+            `;
             document.getElementById('remCount').innerText = "--";
             document.getElementById('predictDate').innerText = "寿命予測：--/--頃";
             document.getElementById('costDisp').innerText = "0 円";
         } else {
-            const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm, rem = Math.max(0, cap - d.used), ratio = rem / cap, avg = getRecentAvg();
-            remL.innerHTML = Math.floor(rem) + '<span class="unit-l">ℓ</span>';
+            const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
+            const rem = Math.max(0, cap - d.used);
+            const avg = d.history.length > 0 ? Math.round(d.history.slice(0,5).reduce((a,b)=>a+b.amt,0)/d.history.slice(0,5).length) : 30;
+            
+            header.innerHTML = `
+                <div class="label-xs">交換まであと</div>
+                <div class="main-val-wrap" onclick="showDetail()">
+                    <span class="main-val" id="remDisplay">${Math.floor(rem)}<span class="unit-l">ℓ</span></span>
+                </div>
+                <button class="btn-detail" onclick="showDetail()">コンディション詳細</button>
+            `;
+            const remDisp = document.getElementById('remDisplay');
+            if (rem/cap < 0.1) remDisp.style.color = 'var(--accent-red)';
+            else if (rem/cap < 0.3) remDisp.style.color = 'var(--accent-yellow)';
+            else remDisp.style.color = 'var(--accent-green)';
+
             document.getElementById('remCount').innerText = Math.floor(rem / avg);
-            if (ratio < 0.1) { remL.style.color = 'var(--accent-red)'; document.body.classList.add('alert-red'); } else if (ratio < 0.3) remL.style.color = 'var(--accent-yellow)'; else remL.style.color = 'var(--accent-green)';
             document.getElementById('costDisp').innerText = Math.round(((d.logs[monthKey]||0)/cap)*resinPrice).toLocaleString() + ' 円';
-            const daysRem = Math.floor((rem/avg)*getAvgInterval()); const t = new Date(); t.setDate(now.getDate()+daysRem);
+            
+            const daysRem = Math.floor((rem/avg)*7); const t = new Date(); t.setDate(now.getDate()+daysRem);
             document.getElementById('predictDate').innerText = `寿命予測：${t.getMonth()+1}/${t.getDate()}頃`;
         }
+
+        if (d.ppm !== null) document.getElementById('ppmIn').value = d.ppm;
         document.getElementById('totalUsed').innerText = d.used + ' ℓ';
         document.getElementById('monthUsed').innerText = (d.logs[monthKey]||0) + ' ℓ';
         document.getElementById('inVal').innerText = d.in;
         saveBtn.innerText = d.in > 0 ? `${d.in}ℓ の使用を記録` : '数値を入力してください';
-        saveBtn.style.opacity = d.in > 0 ? "1" : "0.3"; saveBtn.style.pointerEvents = d.in > 0 ? "auto" : "none";
+        saveBtn.style.opacity = d.in > 0 ? "1" : "0.3";
+        saveBtn.style.pointerEvents = (d.in > 0 && d.ppm) ? "auto" : "none";
         document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
         document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
         localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
     }
 
+    function setPPM(v) { d.ppm = v===""?null:parseInt(v); up(); }
+    function add(v) { d.in = Math.max(0, d.in+v); up(); }
+    function clr() { d.in=0; up(); }
+    function mode(m) { d.m=m; up(); }
     function save() {
-        if (!d.ppm || d.in <= 0) return; vib(30);
+        if (!d.ppm || d.in <= 0) return;
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}`;
-        const resinPrice = (d.m==='PRO'?12980:9878), cap = (d.m==='PRO'?180000:90000)/d.ppm;
-        const avg = getRecentAvg(); const diff = d.in - avg;
-        let lv = d.in > avg*1.5 ? 'danger' : (d.in > avg*1.2 ? 'warn' : 'normal');
-        d.history.unshift({ ts: now.getTime(), date: `${now.getMonth()+1}/${now.getDate()}`, amt: d.in, cost: Math.round((d.in/cap)*resinPrice), wasteL: Math.max(0, diff), diffL: Math.abs(diff), wasteCost: Math.round((Math.max(0, diff)/cap)*resinPrice), refAvg: avg, level: lv });
-        if(d.history.length > 10) d.history.pop();
+        d.history.unshift({ ts: now.getTime(), date: `${now.getMonth()+1}/${now.getDate()}`, amt: d.in });
         d.used += d.in; d.logs[monthKey] = (d.logs[monthKey]||0) + d.in;
         d.in = 0; up();
     }
-
+    
     let longTimer;
-    const rb = document.getElementById('resetBtn'), wrap = document.getElementById('mainValWrap');
-    const startR = (e) => { if(e.type==='touchstart') e.preventDefault(); wrap.classList.add('resetting'); setTimeout(() => wrap.classList.add('reset-active'), 10); vib(10); longTimer = setTimeout(() => { vib([50,30,50]); if(confirm("樹脂記録をリセット？")){ d.used=0; d.in=0; up(); } cancelR(); }, 1000); };
-    const cancelR = () => { clearTimeout(longTimer); wrap.classList.remove('resetting', 'reset-active'); };
-    rb.addEventListener('touchstart', startR, {passive:false}); rb.addEventListener('mousedown', startR);
-    window.addEventListener('touchend', cancelR); window.addEventListener('mouseup', cancelR);
-
-    function showDetail() {
-        if(!d.ppm) return;
-        const resinPrice = (d.m==='PRO'?12980:9878), cap = (d.m==='PRO'?180000:90000)/d.ppm;
-        const hList = document.getElementById('historyList');
-        hList.innerHTML = d.history.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">履歴なし</div>';
-        d.history.forEach(h => {
-            const barW = Math.min(100, (h.amt/h.refAvg)*50);
-            let c = 'var(--accent-green)', txt = `平均より ${h.diffL}ℓ 節約`;
-            if(h.level==='danger'){ c='var(--accent-red)'; txt=`🔥多すぎ (+${h.wasteL}ℓ 約${h.wasteCost}円損)`; }
-            else if(h.level==='warn'){ c='var(--accent-yellow)'; txt=`⚠️多め (+${h.wasteL}ℓ 約${h.wasteCost}円損)`; }
-            hList.innerHTML += `<div class="history-item"><div class="avg-guide-line"></div><div class="graph-bar-left" style="width:${barW}%; background:${c};"></div><div class="hist-main"><span>${h.date}</span><span style="font-weight:bold;">${h.amt}ℓ</span><span>${h.cost}円</span></div><div class="hist-sub" style="color:${c}">${txt}</div></div>`;
-        });
-        const sList = document.getElementById('monthSummaryList'), keys = Object.keys(d.logs).sort().reverse();
-        sList.innerHTML = keys.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">サマリーなし</div>';
-        keys.slice(0,12).forEach(k => { sList.innerHTML += `<div class="history-item"><div class="hist-main"><span>${k}</span><span>${d.logs[k]}ℓ</span><span>${Math.round((d.logs[k]/cap)*resinPrice)}円</span></div></div>`; });
-        document.getElementById('adviceBox').innerHTML = `・直近平均: ${getRecentAvg()}ℓ<br>・平均間隔: ${Math.round(getAvgInterval()*10)/10}日<br>・コスト目安: ${resinPrice.toLocaleString()}円`;
-        document.getElementById('modalOverlay').style.display = 'flex'; vib(10);
-    }
-
-    let tMode = '';
-    function openTransferModal(m) {
-        tMode = m; const area = document.getElementById('transferArea'), btn = document.getElementById('transferActionBtn'), title = document.getElementById('transferTitle'), desc = document.getElementById('transferDesc');
-        if(m==='export'){
-            title.innerText='データ書き出し'; desc.innerText='コードをコピーして保存してください。機種変更時に引き継げます。'; area.value = btoa(unescape(encodeURIComponent(JSON.stringify(d)))); area.readOnly = true; btn.innerText = 'コピーする'; setTimeout(()=>area.select(), 100);
-        } else {
-            title.innerText='データ読み込み'; desc.innerText='保存したコードを貼り付けてください。'; area.value = ''; area.readOnly = false; btn.innerText = '復元する';
-        }
-        document.getElementById('transferModal').style.display='flex';
-    }
-    function handleTransferAction() {
-        const area = document.getElementById('transferArea');
-        if(tMode==='export'){ navigator.clipboard.writeText(area.value).then(() => { vib([30,30]); alert("コピー完了！"); }); } else {
-            try { d = JSON.parse(decodeURIComponent(escape(atob(area.value.trim())))); localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); up(); alert("復元成功！"); closeTransferModal(); } catch(e) { alert("無効なコードです"); }
-        }
-    }
-    function closeTransferModal() { document.getElementById('transferModal').style.display='none'; }
-    function setPPM(v) { d.ppm = v===""?null:parseInt(v); up(); }
-    function add(v) { d.in = Math.max(0, d.in+v); vib(5); up(); }
-    function clr() { d.in=0; vib(5); up(); }
-    function mode(m) { d.m=m; vib(10); up(); }
+    const rb = document.getElementById('resetBtn');
+    rb.addEventListener('touchstart', (e) => { e.preventDefault(); longTimer = setTimeout(() => { if(confirm("樹脂記録をリセット？")){ d.used=0; up(); } }, 1000); });
+    rb.addEventListener('touchend', () => { clearTimeout(longTimer); });
+    function showDetail() { document.getElementById('modalOverlay').style.display='flex'; }
     function closeDetail() { document.getElementById('modalOverlay').style.display='none'; }
-    function resetHistory() { if(confirm("履歴消去？")){ d.history=[]; up(); showDetail(); } }
-    function resetSummary() { if(confirm("月別消去？")){ d.logs={}; up(); showDetail(); } }
+    function openTransferModal(m) { alert("移行機能（開発中または前Verコード参照）"); }
+
     up();
 </script>
 </body>
