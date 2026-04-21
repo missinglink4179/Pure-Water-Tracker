@@ -81,16 +81,18 @@
         .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; cursor: pointer; }
         .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
         
-        /* バックアップ用スタイル改善 */
         .backup-section { margin-top: 25px; border-top: 1px dashed #3a3a3c; padding-top: 20px; }
         .backup-label { font-size: 11px; color: var(--accent-blue); font-weight: bold; text-align: center; margin-bottom: 10px; }
         .backup-guide { font-size: 9px; color: #666; line-height: 1.4; margin-bottom: 12px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; }
         .backup-row { display: flex; gap: 8px; }
         .btn-b { flex: 1; background: #2c2c2e; border: 1px solid #3a3a3c; padding: 12px 5px; border-radius: 10px; color: #aaa; font-size: 10px; font-weight: bold; cursor: pointer; }
 
-        #modalOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
-        .modal-content { background: #1c1c1e; width:100%; max-width:350px; max-height:80vh; border-radius:24px; padding:25px; overflow-y:auto; border: 1px solid #3a3a3c; }
+        /* モーダル基本設定 */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
+        .modal-content { background: #1c1c1e; width:100%; max-width:350px; max-height:85vh; border-radius:24px; padding:25px; overflow-y:auto; border: 1px solid #3a3a3c; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .modal-h { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--accent-blue); text-align: center; }
+        
+        /* 履歴・サマリー用 */
         .modal-section { margin-bottom: 20px; }
         .modal-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .modal-label { font-size: 11px; color: var(--text-sub); border-left: 3px solid var(--accent-blue); padding-left: 8px; }
@@ -99,11 +101,14 @@
         .history-item { position: relative; display: flex; flex-direction: column; padding: 12px 10px; border-bottom: 1px solid #2c2c2e; overflow: hidden; margin-bottom: 4px; border-radius: 8px; background: rgba(255,255,255,0.02); }
         .avg-guide-line { position: absolute; left: 60%; top: 0; bottom: 0; width: 2px; background: #ffffff; z-index: 2; box-shadow: 0 0 5px rgba(255,255,255,0.5); }
         .graph-bar-left { position: absolute; top: 0; bottom: 0; left: 0; z-index: 0; transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1); opacity: 0.4; }
-
         .hist-main { position: relative; z-index: 3; display: flex; width: 100%; justify-content: space-between; align-items: center; }
         .hist-sub { position: relative; z-index: 3; width: 100%; font-size: 10px; color: var(--text-sub); text-align: right; margin-top: 2px; }
 
-        .status-label { font-size: 9px; margin-left: 4px; padding: 1px 4px; border-radius: 4px; vertical-align: middle; }
+        /* データ移行UI用 */
+        .data-textarea { width: 100%; height: 120px; background: #000; border: 1px solid #333; border-radius: 12px; color: var(--accent-green); font-family: monospace; font-size: 12px; padding: 12px; margin-bottom: 15px; resize: none; word-break: break-all; }
+        .modal-desc { font-size: 11px; color: #aaa; margin-bottom: 15px; line-height: 1.5; }
+        .btn-primary { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
+        
         .logic-box { font-size: 11px; color: var(--text-sub); background: #111; padding: 10px; border-radius: 8px; line-height: 1.5; }
         .btn-close { width:100%; background: #3a3a3c; border:none; color:white; padding:12px; border-radius:12px; margin-top:10px; font-weight:bold; }
 
@@ -168,14 +173,13 @@
         </div>
         
         <div class="backup-section">
-            <div class="backup-label">データ移行・復元ガイド</div>
+            <div class="backup-label">データ移行・復元</div>
             <div class="backup-guide">
-                ①「書き出し」でコードをコピーし、メモ帳等に保存。<br>
-                ② 新しい端末でそのコードを「読み込む」と復元完了。
+                機種変更やブラウザ変更時に、これまでの洗車記録をコードで引き継ぐことができます。
             </div>
             <div class="backup-row">
-                <button class="btn-b" onclick="exportData()">コードを書き出す</button>
-                <button class="btn-b" onclick="importData()">コードを読み込む</button>
+                <button class="btn-b" onclick="openTransferModal('export')">書き出し</button>
+                <button class="btn-b" onclick="openTransferModal('import')">読み込み</button>
             </div>
         </div>
     </div>
@@ -197,7 +201,7 @@
     </div>
 </div>
 
-<div id="modalOverlay" onclick="closeDetail()">
+<div id="modalOverlay" class="modal-overlay" onclick="closeDetail()">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-h">コンディション詳細</div>
         
@@ -226,14 +230,20 @@
     </div>
 </div>
 
+<div id="transferModal" class="modal-overlay" onclick="closeTransferModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div id="transferTitle" class="modal-h">データ移行</div>
+        <div id="transferDesc" class="modal-desc"></div>
+        <textarea id="transferArea" class="data-textarea" placeholder="ここにコードを貼り付けてください"></textarea>
+        <button id="transferActionBtn" class="btn-primary" onclick="handleTransferAction()">コピーする</button>
+        <button class="btn-close" onclick="closeTransferModal()">閉じる</button>
+    </div>
+</div>
+
 <script>
-    let d = JSON.parse(localStorage.getItem('pwMasterV4')) || { 
-        ppm: null, 
-        m: 'PRO', 
-        used: 0, 
-        in: 0, 
-        logs: {}, 
-        history: [] 
+    const STORAGE_KEY = 'pwMasterV4';
+    let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { 
+        ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [] 
     };
 
     function vib(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
@@ -329,37 +339,67 @@
 
         document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
         document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
-        localStorage.setItem('pwMasterV4', JSON.stringify(d));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
     }
 
-    function exportData() {
-        const jsonStr = JSON.stringify(d);
-        const encodedData = btoa(unescape(encodeURIComponent(jsonStr)));
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(encodedData).then(() => {
-                alert("【重要：復元用コードをコピーしました】\n\nこのコードをメモ帳やメールの下書き等に貼り付けて大切に保存してください。\n機種変更時に「読み込む」ボタンから使用できます。");
-            });
+    // データ移行用ロジック
+    let currentTransferMode = '';
+    function openTransferModal(mode) {
+        currentTransferMode = mode;
+        const area = document.getElementById('transferArea');
+        const btn = document.getElementById('transferActionBtn');
+        const title = document.getElementById('transferTitle');
+        const desc = document.getElementById('transferDesc');
+        
+        if (mode === 'export') {
+            title.innerText = 'データの書き出し';
+            desc.innerText = '下のコードをすべてコピーして、メモ帳などに保存してください。';
+            const jsonStr = JSON.stringify(d);
+            area.value = btoa(unescape(encodeURIComponent(jsonStr)));
+            area.readOnly = true;
+            btn.innerText = 'コードをコピーする';
+            setTimeout(() => { area.select(); area.setSelectionRange(0, 99999); }, 100);
         } else {
-            alert("以下のコードをコピーして保存してください:\n\n" + encodedData);
+            title.innerText = 'データの読み込み';
+            desc.innerText = '保存していたコードを下に貼り付けてください。現在のデータは上書きされます。';
+            area.value = '';
+            area.readOnly = false;
+            btn.innerText = 'データを復元する';
         }
+        document.getElementById('transferModal').style.display = 'flex';
+        vib(10);
     }
 
-    function importData() {
-        const code = prompt("保存しておいた「復元用コード」を貼り付けてください。\n\n※現在の記録はすべて保存されたデータに置き換わります。");
-        if (!code) return;
-        try {
-            const decodedData = decodeURIComponent(escape(atob(code)));
-            const importedObj = JSON.parse(decodedData);
-            if (confirm("データを上書きして復元しますか？\n（現在の累計使用量や履歴は上書き消去されます）")) {
-                d = importedObj;
-                up();
-                alert("データの復元が成功しました！");
+    function closeTransferModal() { document.getElementById('transferModal').style.display = 'none'; }
+
+    function handleTransferAction() {
+        const area = document.getElementById('transferArea');
+        if (currentTransferMode === 'export') {
+            area.select();
+            area.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            vib([30, 30]);
+            alert("クリップボードにコピーしました！\nメモ帳等に保存してください。");
+        } else {
+            const code = area.value.trim();
+            if (!code) return;
+            try {
+                const decodedData = decodeURIComponent(escape(atob(code)));
+                const importedObj = JSON.parse(decodedData);
+                if (confirm("データを復元しますか？\n（現在の記録は消去され、読み込んだ内容に置き換わります）")) {
+                    d = importedObj;
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); // 明示的な保存
+                    up();
+                    closeTransferModal();
+                    alert("復元が完了しました。");
+                }
+            } catch (e) {
+                alert("コードが正しくありません。正しく貼り付けられているか確認してください。");
             }
-        } catch (e) {
-            alert("エラー：コードが正しくありません。\nコピーした文字列が不足していないか確認してください。");
         }
     }
 
+    // リセットボタン（長押し）
     const resetBtn = document.getElementById('resetBtn');
     const mainValWrap = document.getElementById('mainValWrap');
     let longClickTimer;
@@ -372,8 +412,7 @@
         longClickTimer = setTimeout(() => {
             vib([50, 30, 50]);
             if(confirm("樹脂の使用記録のみをリセットしますか？")) { 
-                d.used = 0; 
-                d.in = 0; 
+                d.used = 0; d.in = 0; 
                 up();
             }
             cancelReset();
@@ -409,22 +448,11 @@
 
         if(!d.history) d.history = [];
         if (d.in > 0) {
-            let level = "normal";
-            if (d.in > currentAvg * 1.5) level = "danger";
-            else if (d.in > currentAvg * 1.2) level = "warn";
-            
             const wasteL = Math.max(0, d.in - currentAvg);
             const wasteCost = Math.round((wasteL / cap) * currentResinPrice);
-
             d.history.unshift({ 
-                ts: now.getTime(),
-                date: dateStr, 
-                amt: d.in, 
-                cost: cost, 
-                level: level, 
-                wasteL: wasteL, 
-                wasteCost: wasteCost,
-                refAvg: currentAvg 
+                ts: now.getTime(), date: dateStr, amt: d.in, cost: cost, 
+                wasteL: wasteL, wasteCost: wasteCost, refAvg: currentAvg 
             });
             if(d.history.length > 10) d.history.pop();
         }
@@ -435,64 +463,24 @@
         up();
     }
 
-    function resetHistory() {
-        if(confirm("直近の洗車履歴（グラフデータ）をすべて削除しますか？")) {
-            d.history = [];
-            vib(20);
-            localStorage.setItem('pwMasterV4', JSON.stringify(d));
-            showDetail();
-            up();
-        }
-    }
-
-    function resetSummary() {
-        if(confirm("月別サマリーの累計ログをすべて削除しますか？")) {
-            d.logs = {};
-            vib(20);
-            localStorage.setItem('pwMasterV4', JSON.stringify(d));
-            showDetail();
-            up();
-        }
-    }
+    function resetHistory() { if(confirm("履歴データをクリアしますか？")) { d.history = []; up(); showDetail(); } }
+    function resetSummary() { if(confirm("月別ログをクリアしますか？")) { d.logs = {}; up(); showDetail(); } }
 
     function showDetail() {
         if (!d.ppm) return;
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         const currentResinPrice = (d.m === 'PRO' ? 12980 : 9878);
         const latestAvg = getRecentAvg();
-        const avgInterval = getAvgInterval();
         
         const histDiv = document.getElementById('historyList');
-        histDiv.innerHTML = d.history && d.history.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">履歴なし</div>';
+        histDiv.innerHTML = d.history.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">履歴なし</div>';
         
         let hasWaste = false;
-        (d.history || []).forEach(h => {
-            let label = '';
-            let subInfo = '';
-            let barColor = 'var(--accent-blue)';
+        d.history.forEach(h => {
             const ratio = h.amt / (h.refAvg || 30);
             const barWidth = Math.min(100, ratio * 60);
-
-            if (ratio > 1.5) {
-                barColor = 'var(--accent-red)';
-                label = '<span class="status-label" style="background:rgba(255,69,58,0.2);color:var(--accent-red)">🔥多すぎ</span>';
-                hasWaste = true;
-            } else if (ratio > 1.2) {
-                barColor = 'var(--accent-yellow)';
-                label = '<span class="status-label" style="background:rgba(255,204,0,0.2);color:var(--accent-yellow)">⚠️多め</span>';
-                hasWaste = true;
-            } else if (ratio > 1.0) {
-                barColor = 'var(--accent-yellow)';
-                hasWaste = true;
-            } else {
-                barColor = 'var(--accent-green)';
-            }
-
-            if (h.wasteL > 0) {
-                subInfo = `<div class="hist-sub">+${h.wasteL}ℓ（約${h.wasteCost}円のロス）</div>`;
-            } else {
-                subInfo = `<div class="hist-sub" style="color:var(--accent-green)">平均以内</div>`;
-            }
+            const barColor = ratio > 1.5 ? 'var(--accent-red)' : ratio > 1.0 ? 'var(--accent-yellow)' : 'var(--accent-green)';
+            if (ratio > 1.0) hasWaste = true;
 
             histDiv.innerHTML += `
                 <div class="history-item">
@@ -500,10 +488,10 @@
                     <div class="graph-bar-left" style="width:${barWidth}%; background:${barColor};"></div>
                     <div class="hist-main">
                         <span>${h.date}</span>
-                        <span style="font-weight:bold;">${h.amt}ℓ${label}</span>
+                        <span style="font-weight:bold;">${h.amt}ℓ</span>
                         <span>${h.cost}円</span>
                     </div>
-                    ${subInfo}
+                    <div class="hist-sub">${h.wasteL > 0 ? `+${h.wasteL}ℓ（約${h.wasteCost}円ロス）` : '平均以内'}</div>
                 </div>`;
         });
 
@@ -516,13 +504,7 @@
             summaryDiv.innerHTML += `<div class="history-item"><div class="hist-main"><span>${key}</span><span>${mUsed}ℓ</span><span>${mCost}円</span></div></div>`;
         });
 
-        const adviceBox = document.getElementById('adviceBox');
-        let adviceHtml = `・直近使用平均: ${latestAvg}ℓ<br>・平均洗車間隔: ${Math.round(avgInterval * 10) / 10}日<br>・1回コスト目安: ${currentResinPrice.toLocaleString()}円`;
-        if (hasWaste) {
-            adviceHtml += `<div style="color:var(--accent-yellow); margin-top:8px; border-top:1px solid #333; padding-top:8px;">⚠️ 白線（平均）を超えて右に伸びる棒はロスのサインです。</div>`;
-        }
-        adviceBox.innerHTML = adviceHtml;
-
+        document.getElementById('adviceBox').innerHTML = `・直近平均: ${latestAvg}ℓ<br>・平均間隔: ${Math.round(getAvgInterval() * 10) / 10}日<br>・コスト目安: ${currentResinPrice.toLocaleString()}円`;
         document.getElementById('modalOverlay').style.display = 'flex';
         vib(10);
     }
