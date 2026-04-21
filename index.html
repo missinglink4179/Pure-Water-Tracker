@@ -86,7 +86,13 @@
         .modal-h { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--accent-blue); text-align: center; }
         .modal-section { margin-bottom: 20px; }
         .modal-label { font-size: 11px; color: var(--text-sub); margin-bottom: 8px; border-left: 3px solid var(--accent-blue); padding-left: 8px; }
-        .history-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #2c2c2e; }
+        
+        /* 履歴アイテム：グラフ統合スタイル */
+        .history-item { position: relative; display: flex; flex-direction: column; padding: 12px 10px; border-bottom: 1px solid #2c2c2e; overflow: hidden; margin-bottom: 4px; border-radius: 8px; }
+        .graph-layer { position: absolute; top:0; left:0; height:100%; z-index: 0; opacity: 0.25; transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        .hist-main { position: relative; z-index: 1; display: flex; width: 100%; justify-content: space-between; align-items: center; }
+        .hist-sub { position: relative; z-index: 1; width: 100%; font-size: 10px; color: var(--text-sub); text-align: right; margin-top: 2px; }
+
         .status-label { font-size: 9px; margin-left: 4px; padding: 1px 4px; border-radius: 4px; vertical-align: middle; }
         .logic-box { font-size: 11px; color: var(--text-sub); background: #111; padding: 10px; border-radius: 8px; line-height: 1.5; }
         .btn-close { width:100%; background: #3a3a3c; border:none; color:white; padding:12px; border-radius:12px; margin-top:10px; font-weight:bold; }
@@ -174,7 +180,7 @@
         <div class="modal-h">コンディション詳細</div>
         
         <div class="modal-section">
-            <div class="modal-label">直近10件の使用履歴</div>
+            <div class="modal-label">直近10件の使用履歴（白線：平均値）</div>
             <div id="historyList"></div>
         </div>
 
@@ -185,12 +191,7 @@
 
         <div class="modal-section">
             <div class="modal-label">算出ロジックの根拠と診断</div>
-            <div class="logic-box" id="adviceBox">
-                ・洗車1回あたりの想定使用量: <span id="avgUsageDisp">30</span>ℓ<br>
-                ・樹脂寿命(ℓ) = 係数 / 水道水ppm<br>
-                　(PRO: 180,000 / JUST: 90,000)<br>
-                ・1回交換コスト: <span id="resinPriceDisp">--</span>円
-            </div>
+            <div class="logic-box" id="adviceBox"></div>
         </div>
 
         <button class="btn-close" onclick="closeDetail()">閉じる</button>
@@ -214,9 +215,15 @@
         up();
     }
 
+    function getRecentAvg() {
+        if (!d.history || d.history.length === 0) return 30;
+        const recent = d.history.slice(0, 5);
+        return Math.round(recent.reduce((a, b) => a + b.amt, 0) / recent.length);
+    }
+
     function calculatePredictDate(remaining, avg) {
         if (!avg || avg <= 0 || remaining <= 0) return "--/--";
-        const dailyAvg = avg / 30; 
+        const dailyAvg = (avg * 4) / 30; 
         const daysRemaining = Math.floor(remaining / dailyAvg);
         const targetDate = new Date();
         targetDate.setDate(targetDate.getDate() + daysRemaining);
@@ -247,13 +254,7 @@
             const ratio = rem / cap;
             remL.innerHTML = Math.floor(rem) + '<span class="unit-l">ℓ</span>';
             
-            const months = Object.keys(d.logs);
-            let avgUsage = 30; 
-            if (months.length > 0) {
-                const totalInLogs = Object.values(d.logs).reduce((a, b) => a + b, 0);
-                avgUsage = Math.round(totalInLogs / months.length);
-            }
-            
+            const avgUsage = getRecentAvg();
             document.getElementById('remCount').innerText = Math.floor(rem / avgUsage);
             
             if (ratio < 0.1) {
@@ -333,17 +334,26 @@
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         const currentResinPrice = (d.m === 'PRO' ? 12980 : 9878);
         const cost = Math.round((d.in / cap) * currentResinPrice);
+        const currentAvg = getRecentAvg();
 
-        let avgUsage = 30;
-        const months = Object.keys(d.logs);
-        if (months.length > 0) {
-            avgUsage = Math.round(Object.values(d.logs).reduce((a, b) => a + b, 0) / months.length);
-        }
-        
         if(!d.history) d.history = [];
         if (d.in > 0) {
-            const isWaste = d.in > avgUsage * 1.3;
-            d.history.unshift({ date: dateStr, amt: d.in, cost: cost, waste: isWaste });
+            let level = "normal";
+            if (d.in > currentAvg * 1.5) level = "danger";
+            else if (d.in > currentAvg * 1.2) level = "warn";
+            
+            const wasteL = Math.max(0, d.in - currentAvg);
+            const wasteCost = Math.round((wasteL / cap) * currentResinPrice);
+
+            d.history.unshift({ 
+                date: dateStr, 
+                amt: d.in, 
+                cost: cost, 
+                level: level, 
+                wasteL: wasteL, 
+                wasteCost: wasteCost,
+                refAvg: currentAvg // 保存時点の平均を記録
+            });
             if(d.history.length > 10) d.history.pop();
         }
 
@@ -357,36 +367,54 @@
         if (!d.ppm) return;
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         const currentResinPrice = (d.m === 'PRO' ? 12980 : 9878);
-        document.getElementById('resinPriceDisp').innerText = currentResinPrice.toLocaleString() + '円';
+        const latestAvg = getRecentAvg();
         
-        const months = Object.keys(d.logs);
-        let avgUsage = 30;
-        if (months.length > 0) {
-            avgUsage = Math.round(Object.values(d.logs).reduce((a, b) => a + b, 0) / months.length);
-        }
-        document.getElementById('avgUsageDisp').innerText = avgUsage;
-
         const histDiv = document.getElementById('historyList');
-        histDiv.innerHTML = d.history && d.history.length ? '' : '<div style="font-size:12px;color:#555;">履歴なし</div>';
+        histDiv.innerHTML = d.history && d.history.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">履歴なし</div>';
         
         let hasWaste = false;
         (d.history || []).forEach(h => {
             let color = 'var(--text-main)';
             let label = '';
-            if (h.waste) {
+            let subInfo = '';
+            let barColor = 'var(--accent-blue)';
+
+            if (h.level === "danger") {
                 color = 'var(--accent-red)';
-                label = '<span class="status-label" style="background:rgba(255,69,58,0.2);color:var(--accent-red)">⚠️多め</span>';
+                barColor = 'var(--accent-red)';
+                label = '<span class="status-label" style="background:rgba(255,69,58,0.2);color:var(--accent-red)">🔥多すぎ</span>';
                 hasWaste = true;
-            } else if (h.amt > avgUsage) {
+            } else if (h.level === "warn") {
                 color = 'var(--accent-yellow)';
+                barColor = 'var(--accent-yellow)';
+                label = '<span class="status-label" style="background:rgba(255,204,0,0.2);color:var(--accent-yellow)">⚠️多め</span>';
+                hasWaste = true;
             }
-            histDiv.innerHTML += `<div class="history-item"><span>${h.date}</span><span style="color:${color}; font-weight:bold;">${h.amt}ℓ${label}</span><span>${h.cost}円</span></div>`;
+
+            if (h.wasteL > 0) {
+                subInfo = `<div class="hist-sub">+${h.wasteL}ℓ（約${h.wasteCost}円のロス）</div>`;
+            }
+
+            // グラフ幅計算：平均値を幅の65%地点（白線）に設定
+            const ref = h.refAvg || 30;
+            const barWidth = Math.min(100, (h.amt / ref) * 65);
+
+            histDiv.innerHTML += `
+                <div class="history-item">
+                    <div class="graph-layer" style="width:${barWidth}%; background:${barColor}; border-right: 2px solid rgba(255,255,255,0.6);"></div>
+                    <div class="hist-main">
+                        <span>${h.date}</span>
+                        <span style="color:${color}; font-weight:bold;">${h.amt}ℓ${label}</span>
+                        <span>${h.cost}円</span>
+                    </div>
+                    ${subInfo}
+                </div>`;
         });
 
         const adviceBox = document.getElementById('adviceBox');
-        let adviceHtml = `・洗車1回あたりの想定使用量: ${avgUsage}ℓ<br>・1回交換コスト: ${currentResinPrice.toLocaleString()}円`;
+        let adviceHtml = `・直近5回の平均使用量: ${latestAvg}ℓ<br>・1回交換コスト: ${currentResinPrice.toLocaleString()}円`;
         if (hasWaste) {
-            adviceHtml += `<div style="color:var(--accent-yellow); margin-top:8px; border-top:1px solid #333; padding-top:8px;">⚠️ 直近で水の使用量が多い回があります。節約を意識すると樹脂が長持ちします。</div>`;
+            adviceHtml += `<div style="color:var(--accent-yellow); margin-top:8px; border-top:1px solid #333; padding-top:8px;">⚠️ 白いライン（平均）を超えた回を減らすことで、樹脂の寿命を最大化できます。</div>`;
         }
         adviceBox.innerHTML = adviceHtml;
 
@@ -395,7 +423,7 @@
         Object.keys(d.logs).sort().reverse().slice(0, 12).forEach(key => {
             const mUsed = d.logs[key];
             const mCost = Math.round((mUsed / cap) * currentResinPrice);
-            summaryDiv.innerHTML += `<div class="history-item"><span>${key}</span><span>${mUsed}ℓ</span><span>${mCost}円</span></div>`;
+            summaryDiv.innerHTML += `<div class="history-item"><div class="hist-main"><span>${key}</span><span>${mUsed}ℓ</span><span>${mCost}円</span></div></div>`;
         });
 
         document.getElementById('modalOverlay').style.display = 'flex';
