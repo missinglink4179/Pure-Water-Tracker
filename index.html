@@ -85,9 +85,10 @@
         .modal-content { background: #1c1c1e; width:100%; max-width:350px; max-height:80vh; border-radius:24px; padding:25px; overflow-y:auto; border: 1px solid #3a3a3c; }
         .modal-h { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--accent-blue); text-align: center; }
         .modal-section { margin-bottom: 20px; }
-        .modal-label { font-size: 11px; color: var(--text-sub); margin-bottom: 8px; border-left: 3px solid var(--accent-blue); padding-left: 8px; }
+        .modal-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .modal-label { font-size: 11px; color: var(--text-sub); border-left: 3px solid var(--accent-blue); padding-left: 8px; }
+        .btn-mini-reset { background: none; border: 1px solid #444; color: #666; font-size: 9px; padding: 2px 8px; border-radius: 10px; cursor: pointer; }
         
-        /* 履歴アイテム：左端起点＋平均ライン強調 */
         .history-item { position: relative; display: flex; flex-direction: column; padding: 12px 10px; border-bottom: 1px solid #2c2c2e; overflow: hidden; margin-bottom: 4px; border-radius: 8px; background: rgba(255,255,255,0.02); }
         .avg-guide-line { position: absolute; left: 60%; top: 0; bottom: 0; width: 2px; background: #ffffff; z-index: 2; box-shadow: 0 0 5px rgba(255,255,255,0.5); }
         .graph-bar-left { position: absolute; top: 0; bottom: 0; left: 0; z-index: 0; transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1); opacity: 0.4; }
@@ -182,7 +183,10 @@
         <div class="modal-h">コンディション詳細</div>
         
         <div class="modal-section">
-            <div class="modal-label">直近10件の使用傾向（白線：平均値）</div>
+            <div class="modal-label-row">
+                <div class="modal-label">直近10件の使用傾向（白線：平均）</div>
+                <button class="btn-mini-reset" onclick="resetHistory()">履歴クリア</button>
+            </div>
             <div id="historyList"></div>
         </div>
 
@@ -365,6 +369,16 @@
         up();
     }
 
+    function resetHistory() {
+        if(confirm("直近の洗車履歴（グラフデータ）をすべて削除しますか？")) {
+            d.history = [];
+            vib(20);
+            localStorage.setItem('pwMasterV4', JSON.stringify(d));
+            showDetail();
+            up();
+        }
+    }
+
     function showDetail() {
         if (!d.ppm) return;
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
@@ -382,7 +396,7 @@
             let barColor = 'var(--accent-blue)';
 
             const ratio = h.amt / (h.refAvg || 30);
-            const barWidth = Math.min(100, ratio * 60); // 平均(1.0)を60%幅に設定
+            const barWidth = Math.min(100, ratio * 60);
 
             if (ratio > 1.5) {
                 barColor = 'var(--accent-red)';
@@ -421,7 +435,7 @@
         const adviceBox = document.getElementById('adviceBox');
         let adviceHtml = `・直近平均: ${latestAvg}ℓ<br>・1回コスト目安: ${currentResinPrice.toLocaleString()}円`;
         if (hasWaste) {
-            adviceHtml += `<div style="color:var(--accent-yellow); margin-top:8px; border-top:1px solid #333; padding-top:8px;">⚠️ 白線（平均）を大きく超えて右に伸びる赤い棒は、ロスのサインです。</div>`;
+            adviceHtml += `<div style="color:var(--accent-yellow); margin-top:8px; border-top:1px solid #333; padding-top:8px;">⚠️ 白線（平均）を超えて右に伸びる棒はロスのサインです。</div>`;
         }
         adviceBox.innerHTML = adviceHtml;
 
