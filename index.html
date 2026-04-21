@@ -23,7 +23,6 @@
         .top-title span { color: var(--accent-blue); }
         .top-sub { font-size: 9px; color: var(--text-sub); text-align: center; margin-bottom: 25px; font-weight: 500; letter-spacing: 1px; }
         
-        /* ステップガイド・ヘッダーエリア */
         .header-section { text-align: center; margin-bottom: 20px; min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
         .tutorial-box { background: rgba(10, 132, 255, 0.05); border: 1px dashed rgba(10, 132, 255, 0.5); padding: 20px; border-radius: 24px; width: 100%; text-align: left; }
         .step-row { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; font-size: 13px; font-weight: 600; }
@@ -60,15 +59,17 @@
         .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; font-size: 13px; border: 1px solid transparent; }
         .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
 
-        /* リファレンス・免責事項 */
+        /* 元の順序に基づいたフッターセクション */
         .reference-section { margin-top: 20px; text-align: center; width: 100%; }
-        .ref-label { font-size: 11px; font-weight: 800; color: #8e8e93; margin-bottom: 8px; letter-spacing: 1px; }
-        .ref-val { font-size: 10px; color: #666; margin-bottom: 15px; line-height: 1.5; }
         
         .info-title { font-size: 11px; font-weight: 800; color: #8e8e93; margin: 25px 0 10px; letter-spacing: 1px; }
-        .info-text { font-size: 9px; color: #555; line-height: 1.8; text-align: center; margin-bottom: 5px; }
+        .info-text { font-size: 9px; color: #555; line-height: 1.8; text-align: center; margin-bottom: 10px; }
+        
         .terms-list { text-align: left; font-size: 9px; color: #555; line-height: 1.8; padding: 0 15px; list-style: none; margin: 0; }
         
+        .ref-label { font-size: 11px; font-weight: 800; color: #8e8e93; margin: 30px 0 8px; letter-spacing: 1px; }
+        .ref-val { font-size: 10px; color: #666; margin-bottom: 15px; line-height: 1.5; }
+
         .footer-version { font-size: 10px; color: #444; margin-top: 30px; margin-bottom: 5px; }
         .footer-copy { font-size: 9px; color: #333; margin-bottom: 80px; }
 
@@ -136,12 +137,8 @@
     </div>
 
     <div class="reference-section">
-        <div class="ref-label">Reference</div>
-        <div class="ref-val">監修：ビューティフルカーズ<br>製造：グリーンライフ</div>
-        
         <div class="info-title">Information</div>
-        <div class="info-text">本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。</div>
-        <div class="info-text">※製造・監修元各社様とは一切関係ありません。</div>
+        <div class="info-text">本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>※製造・監修元各社様とは一切関係ありません。</div>
 
         <div class="info-title">Terms of Use</div>
         <ul class="terms-list">
@@ -151,6 +148,9 @@
             <li>・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。</li>
             <li>・無断転載・再配布、および商用利用を固く禁じます。</li>
         </ul>
+
+        <div class="ref-label">Reference</div>
+        <div class="ref-val">監修：ビューティフルカーズ<br>製造：グリーンライフ</div>
 
         <div class="footer-version">Version 1.0.1</div>
         <div class="footer-copy">© 2026 missing link. All rights reserved.</div>
@@ -181,7 +181,6 @@
         const now = new Date(), monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const resinPrice = (d.m === 'PRO' ? 12980 : 9878);
 
-        // ガイド表示のロジック
         if (!d.ppm) {
             step1.innerText = "STEP1：水道水硬度 (ppm)";
             header.innerHTML = `
@@ -221,3 +220,52 @@
         document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
         localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
     }
+
+    function setPPM(v) { d.ppm = v===""?null:parseInt(v); up(); }
+    function add(v) { d.in = Math.max(0, d.in+v); up(); }
+    function clr() { d.in=0; up(); }
+    function mode(m) { d.m=m; up(); }
+    
+    function save() {
+        if (!d.ppm || d.in <= 0) return;
+        const now = new Date(), monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}`;
+        d.history.unshift({ ts: now.getTime(), amt: d.in });
+        d.used += d.in; d.logs[monthKey] = (d.logs[monthKey]||0) + d.in;
+        d.in = 0; up();
+    }
+
+    function delLog(key) { if(confirm(`${key}の記録を消去しますか？`)) { delete d.logs[key]; up(); showDetail(); } }
+
+    function showDetail() {
+        const capTotal = (d.m === 'PRO' ? 180000 : 90000), resinPrice = (d.m === 'PRO' ? 12980 : 9878);
+        const cap = capTotal / (d.ppm || 1), perL = resinPrice / cap;
+        const avg = d.history.length > 0 ? (d.history.slice(0,10).reduce((a,b)=>a+b.amt,0)/Math.min(d.history.length, 10)) : 0;
+
+        let sumHTML = "";
+        Object.keys(d.logs).sort().reverse().forEach(key => {
+            sumHTML += `<div class="summary-card"><span class="summary-date">${key}</span><span class="summary-val">${d.logs[key]}ℓ</span><span class="summary-val">${Math.round((d.logs[key]/cap)*resinPrice).toLocaleString()}円</span><button class="btn-del-mini" onclick="delLog('${key}')">消去</button></div>`;
+        });
+        document.getElementById('monthlySummaryArea').innerHTML = sumHTML || '<div style="text-align:center; color:#555; padding:20px;">履歴なし</div>';
+
+        document.getElementById('logicArea').innerHTML = `
+            <div class="logic-item">・イオン交換容量：${capTotal.toLocaleString()} (ppm・ℓ)</div>
+            <div class="logic-item">・算出寿命：${Math.floor(cap).toLocaleString()} ℓ (水質 ${d.ppm}ppm)</div>
+            <div class="logic-item">・樹脂価格：${resinPrice.toLocaleString()} 円 / 1ℓ単価：約 ${perL.toFixed(1)}円</div>
+            <div class="logic-item blue-text" style="margin-top:10px;">・直近10件平均：${avg > 0 ? avg.toFixed(1) : "--"} ℓ</div>
+            <div class="logic-item blue-text">・1回コスト目安：${avg > 0 ? Math.round(avg * perL).toLocaleString() : "--"} 円</div>`;
+
+        document.getElementById('chartBox').innerText = d.history.length > 0 ? `直近${Math.min(d.history.length, 10)}件のデータを蓄積中` : "履歴なし";
+        document.getElementById('modalOverlay').style.display='flex';
+    }
+    
+    function closeDetail() { document.getElementById('modalOverlay').style.display='none'; }
+
+    let longTimer;
+    const rb = document.getElementById('resetBtn');
+    rb.addEventListener('touchstart', (e) => { e.preventDefault(); longTimer = setTimeout(() => { if(confirm("累計記録をリセット？")){ d.used=0; d.history=[]; d.logs={}; up(); } }, 1000); });
+    rb.addEventListener('touchend', () => clearTimeout(longTimer));
+
+    up();
+</script>
+</body>
+</html>
