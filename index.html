@@ -81,6 +81,13 @@
         .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; cursor: pointer; }
         .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
         
+        /* バックアップ用スタイル改善 */
+        .backup-section { margin-top: 25px; border-top: 1px dashed #3a3a3c; padding-top: 20px; }
+        .backup-label { font-size: 11px; color: var(--accent-blue); font-weight: bold; text-align: center; margin-bottom: 10px; }
+        .backup-guide { font-size: 9px; color: #666; line-height: 1.4; margin-bottom: 12px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; }
+        .backup-row { display: flex; gap: 8px; }
+        .btn-b { flex: 1; background: #2c2c2e; border: 1px solid #3a3a3c; padding: 12px 5px; border-radius: 10px; color: #aaa; font-size: 10px; font-weight: bold; cursor: pointer; }
+
         #modalOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
         .modal-content { background: #1c1c1e; width:100%; max-width:350px; max-height:80vh; border-radius:24px; padding:25px; overflow-y:auto; border: 1px solid #3a3a3c; }
         .modal-h { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--accent-blue); text-align: center; }
@@ -159,6 +166,18 @@
             <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO (3個)</button>
             <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST (2個)</button>
         </div>
+        
+        <div class="backup-section">
+            <div class="backup-label">データ移行・復元ガイド</div>
+            <div class="backup-guide">
+                ①「書き出し」でコードをコピーし、メモ帳等に保存。<br>
+                ② 新しい端末でそのコードを「読み込む」と復元完了。
+            </div>
+            <div class="backup-row">
+                <button class="btn-b" onclick="exportData()">コードを書き出す</button>
+                <button class="btn-b" onclick="importData()">コードを読み込む</button>
+            </div>
+        </div>
     </div>
 
     <div class="footer">
@@ -230,10 +249,8 @@
         return Math.round(recent.reduce((a, b) => a + b.amt, 0) / recent.length);
     }
 
-    // 平均使用間隔（日）を算出するロジック
     function getAvgInterval() {
-        if (!d.history || d.history.length < 2) return 7; // データ不足時は週1想定
-        
+        if (!d.history || d.history.length < 2) return 7;
         let totalDays = 0;
         let count = 0;
         for (let i = 0; i < d.history.length - 1; i++) {
@@ -248,11 +265,9 @@
 
     function calculatePredictDate(remaining, avgUsage) {
         if (!avgUsage || avgUsage <= 0 || remaining <= 0) return "--/--";
-        
         const avgInterval = getAvgInterval();
-        const remTimes = remaining / avgUsage; // あと何回洗車できるか
+        const remTimes = remaining / avgUsage;
         const daysRemaining = Math.floor(remTimes * avgInterval);
-        
         const targetDate = new Date();
         targetDate.setDate(targetDate.getDate() + daysRemaining);
         return `${targetDate.getMonth() + 1}/${targetDate.getDate()}`;
@@ -315,6 +330,34 @@
         document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
         document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
         localStorage.setItem('pwMasterV4', JSON.stringify(d));
+    }
+
+    function exportData() {
+        const jsonStr = JSON.stringify(d);
+        const encodedData = btoa(unescape(encodeURIComponent(jsonStr)));
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(encodedData).then(() => {
+                alert("【重要：復元用コードをコピーしました】\n\nこのコードをメモ帳やメールの下書き等に貼り付けて大切に保存してください。\n機種変更時に「読み込む」ボタンから使用できます。");
+            });
+        } else {
+            alert("以下のコードをコピーして保存してください:\n\n" + encodedData);
+        }
+    }
+
+    function importData() {
+        const code = prompt("保存しておいた「復元用コード」を貼り付けてください。\n\n※現在の記録はすべて保存されたデータに置き換わります。");
+        if (!code) return;
+        try {
+            const decodedData = decodeURIComponent(escape(atob(code)));
+            const importedObj = JSON.parse(decodedData);
+            if (confirm("データを上書きして復元しますか？\n（現在の累計使用量や履歴は上書き消去されます）")) {
+                d = importedObj;
+                up();
+                alert("データの復元が成功しました！");
+            }
+        } catch (e) {
+            alert("エラー：コードが正しくありません。\nコピーした文字列が不足していないか確認してください。");
+        }
     }
 
     const resetBtn = document.getElementById('resetBtn');
