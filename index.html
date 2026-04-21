@@ -73,7 +73,6 @@
         .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; user-select: none; cursor: pointer; touch-action: none; }
         
         .settings-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 10px; }
-        /* 設定エリアのタイトル用のスタイルを追加 */
         .settings-title { font-size: 11px; color: var(--accent-green); font-weight: bold; text-align: center; margin-bottom: 15px; }
         
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2c2c2e; }
@@ -199,7 +198,6 @@
 </div>
 
 <script>
-    // データ初期化
     let d = JSON.parse(localStorage.getItem('pwMasterV4')) || { 
         ppm: null, 
         m: 'PRO', 
@@ -301,9 +299,11 @@
         vib(10);
         longClickTimer = setTimeout(() => {
             vib([50, 30, 50]);
-            if(confirm("樹脂の使用記録をすべてリセットしますか？")) { 
-                d.used = 0; d.logs = {}; d.in = 0; d.history = []; 
-                save();
+            if(confirm("樹脂の使用記録のみをリセットしますか？（過去の履歴は維持されます）")) { 
+                // used（カウント量）と現在の入力値のみリセットし、logsやhistoryは維持する
+                d.used = 0; 
+                d.in = 0; 
+                up();
             }
             cancelReset();
         }, 1000);
@@ -387,3 +387,5 @@
 </script>
 </body>
 </html>
+
+
