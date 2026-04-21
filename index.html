@@ -191,7 +191,10 @@
         </div>
 
         <div class="modal-section">
-            <div class="modal-label">月別サマリー</div>
+            <div class="modal-label-row">
+                <div class="modal-label">月別サマリー</div>
+                <button class="btn-mini-reset" onclick="resetSummary()">サマリークリア</button>
+            </div>
             <div id="monthSummaryList"></div>
         </div>
 
@@ -379,6 +382,16 @@
         }
     }
 
+    function resetSummary() {
+        if(confirm("月別サマリーの累計ログをすべて削除しますか？")) {
+            d.logs = {};
+            vib(20);
+            localStorage.setItem('pwMasterV4', JSON.stringify(d));
+            showDetail();
+            up();
+        }
+    }
+
     function showDetail() {
         if (!d.ppm) return;
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
@@ -390,11 +403,9 @@
         
         let hasWaste = false;
         (d.history || []).forEach(h => {
-            let color = 'var(--text-main)';
             let label = '';
             let subInfo = '';
             let barColor = 'var(--accent-blue)';
-
             const ratio = h.amt / (h.refAvg || 30);
             const barWidth = Math.min(100, ratio * 60);
 
@@ -432,20 +443,21 @@
                 </div>`;
         });
 
+        const summaryDiv = document.getElementById('monthSummaryList');
+        const sortedLogKeys = Object.keys(d.logs).sort().reverse();
+        summaryDiv.innerHTML = sortedLogKeys.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">サマリーなし</div>';
+        sortedLogKeys.slice(0, 12).forEach(key => {
+            const mUsed = d.logs[key];
+            const mCost = Math.round((mUsed / cap) * currentResinPrice);
+            summaryDiv.innerHTML += `<div class="history-item"><div class="hist-main"><span>${key}</span><span>${mUsed}ℓ</span><span>${mCost}円</span></div></div>`;
+        });
+
         const adviceBox = document.getElementById('adviceBox');
         let adviceHtml = `・直近平均: ${latestAvg}ℓ<br>・1回コスト目安: ${currentResinPrice.toLocaleString()}円`;
         if (hasWaste) {
             adviceHtml += `<div style="color:var(--accent-yellow); margin-top:8px; border-top:1px solid #333; padding-top:8px;">⚠️ 白線（平均）を超えて右に伸びる棒はロスのサインです。</div>`;
         }
         adviceBox.innerHTML = adviceHtml;
-
-        const summaryDiv = document.getElementById('monthSummaryList');
-        summaryDiv.innerHTML = '';
-        Object.keys(d.logs).sort().reverse().slice(0, 12).forEach(key => {
-            const mUsed = d.logs[key];
-            const mCost = Math.round((mUsed / cap) * currentResinPrice);
-            summaryDiv.innerHTML += `<div class="history-item"><div class="hist-main"><span>${key}</span><span>${mUsed}ℓ</span><span>${mCost}円</span></div></div>`;
-        });
 
         document.getElementById('modalOverlay').style.display = 'flex';
         vib(10);
