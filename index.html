@@ -87,11 +87,13 @@
         .modal-section { margin-bottom: 20px; }
         .modal-label { font-size: 11px; color: var(--text-sub); margin-bottom: 8px; border-left: 3px solid var(--accent-blue); padding-left: 8px; }
         
-        /* 履歴アイテム：グラフ統合スタイル */
-        .history-item { position: relative; display: flex; flex-direction: column; padding: 12px 10px; border-bottom: 1px solid #2c2c2e; overflow: hidden; margin-bottom: 4px; border-radius: 8px; }
-        .graph-layer { position: absolute; top:0; left:0; height:100%; z-index: 0; opacity: 0.25; transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
-        .hist-main { position: relative; z-index: 1; display: flex; width: 100%; justify-content: space-between; align-items: center; }
-        .hist-sub { position: relative; z-index: 1; width: 100%; font-size: 10px; color: var(--text-sub); text-align: right; margin-top: 2px; }
+        /* センター基準グラフスタイル */
+        .history-item { position: relative; display: flex; flex-direction: column; padding: 12px 10px; border-bottom: 1px solid #2c2c2e; overflow: hidden; margin-bottom: 4px; border-radius: 8px; background: rgba(255,255,255,0.02); }
+        .graph-center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.4); z-index: 1; }
+        .graph-bar { position: absolute; top: 0; bottom: 0; z-index: 0; transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1); opacity: 0.3; }
+
+        .hist-main { position: relative; z-index: 2; display: flex; width: 100%; justify-content: space-between; align-items: center; }
+        .hist-sub { position: relative; z-index: 2; width: 100%; font-size: 10px; color: var(--text-sub); text-align: right; margin-top: 2px; }
 
         .status-label { font-size: 9px; margin-left: 4px; padding: 1px 4px; border-radius: 4px; vertical-align: middle; }
         .logic-box { font-size: 11px; color: var(--text-sub); background: #111; padding: 10px; border-radius: 8px; line-height: 1.5; }
@@ -180,7 +182,7 @@
         <div class="modal-h">コンディション詳細</div>
         
         <div class="modal-section">
-            <div class="modal-label">直近10件の使用履歴（白線：平均値）</div>
+            <div class="modal-label">直近10件の使用傾向（中央：平均値）</div>
             <div id="historyList"></div>
         </div>
 
@@ -343,6 +345,7 @@
             else if (d.in > currentAvg * 1.2) level = "warn";
             
             const wasteL = Math.max(0, d.in - currentAvg);
+            const diffL = d.in - currentAvg;
             const wasteCost = Math.round((wasteL / cap) * currentResinPrice);
 
             d.history.unshift({ 
@@ -350,9 +353,9 @@
                 amt: d.in, 
                 cost: cost, 
                 level: level, 
-                wasteL: wasteL, 
+                diffL: diffL, 
                 wasteCost: wasteCost,
-                refAvg: currentAvg // 保存時点の平均を記録
+                refAvg: currentAvg 
             });
             if(d.history.length > 10) d.history.pop();
         }
@@ -377,34 +380,33 @@
             let color = 'var(--text-main)';
             let label = '';
             let subInfo = '';
-            let barColor = 'var(--accent-blue)';
+            let barStyle = '';
 
-            if (h.level === "danger") {
-                color = 'var(--accent-red)';
-                barColor = 'var(--accent-red)';
-                label = '<span class="status-label" style="background:rgba(255,69,58,0.2);color:var(--accent-red)">🔥多すぎ</span>';
+            // 平均との差分計算
+            const diff = h.diffL || (h.amt - (h.refAvg || 30));
+            const maxDiffForGraph = (h.refAvg || 30) * 0.8; // グラフの最大振れ幅
+            const barWidth = Math.min(50, (Math.abs(diff) / maxDiffForGraph) * 50);
+
+            if (diff > 0) {
+                // 平均より多い（右側に赤）
+                barStyle = `left: 50%; width: ${barWidth}%; background: var(--accent-red);`;
+                if (h.level === "danger") label = '<span class="status-label" style="background:rgba(255,69,58,0.2);color:var(--accent-red)">🔥多すぎ</span>';
+                else if (h.level === "warn") label = '<span class="status-label" style="background:rgba(255,204,0,0.2);color:var(--accent-yellow)">⚠️多め</span>';
+                subInfo = `<div class="hist-sub">+${Math.abs(Math.round(diff))}ℓ（約${h.wasteCost}円のロス）</div>`;
                 hasWaste = true;
-            } else if (h.level === "warn") {
-                color = 'var(--accent-yellow)';
-                barColor = 'var(--accent-yellow)';
-                label = '<span class="status-label" style="background:rgba(255,204,0,0.2);color:var(--accent-yellow)">⚠️多め</span>';
-                hasWaste = true;
+            } else {
+                // 平均より少ない（左側に緑）
+                barStyle = `right: 50%; width: ${barWidth}%; background: var(--accent-green);`;
+                subInfo = `<div class="hist-sub" style="color:var(--accent-green)">平均より ${Math.abs(Math.round(diff))}ℓ 節約</div>`;
             }
-
-            if (h.wasteL > 0) {
-                subInfo = `<div class="hist-sub">+${h.wasteL}ℓ（約${h.wasteCost}円のロス）</div>`;
-            }
-
-            // グラフ幅計算：平均値を幅の65%地点（白線）に設定
-            const ref = h.refAvg || 30;
-            const barWidth = Math.min(100, (h.amt / ref) * 65);
 
             histDiv.innerHTML += `
                 <div class="history-item">
-                    <div class="graph-layer" style="width:${barWidth}%; background:${barColor}; border-right: 2px solid rgba(255,255,255,0.6);"></div>
+                    <div class="graph-center-line"></div>
+                    <div class="graph-bar" style="${barStyle}"></div>
                     <div class="hist-main">
                         <span>${h.date}</span>
-                        <span style="color:${color}; font-weight:bold;">${h.amt}ℓ${label}</span>
+                        <span style="font-weight:bold;">${h.amt}ℓ${label}</span>
                         <span>${h.cost}円</span>
                     </div>
                     ${subInfo}
@@ -412,9 +414,9 @@
         });
 
         const adviceBox = document.getElementById('adviceBox');
-        let adviceHtml = `・直近5回の平均使用量: ${latestAvg}ℓ<br>・1回交換コスト: ${currentResinPrice.toLocaleString()}円`;
+        let adviceHtml = `・直近平均: ${latestAvg}ℓ<br>・1回コスト目安: ${currentResinPrice.toLocaleString()}円`;
         if (hasWaste) {
-            adviceHtml += `<div style="color:var(--accent-yellow); margin-top:8px; border-top:1px solid #333; padding-top:8px;">⚠️ 白いライン（平均）を超えた回を減らすことで、樹脂の寿命を最大化できます。</div>`;
+            adviceHtml += `<div style="color:var(--accent-yellow); margin-top:8px; border-top:1px solid #333; padding-top:8px;">⚠️ 右側の赤バーは「平均オーバー」を意味します。左側の緑を増やすのがコツです。</div>`;
         }
         adviceBox.innerHTML = adviceHtml;
 
