@@ -68,8 +68,19 @@
         .info-text { font-size: 9px; color: #555; line-height: 1.8; margin-bottom: 20px; }
         .footer { text-align: center; font-size: 10px; color: #444; margin-top: 20px; padding-bottom: 40px; }
 
+        /* モーダル・コンディション詳細 */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
-        .modal-content { background: #1c1c1e; width:100%; max-width:350px; border-radius:24px; padding:25px; border: 1px solid #3a3a3c; }
+        .modal-content { background: #1c1c1e; width:100%; max-width:360px; border-radius:24px; padding:25px; border: 1px solid #3a3a3c; overflow-y: auto; max-height: 90vh; }
+        .detail-title { color: var(--accent-blue); text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 25px; }
+        .detail-sec-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .detail-label { font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 8px; }
+        .detail-label::before { content: ""; width: 3px; height: 14px; background: var(--accent-blue); border-radius: 2px; }
+        .btn-mini-clear { background: #2c2c2e; border: 1px solid #3a3a3c; color: var(--text-sub); font-size: 9px; padding: 4px 10px; border-radius: 10px; cursor: pointer; }
+        .summary-card { background: #2c2c2e; border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .summary-date { font-size: 16px; font-weight: 500; }
+        .summary-val { font-size: 16px; font-weight: bold; }
+        .logic-card { background: #141414; border-radius: 12px; padding: 15px; margin-bottom: 25px; }
+        .logic-item { font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
     </style>
 </head>
 <body>
@@ -142,12 +153,30 @@
     </div>
 
     <div class="footer">
-        Version 1.0.3<br>
+        Version 1.0.1<br>
         © 2026 missing link. All rights reserved.
     </div>
 </div>
 
-<div id="modalOverlay" class="modal-overlay" onclick="closeDetail()"><div class="modal-content" onclick="event.stopPropagation()"><div style="color:var(--accent-blue); text-align:center; font-weight:bold; margin-bottom:20px;">履歴・詳細</div><div id="historyList" style="max-height:300px; overflow-y:auto;"></div><button style="width:100%; background:#3a3a3c; border:none; color:white; padding:12px; border-radius:12px; margin-top:10px;" onclick="closeDetail()">閉じる</button></div></div>
+<div id="modalOverlay" class="modal-overlay" onclick="closeDetail()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="detail-title">コンディション詳細</div>
+        
+        <div class="detail-sec-head">
+            <div class="detail-label">直近10件の使用傾向（白線：平均）</div>
+            <button class="btn-mini-clear" onclick="historyClear()">履歴クリア</button>
+        </div>
+        <div id="chartArea" style="text-align:center; color:#555; font-size:12px; margin-bottom:25px; height:60px; display:flex; align-items:center; justify-content:center;">履歴なし</div>
+
+        <div class="detail-label" style="margin-bottom:12px;">月別サマリー</div>
+        <div id="monthlySummaryArea"></div>
+
+        <div class="detail-label" style="margin-bottom:12px;">算出ロジックの根拠と診断</div>
+        <div class="logic-card" id="logicArea"></div>
+
+        <button style="width:100%; background:#3a3a3c; border:none; color:white; padding:18px; border-radius:18px; font-weight:bold; cursor:pointer;" onclick="closeDetail()">閉じる</button>
+    </div>
+</div>
 
 <script>
     const STORAGE_KEY = 'pwMasterV4';
@@ -207,13 +236,30 @@
         d.in = 0; up();
     }
     
-    let longTimer;
-    document.getElementById('resetBtn').addEventListener('touchstart', (e) => { e.preventDefault(); longTimer = setTimeout(() => { if(confirm("樹脂記録をリセット？")){ d.used=0; up(); } }, 1000); });
-    document.getElementById('resetBtn').addEventListener('touchend', () => { clearTimeout(longTimer); });
-    function showDetail() { document.getElementById('modalOverlay').style.display='flex'; }
+    function historyClear() { if(confirm("履歴をすべてクリアしますか？（累計使用量はリセットされません）")){ d.history = []; d.logs = {}; up(); closeDetail(); } }
+
+    function showDetail() {
+        const now = new Date(), monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        const cap = (d.m === 'PRO' ? 180000 : 90000) / (d.ppm || 1);
+        const resinPrice = (d.m === 'PRO' ? 12980 : 9878);
+        const avg = d.history.length > 0 ? Math.round(d.history.slice(0,10).reduce((a,b)=>a+b.amt,0)/d.history.slice(0,10).length) : 0;
+
+        const monthVal = d.logs[monthKey] || 0;
+        const monthCost = Math.round((monthVal/cap)*resinPrice);
+        document.getElementById('monthlySummaryArea').innerHTML = `
+            <div class="summary-card">
+                <span class="summary-date">${monthKey}</span>
+                <span class="summary-val">${monthVal}ℓ</span>
+                <span class="summary-val">${monthCost.toLocaleString()}円</span>
+            </div>`;
+
+        document.getElementById('logicArea').innerHTML = `
+            <div class="logic-item">・直近平均：${avg}ℓ</div>
+            <div class="logic-item">・1回コスト目安：${Math.round((avg/cap)*resinPrice).toLocaleString()}円</div>`;
+
+        document.getElementById('modalOverlay').style.display='flex';
+    }
     function closeDetail() { document.getElementById('modalOverlay').style.display='none'; }
 
-    up();
-</script>
-</body>
-</html>
+    let longTimer;
+    document.getElementById('resetBtn').addEventListener('touchstart', (e) => { e.preventDefault(); longTimer = setTimeout(() => { if(confirm("樹脂記録をリ
