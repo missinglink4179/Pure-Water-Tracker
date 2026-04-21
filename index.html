@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>pure-water-tracker</title>
+    <title>PURE WATER TRACKER</title>
     <style>
         :root {
             --bg-color: #0c0c0c;
@@ -14,23 +14,26 @@
             --accent-blue: #0a84ff;
             --text-main: #ffffff;
             --text-sub: #8e8e93;
-            --alert-deep-red: #2a0a0a;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; touch-action: manipulation; }
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; transition: background-color 0.8s ease; }
-        body.alert-red { background-color: var(--alert-deep-red); }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; transition: background-color 0.8s ease; }
+        body.alert-red { background-color: #2a0a0a; }
         .container { width: 100%; max-width: 380px; }
-        .top-title { font-size: 14px; font-weight: 800; color: var(--text-main); text-align: center; margin-bottom: 2px; letter-spacing: 0.5px; }
-        .top-sub { font-size: 10px; color: var(--accent-blue); text-align: center; margin-bottom: 25px; font-weight: 600; }
+
+        /* メインタイトルのブラッシュアップ */
+        .top-title { font-size: 18px; font-weight: 900; color: var(--text-main); text-align: center; margin-bottom: 2px; letter-spacing: 2.5px; text-transform: uppercase; }
+        .top-title span { color: var(--accent-blue); }
+        .top-sub { font-size: 9px; color: var(--text-sub); text-align: center; margin-bottom: 25px; font-weight: 500; letter-spacing: 1px; }
         
-        .header-section { text-align: center; margin-bottom: 20px; padding: 20px 10px; border-radius: 24px; min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .header-section { text-align: center; margin-bottom: 20px; padding: 20px 10px; border-radius: 24px; min-height: 190px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
         
-        /* チュートリアルエリアのスタイル */
-        .tutorial-box { background: rgba(10, 132, 255, 0.05); border: 1px dashed rgba(10, 132, 255, 0.5); padding: 20px 15px; border-radius: 20px; margin-top: 10px; text-align: left; width: 100%; }
-        .step-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 13px; color: #fff; font-weight: 600; }
+        /* 3ステップガイド */
+        .tutorial-box { background: rgba(10, 132, 255, 0.05); border: 1px dashed rgba(10, 132, 255, 0.5); padding: 25px 20px; border-radius: 24px; width: 100%; text-align: left; }
+        .step-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; font-size: 13px; color: #fff; font-weight: 600; }
         .step-num { background: var(--accent-blue); color: #fff; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
-        .step-active { color: var(--accent-yellow); text-decoration: underline; text-underline-offset: 4px; }
+        .step-active { color: var(--accent-yellow); font-weight: 800; border-bottom: 1px solid var(--accent-yellow); padding-bottom: 1px; }
+        .step-row:last-child { margin-bottom: 0; }
 
         .main-val-wrap { position: relative; display: inline-block; margin-bottom: 15px; cursor: pointer; }
         .main-val { font-size: 64px; font-weight: 800; line-height: 1; transition: color 0.3s; }
@@ -64,32 +67,23 @@
         .mode-row { display: flex; gap: 8px; margin-top: 5px; }
         .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; cursor: pointer; font-size: 13px; }
         .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
-        
-        .backup-section { margin-top: 25px; border-top: 1px dashed #3a3a3c; padding-top: 20px; }
-        .backup-label { font-size: 11px; color: var(--accent-blue); font-weight: bold; text-align: center; margin-bottom: 15px; }
-        .btn-b { flex: 1; background: #2c2c2e; border: 1px solid #3a3a3c; padding: 12px 5px; border-radius: 10px; color: #aaa; font-size: 10px; font-weight: bold; cursor: pointer; }
-        .backup-row { display: flex; gap: 8px; }
 
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
-        .modal-content { background: #1c1c1e; width:100%; max-width:350px; max-height:85vh; border-radius:24px; padding:25px; overflow-y:auto; border: 1px solid #3a3a3c; }
+        .modal-content { background: #1c1c1e; width:100%; max-width:350px; border-radius:24px; padding:25px; border: 1px solid #3a3a3c; }
         .modal-h { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--accent-blue); text-align: center; }
-        .history-item { position: relative; display: flex; flex-direction: column; padding: 12px 10px; border-bottom: 1px solid #2c2c2e; margin-bottom: 4px; border-radius: 8px; background: rgba(255,255,255,0.02); }
-        .hist-main { display: flex; width: 100%; justify-content: space-between; align-items: center; font-size: 13px; }
         .btn-close { width:100%; background: #3a3a3c; border:none; color:white; padding:12px; border-radius:12px; margin-top:10px; font-weight:bold; }
         
-        .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.6; padding-bottom: 50px; }
-        .info-section { max-width: 380px; text-align: center; margin-top: 40px; padding: 0 20px; }
-        .info-text { font-size: 10px; color: #666; line-height: 1.8; margin-bottom: 20px; }
+        .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; padding-bottom: 50px; }
+        .info-text { font-size: 9px; color: #444; text-align: center; margin-top: 40px; line-height: 1.6; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="top-title">pure-water-tracker</div>
-    <div class="top-sub">純水器の寿命とコストを管理</div>
+    <div class="top-title">PURE WATER <span>TRACKER.</span></div>
+    <div class="top-sub">ULTIMATE RESIN MANAGEMENT TOOL</div>
 
-    <div class="header-section" id="headerSection">
-        </div>
+    <div class="header-section" id="headerSection"></div>
 
     <div class="sub-stats"><span>洗車回数：あと <span id="remCount">--</span> 回分</span><span id="predictDate">寿命予測：--/--頃</span></div>
 
@@ -129,19 +123,13 @@
             <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO (3個)</button>
             <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST (2個)</button>
         </div>
-        <div class="backup-section">
-            <div class="backup-label">データ移行・復元</div>
-            <div class="backup-row"><button class="btn-b" onclick="openTransferModal('export')">書き出し</button><button class="btn-b" onclick="openTransferModal('import')">読み込み</button></div>
-        </div>
     </div>
 
-    <div class="info-section">
-        <div class="info-text">本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>© 2026 missing link.</div>
-    </div>
-    <div class="footer">Version 1.0.1</div>
+    <div class="info-text">DESIGNED FOR BEAUTIFUL CARS ENTHUSIASTS<br>© 2026 missing link.</div>
+    <div class="footer">Version 1.0.2</div>
 </div>
 
-<div id="modalOverlay" class="modal-overlay" onclick="closeDetail()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-h">コンディション詳細</div><div id="historyList"></div><button class="btn-close" onclick="closeDetail()">閉じる</button></div></div>
+<div id="modalOverlay" class="modal-overlay" onclick="closeDetail()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-h">履歴・詳細</div><div id="historyList" style="max-height: 300px; overflow-y: auto;"></div><button class="btn-close" onclick="closeDetail()">閉じる</button></div></div>
 
 <script>
     const STORAGE_KEY = 'pwMasterV4';
@@ -153,11 +141,10 @@
         const now = new Date(), monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const resinPrice = (d.m === 'PRO' ? 12980 : 9878);
 
-        // ステップガイドの動的表示
         if (!d.ppm) {
             header.innerHTML = `
                 <div class="tutorial-box">
-                    <div class="step-row"><span class="step-num">STEP 1</span> <span class="step-active">PPMを入力 (下部の設定)</span></div>
+                    <div class="step-row"><span class="step-num">STEP 1</span> <span class="step-active">PPMを入力</span></div>
                     <div class="step-row"><span class="step-num">STEP 2</span> <span>洗車ごとに使用量を記録</span></div>
                     <div class="step-row"><span class="step-num">STEP 3</span> <span>寿命とコストを自動管理</span></div>
                 </div>
@@ -175,7 +162,7 @@
                 <div class="main-val-wrap" onclick="showDetail()">
                     <span class="main-val" id="remDisplay">${Math.floor(rem)}<span class="unit-l">ℓ</span></span>
                 </div>
-                <button class="btn-detail" onclick="showDetail()">コンディション詳細</button>
+                <button class="btn-detail" onclick="showDetail()">履歴・分析を表示</button>
             `;
             const remDisp = document.getElementById('remDisplay');
             if (rem/cap < 0.1) remDisp.style.color = 'var(--accent-red)';
@@ -194,7 +181,7 @@
         document.getElementById('monthUsed').innerText = (d.logs[monthKey]||0) + ' ℓ';
         document.getElementById('inVal').innerText = d.in;
         saveBtn.innerText = d.in > 0 ? `${d.in}ℓ の使用を記録` : '数値を入力してください';
-        saveBtn.style.opacity = d.in > 0 ? "1" : "0.3";
+        saveBtn.style.opacity = (d.in > 0 && d.ppm) ? "1" : "0.3";
         saveBtn.style.pointerEvents = (d.in > 0 && d.ppm) ? "auto" : "none";
         document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
         document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
@@ -220,7 +207,6 @@
     rb.addEventListener('touchend', () => { clearTimeout(longTimer); });
     function showDetail() { document.getElementById('modalOverlay').style.display='flex'; }
     function closeDetail() { document.getElementById('modalOverlay').style.display='none'; }
-    function openTransferModal(m) { alert("移行機能（開発中または前Verコード参照）"); }
 
     up();
 </script>
