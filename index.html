@@ -26,7 +26,6 @@
         .header-section { text-align: center; margin-bottom: 20px; min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
         .tutorial-box { background: rgba(10, 132, 255, 0.05); border: 1px dashed rgba(10, 132, 255, 0.5); padding: 20px; border-radius: 24px; width: 100%; text-align: left; }
         .step-row { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; font-size: 13px; font-weight: 600; }
-        .step-row:last-child { margin-bottom: 0; }
         .step-num { background: var(--accent-blue); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; min-width: 45px; text-align: center; }
         .step-active { color: var(--accent-yellow); border-bottom: 1px solid var(--accent-yellow); }
 
@@ -59,34 +58,33 @@
         .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; font-size: 13px; border: 1px solid transparent; }
         .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
 
-        /* 元の順序に基づいたフッターセクション */
         .reference-section { margin-top: 20px; text-align: center; width: 100%; }
-        
         .info-title { font-size: 11px; font-weight: 800; color: #8e8e93; margin: 25px 0 10px; letter-spacing: 1px; }
         .info-text { font-size: 9px; color: #555; line-height: 1.8; text-align: center; margin-bottom: 10px; }
-        
         .terms-list { text-align: left; font-size: 9px; color: #555; line-height: 1.8; padding: 0 15px; list-style: none; margin: 0; }
-        
         .ref-label { font-size: 11px; font-weight: 800; color: #8e8e93; margin: 30px 0 8px; letter-spacing: 1px; }
         .ref-val { font-size: 10px; color: #666; margin-bottom: 15px; line-height: 1.5; }
-
         .footer-version { font-size: 10px; color: #444; margin-top: 30px; margin-bottom: 5px; }
-        .footer-copy { font-size: 9px; color: #333; margin-bottom: 80px; }
+        .footer-copy { font-size: 9px; color: #333; margin-bottom: 40px; }
+        .survey-note { font-size: 8px; color: #333; text-align: center; margin-bottom: 80px; padding: 0 20px; line-height: 1.4; }
 
-        /* モーダル */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
         .modal-content { background: #1c1c1e; width:100%; max-width:360px; border-radius:24px; padding:25px; border: 1px solid #3a3a3c; overflow-y: auto; max-height: 90vh; }
         .detail-title { color: var(--accent-blue); text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 25px; }
         .detail-label { font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
         .detail-label::before { content: ""; width: 3px; height: 14px; background: var(--accent-blue); border-radius: 2px; }
-        .chart-box { background: #141414; border-radius: 12px; padding: 20px; text-align: center; color: #555; font-size: 12px; margin-bottom: 25px; }
-        .summary-card { background: #2c2c2e; border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .summary-date { font-size: 15px; font-weight: 500; }
-        .summary-val { font-size: 15px; font-weight: bold; }
-        .btn-del-mini { background: rgba(255,69,58,0.1); border: none; color: var(--accent-red); font-size: 10px; padding: 6px 10px; border-radius: 6px; }
-        .logic-card { background: #141414; border-radius: 12px; padding: 15px; margin-bottom: 25px; }
-        .logic-item { font-size: 12px; color: var(--text-sub); margin-bottom: 8px; line-height: 1.6; }
-        .blue-text { color: var(--accent-blue); font-weight: bold; }
+        .chart-box { background: #141414; border-radius: 12px; padding: 25px 20px; text-align: center; color: #555; font-size: 13px; margin-bottom: 25px; }
+        
+        /* 履歴リスト（1件ずつの表示用） */
+        .log-item-card { background: #2c2c2e; border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .log-date { font-size: 14px; font-weight: 500; color: var(--text-main); flex: 1.5; }
+        .log-amt { font-size: 14px; font-weight: bold; color: var(--accent-green); flex: 1; text-align: center; }
+        .log-cost { font-size: 14px; font-weight: bold; color: var(--text-main); flex: 1.2; text-align: right; }
+        .btn-del-mini { background: rgba(255,69,58,0.1); border: none; color: var(--accent-red); font-size: 10px; padding: 6px 10px; border-radius: 6px; margin-left: 10px; }
+
+        .logic-card { background: #141414; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
+        .logic-item { font-size: 13px; color: var(--text-sub); margin-bottom: 10px; line-height: 1.6; }
+        .blue-text { color: var(--accent-blue); font-weight: 500; }
     </style>
 </head>
 <body>
@@ -139,7 +137,6 @@
     <div class="reference-section">
         <div class="info-title">Information</div>
         <div class="info-text">本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>※製造・監修元各社様とは一切関係ありません。</div>
-
         <div class="info-title">Terms of Use</div>
         <ul class="terms-list">
             <li>・本アプリは非営利目的で制作・公開されています。</li>
@@ -148,22 +145,21 @@
             <li>・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。</li>
             <li>・無断転載・再配布、および商用利用を固く禁じます。</li>
         </ul>
-
         <div class="ref-label">Reference</div>
         <div class="ref-val">監修：ビューティフルカーズ<br>製造：グリーンライフ</div>
-
         <div class="footer-version">Version 1.0.1</div>
         <div class="footer-copy">© 2026 missing link. All rights reserved.</div>
+        <div class="survey-note">※本アプリでは、予測精度の向上とユーザー様への還元を目的として、匿名化された使用データ（ppm・生成量のみ）を統計的に収集しています。</div>
     </div>
 </div>
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeDetail()">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="detail-title">コンディション詳細</div>
-        <div class="detail-label">直近10件の使用傾向（白線：平均）</div>
+        <div class="detail-label" id="chartLabel">直近10件の使用傾向</div>
         <div class="chart-box" id="chartBox">履歴を解析中</div>
-        <div class="detail-label">月別サマリー</div>
-        <div id="monthlySummaryArea"></div>
+        <div class="detail-label">直近10件の洗車履歴</div>
+        <div id="historyLogArea"></div>
         <div class="detail-label">算出ロジックの根拠と診断</div>
         <div class="logic-card" id="logicArea"></div>
         <button style="width:100%; background:#3a3a3c; border:none; color:white; padding:18px; border-radius:18px; font-weight:bold;" onclick="closeDetail()">閉じる</button>
@@ -229,23 +225,45 @@
     function save() {
         if (!d.ppm || d.in <= 0) return;
         const now = new Date(), monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}`;
+        // 1件ずつの履歴データを保持
         d.history.unshift({ ts: now.getTime(), amt: d.in });
-        d.used += d.in; d.logs[monthKey] = (d.logs[monthKey]||0) + d.in;
+        d.used += d.in; 
+        d.logs[monthKey] = (d.logs[monthKey]||0) + d.in;
         d.in = 0; up();
     }
 
-    function delLog(key) { if(confirm(`${key}の記録を消去しますか？`)) { delete d.logs[key]; up(); showDetail(); } }
+    function delLog(index) {
+        if(confirm(`この履歴を削除しますか？`)) {
+            const item = d.history[index];
+            const dt = new Date(item.ts);
+            const mKey = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2, '0')}`;
+            d.used -= item.amt;
+            d.logs[mKey] -= item.amt;
+            d.history.splice(index, 1);
+            up(); showDetail();
+        }
+    }
 
     function showDetail() {
         const capTotal = (d.m === 'PRO' ? 180000 : 90000), resinPrice = (d.m === 'PRO' ? 12980 : 9878);
         const cap = capTotal / (d.ppm || 1), perL = resinPrice / cap;
         const avg = d.history.length > 0 ? (d.history.slice(0,10).reduce((a,b)=>a+b.amt,0)/Math.min(d.history.length, 10)) : 0;
 
-        let sumHTML = "";
-        Object.keys(d.logs).sort().reverse().forEach(key => {
-            sumHTML += `<div class="summary-card"><span class="summary-date">${key}</span><span class="summary-val">${d.logs[key]}ℓ</span><span class="summary-val">${Math.round((d.logs[key]/cap)*resinPrice).toLocaleString()}円</span><button class="btn-del-mini" onclick="delLog('${key}')">消去</button></div>`;
+        // 履歴を1件ずつ10件分出力
+        let logHTML = "";
+        d.history.slice(0, 10).forEach((item, index) => {
+            const dt = new Date(item.ts);
+            const dateStr = `${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+            const cost = Math.round(item.amt * perL);
+            logHTML += `
+                <div class="log-item-card">
+                    <span class="log-date">${dateStr}</span>
+                    <span class="log-amt">${item.amt}ℓ</span>
+                    <span class="log-cost">${cost.toLocaleString()}円</span>
+                    <button class="btn-del-mini" onclick="delLog(${index})">削除</button>
+                </div>`;
         });
-        document.getElementById('monthlySummaryArea').innerHTML = sumHTML || '<div style="text-align:center; color:#555; padding:20px;">履歴なし</div>';
+        document.getElementById('historyLogArea').innerHTML = logHTML || '<div style="text-align:center; color:#555; padding:20px;">履歴なし</div>';
 
         document.getElementById('logicArea').innerHTML = `
             <div class="logic-item">・イオン交換容量：${capTotal.toLocaleString()} (ppm・ℓ)</div>
@@ -254,7 +272,8 @@
             <div class="logic-item blue-text" style="margin-top:10px;">・直近10件平均：${avg > 0 ? avg.toFixed(1) : "--"} ℓ</div>
             <div class="logic-item blue-text">・1回コスト目安：${avg > 0 ? Math.round(avg * perL).toLocaleString() : "--"} 円</div>`;
 
-        document.getElementById('chartBox').innerText = d.history.length > 0 ? `直近${Math.min(d.history.length, 10)}件のデータを蓄積中` : "履歴なし";
+        document.getElementById('chartLabel').innerText = `直近${Math.min(d.history.length, 10)}件の使用傾向`;
+        document.getElementById('chartBox').innerText = d.history.length > 0 ? `データを蓄積中（白線：平均 ${avg.toFixed(1)}ℓ）` : "履歴なし";
         document.getElementById('modalOverlay').style.display='flex';
     }
     
