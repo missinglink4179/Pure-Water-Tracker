@@ -230,10 +230,29 @@
         return Math.round(recent.reduce((a, b) => a + b.amt, 0) / recent.length);
     }
 
-    function calculatePredictDate(remaining, avg) {
-        if (!avg || avg <= 0 || remaining <= 0) return "--/--";
-        const dailyAvg = (avg * 4) / 30; 
-        const daysRemaining = Math.floor(remaining / dailyAvg);
+    // 平均使用間隔（日）を算出するロジック
+    function getAvgInterval() {
+        if (!d.history || d.history.length < 2) return 7; // データ不足時は週1想定
+        
+        let totalDays = 0;
+        let count = 0;
+        for (let i = 0; i < d.history.length - 1; i++) {
+            if (d.history[i].ts && d.history[i+1].ts) {
+                const diff = (d.history[i].ts - d.history[i+1].ts) / (1000 * 60 * 60 * 24);
+                totalDays += diff;
+                count++;
+            }
+        }
+        return count > 0 ? Math.max(1, totalDays / count) : 7;
+    }
+
+    function calculatePredictDate(remaining, avgUsage) {
+        if (!avgUsage || avgUsage <= 0 || remaining <= 0) return "--/--";
+        
+        const avgInterval = getAvgInterval();
+        const remTimes = remaining / avgUsage; // あと何回洗車できるか
+        const daysRemaining = Math.floor(remTimes * avgInterval);
+        
         const targetDate = new Date();
         targetDate.setDate(targetDate.getDate() + daysRemaining);
         return `${targetDate.getMonth() + 1}/${targetDate.getDate()}`;
@@ -355,6 +374,7 @@
             const wasteCost = Math.round((wasteL / cap) * currentResinPrice);
 
             d.history.unshift({ 
+                ts: now.getTime(),
                 date: dateStr, 
                 amt: d.in, 
                 cost: cost, 
@@ -397,6 +417,7 @@
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         const currentResinPrice = (d.m === 'PRO' ? 12980 : 9878);
         const latestAvg = getRecentAvg();
+        const avgInterval = getAvgInterval();
         
         const histDiv = document.getElementById('historyList');
         histDiv.innerHTML = d.history && d.history.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">履歴なし</div>';
@@ -453,7 +474,7 @@
         });
 
         const adviceBox = document.getElementById('adviceBox');
-        let adviceHtml = `・直近平均: ${latestAvg}ℓ<br>・1回コスト目安: ${currentResinPrice.toLocaleString()}円`;
+        let adviceHtml = `・直近使用平均: ${latestAvg}ℓ<br>・平均洗車間隔: ${Math.round(avgInterval * 10) / 10}日<br>・1回コスト目安: ${currentResinPrice.toLocaleString()}円`;
         if (hasWaste) {
             adviceHtml += `<div style="color:var(--accent-yellow); margin-top:8px; border-top:1px solid #333; padding-top:8px;">⚠️ 白線（平均）を超えて右に伸びる棒はロスのサインです。</div>`;
         }
