@@ -18,68 +18,50 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 380px; }
+        .top-title { font-size: 18px; font-weight: 900; text-align: center; margin-bottom: 2px; letter-spacing: 2.5px; text-transform: uppercase; }
+        .top-title span { color: var(--accent-blue); }
+        .top-sub { font-size: 9px; color: var(--text-sub); text-align: center; margin-bottom: 25px; font-weight: 500; letter-spacing: 1px; }
+        .header-section { text-align: center; margin-bottom: 20px; min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
+        .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
+        .main-val-wrap { position: relative; display: inline-block; margin-bottom: 15px; cursor: pointer; }
+        .main-val { font-size: 64px; font-weight: 800; line-height: 1; }
+        .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
+        .sub-stats { display: flex; justify-content: space-around; font-size: 11px; color: var(--text-sub); margin-bottom: 25px; width: 100%; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; width: 100%; }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; }
+        .card-full { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 25px; width: 100%; }
+        .input-box { background: var(--card-bg); padding: 25px 20px; border-radius: 20px; margin-bottom: 15px; width: 100%; }
+        .input-title { font-size: 11px; color: var(--accent-green); font-weight: bold; text-align: center; margin-bottom: 15px; }
+        .counter-row { display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 15px; }
+        .btn-round { width: 50px; height: 50px; border-radius: 50%; border: none; background: #3a3a3c; color: white; font-size: 26px; }
+        .current-disp { font-size: 52px; font-weight: bold; }
+        .btn-clear { background: #3a3a3c; color: var(--text-sub); border: none; padding: 6px 16px; border-radius: 20px; font-size: 11px; display: block; margin: 0 auto 20px; }
+        .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .btn-q { background: #2c2c2e; border: none; padding: 14px 5px; border-radius: 10px; color: white; font-weight: 600; font-size: 12px; }
+        .btn-save { width: 100%; background: var(--accent-green); color: white; padding: 22px; border-radius: 18px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 15px; }
+        .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; }
+        .settings-box { background: var(--card-bg); padding: 25px 20px; border-radius: 20px; width: 100%; }
+        .setting-item { display: flex; justify-content: space-between; align-items: flex-end; padding: 12px 0; border-bottom: 1px solid #2c2c2e; margin-bottom: 10px; }
+        .ppm-input { background: none; border: none; color: var(--accent-green); font-weight: bold; font-size: 18px; text-align: right; width: 80px; }
+        .mode-row { display: flex; gap: 8px; margin-top: 5px; }
+        .btn-m { flex: 1; background: #2c2c2e; border: none; padding: 12px; border-radius: 10px; color: #666; font-weight: bold; font-size: 13px; border: 1px solid transparent; }
+        .btn-m.active { border: 1px solid var(--accent-green); color: var(--accent-green); }
+        .footer { text-align: center; font-size: 10px; color: #444; padding: 40px 0; }
 
-        /* ヘッダー周り */
-        .top-title { font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 2px; letter-spacing: 2.5px; text-transform: uppercase; color: #444; }
-        .top-title span { color: var(--accent-blue); opacity: 0.8; }
-        .top-sub { font-size: 9px; color: #333; text-align: center; margin-bottom: 25px; font-weight: 700; letter-spacing: 1px; }
-        
-        .header-section { text-align: center; margin-bottom: 20px; min-height: 160px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
-        .main-val-wrap { position: relative; cursor: pointer; }
-        .main-val { font-size: 72px; font-weight: 800; line-height: 1; }
-        .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; color: var(--text-sub); }
-        
-        .sub-stats { display: flex; justify-content: space-around; font-size: 11px; color: var(--text-sub); margin-bottom: 25px; width: 100%; font-weight: bold; }
-        
-        /* カード類 */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; width: 100%; }
-        .card { background: var(--card-bg); padding: 20px 15px; border-radius: 16px; text-align: center; }
-        .card-full { background: var(--card-bg); padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 30px; width: 100%; }
-        .label-xs { font-size: 11px; color: var(--text-sub); margin-bottom: 8px; font-weight: bold; }
-        .val-m { font-size: 24px; font-weight: bold; }
-
-        /* 入力セクション */
-        .input-box { background: var(--card-bg); padding: 35px 20px; border-radius: 28px; margin-bottom: 20px; width: 100%; position: relative; }
-        .input-title { font-size: 12px; color: var(--accent-green); font-weight: bold; text-align: center; margin-bottom: 20px; }
-        .counter-row { display: flex; justify-content: center; align-items: center; gap: 35px; margin-bottom: 20px; }
-        .btn-round { width: 56px; height: 56px; border-radius: 50%; border: none; background: #3a3a3c; color: white; font-size: 28px; display: flex; align-items: center; justify-content: center; }
-        .btn-round:active { background: #4a4a4c; }
-        .current-disp { font-size: 64px; font-weight: bold; display: flex; align-items: baseline; justify-content: center; width: 120px; }
-        .btn-clear-mini { background: #2c2c2e; color: #555; border: none; padding: 6px 18px; border-radius: 12px; font-size: 11px; display: block; margin: 0 auto; font-weight: bold; }
-
-        /* ボタン類 */
-        .btn-save { width: 100%; background: var(--accent-green); color: white; padding: 22px; border-radius: 20px; border: none; font-size: 18px; font-weight: 900; margin-bottom: 12px; }
-        .btn-reset-long { width: 100%; background: none; border: none; color: #441111; padding: 12px; font-size: 11px; margin-bottom: 30px; font-weight: bold; }
-
-        /* 設定エリア (IMG_1372再現) */
-        .settings-box { background: var(--card-bg); padding: 25px 20px; border-radius: 24px; width: 100%; margin-bottom: 20px; }
-        .ppm-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-        .ppm-input { background: none; border: none; color: var(--accent-green); font-weight: bold; font-size: 28px; text-align: right; width: 100px; }
-        .type-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-type { background: #2c2c2e; border: 1px solid transparent; color: #555; padding: 15px; border-radius: 12px; font-size: 13px; font-weight: bold; }
-        .btn-type.active { border-color: var(--accent-green); color: var(--accent-green); background: rgba(52, 199, 89, 0.05); }
-
-        /* モーダル (IMG_1413再現) */
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.92); display:none; justify-content:center; align-items:center; z-index:1000; }
-        .modal-content { background: #151515; width:92%; max-width:360px; border-radius:32px; padding:25px; max-height: 90vh; overflow-y: auto; }
-        .detail-title { color: var(--accent-blue); text-align:center; font-size: 20px; font-weight: 900; margin-bottom: 25px; }
-        .section-label { font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 8px; margin: 25px 0 12px; font-weight: bold; }
-        .section-label::before { content: ""; width: 3px; height: 14px; background: var(--accent-blue); border-radius: 2px; }
-        
-        .chart-area { background: #1c1c1e; border-radius: 16px; padding: 50px 15px 20px; height: 180px; display: flex; align-items: flex-end; gap: 8px; position: relative; }
-        .avg-line { position: absolute; left: 0; width: 100%; border-top: 1px dashed rgba(255,255,255,0.4); z-index: 5; pointer-events: none; }
-        .avg-label { position: absolute; right: 8px; color: #fff; font-size: 9px; font-weight: bold; transform: translateY(-120%); }
-        .bar { flex: 1; background: var(--accent-blue); border-radius: 4px 4px 0 0; min-height: 2px; position: relative; z-index: 2; }
-        .bar.over { background: var(--accent-red); box-shadow: 0 0 12px rgba(255, 69, 58, 0.4); }
-
-        .summary-row { background: #2c2c2e; border-radius: 14px; padding: 18px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .btn-del { background: #3a3a3c; border: none; color: var(--accent-red); font-size: 10px; padding: 6px 12px; border-radius: 6px; opacity: 0.8; }
-
-        .logic-card { background: #1c1c1e; border-radius: 16px; padding: 20px; color: var(--text-sub); font-size: 13px; line-height: 2.2; }
-        .blue-text { color: var(--accent-blue); font-weight: bold; }
-
-        .btn-close { width: 100%; background: #2c2c2e; color: white; padding: 20px; border-radius: 20px; border: none; font-size: 16px; font-weight: bold; margin-top: 30px; }
-        .footer-info { font-size: 9px; color: #222; text-align: center; margin-bottom: 60px; }
+        /* モーダル */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; padding:20px; }
+        .modal-content { background: #1c1c1e; width:100%; max-width:360px; border-radius:24px; padding:25px; border: 1px solid #3a3a3c; overflow-y: auto; max-height: 90vh; }
+        .detail-title { color: var(--accent-blue); text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 25px; }
+        .detail-label { font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .detail-label::before { content: ""; width: 3px; height: 14px; background: var(--accent-blue); border-radius: 2px; }
+        .summary-card { background: #2c2c2e; border-radius: 12px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .summary-date { font-size: 13px; font-weight: 500; flex: 1.5; color: var(--text-sub); }
+        .summary-val { font-size: 15px; font-weight: bold; flex: 0.8; text-align: center; }
+        .summary-cost { font-size: 15px; font-weight: bold; flex: 1.2; text-align: right; margin-right: 10px; color: var(--accent-yellow); }
+        .btn-del-mini { background: rgba(255,69,58,0.1); border: none; color: var(--accent-red); font-size: 10px; padding: 6px 12px; border-radius: 8px; font-weight: bold; }
+        .logic-card { background: #141414; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
+        .logic-item { font-size: 12px; color: var(--text-sub); margin-bottom: 10px; line-height: 1.6; }
+        .blue-text { color: var(--accent-blue); font-weight: 500; }
     </style>
 </head>
 <body>
@@ -87,155 +69,154 @@
 <div class="container">
     <div class="top-title">PURE WATER <span>TRACKER.</span></div>
     <div class="top-sub">ULTIMATE RESIN MANAGEMENT TOOL</div>
-
-    <div class="header-section" id="headerSection"></div>
-
-    <div class="sub-stats">
-        <span>洗車回数：あと <span id="remCount">--</span> 回分</span>
-        <span id="predictDate">寿命予測：--/--頃</span>
-    </div>
-
+    <div id="headerSection" class="header-section"></div>
+    <div class="sub-stats"><span>洗車回数：あと <span id="remCount">--</span> 回分</span><span id="predictDate">寿命予測：--/--頃</span></div>
     <div class="stats-grid">
-        <div class="card"><div class="label-xs">累計使用量</div><div class="val-m" id="totalUsed">0 ℓ</div></div>
-        <div class="card"><div class="label-xs">今月の使用量</div><div class="val-m" id="monthUsed">0 ℓ</div></div>
+        <div class="card"><div class="label-xs">累計使用量</div><div id="totalUsed">0 ℓ</div></div>
+        <div class="card"><div class="label-xs">今月の使用量</div><div id="monthUsed">0 ℓ</div></div>
     </div>
-    <div class="card-full"><div class="label-xs">今月の算出コスト</div><div class="val-m" id="costDisp">0 円</div></div>
+    <div class="card-full"><div class="label-xs">今月の算出コスト</div><div id="costDisp">0 円</div></div>
 
     <div class="input-box">
         <div class="input-title">今回の洗車使用量</div>
         <div class="counter-row">
             <button class="btn-round" onclick="add(-1)">−</button>
-            <div class="current-disp"><span id="inVal">0</span><span style="font-size:24px; margin-left:4px; color:var(--text-sub); font-weight:400;">ℓ</span></div>
+            <div class="current-disp"><span id="inVal">0</span><span style="font-size:24px; margin-left:4px; color:var(--text-sub);">ℓ</span></div>
             <button class="btn-round" onclick="add(1)">＋</button>
         </div>
-        <button class="btn-clear-mini" onclick="clr()">リセット</button>
+        <button class="btn-clear" onclick="clr()">入力をリセット</button>
+        <div class="quick-grid">
+            <button class="btn-q" onclick="add(5)">+5ℓ</button><button class="btn-q" onclick="add(10)">+10ℓ</button><button class="btn-q" onclick="add(20)">+20ℓ</button>
+            <button class="btn-q" onclick="add(30)">+30ℓ</button><button class="btn-q" onclick="add(50)">+50ℓ</button><button class="btn-q" onclick="add(100)">+100ℓ</button>
+        </div>
     </div>
 
-    <button class="btn-save" onclick="save()">記録を保存</button>
-    <button id="resetBtn" class="btn-reset-long">長押しで全履歴を消去</button>
+    <button class="btn-save" id="saveBtn" onclick="save()">数値を入力してください</button>
+    <button id="resetBtn" class="btn-reset">長押しで樹脂リセット</button>
     
     <div class="settings-box">
-        <div class="ppm-row">
-            <span class="label-xs" style="color:var(--text-main); margin:0;">水道水硬度 (ppm)</span>
-            <input type="number" id="ppmIn" class="ppm-input" value="120" oninput="setPPM(this.value)">
+        <div class="setting-item">
+            <div>
+                <span class="label-xs" style="color:#fff; font-size:12px;">STEP1：水道水硬度 (ppm)</span><br>
+                <span style="font-size:9px; color:var(--accent-yellow);">※水質が寿命を決定します</span>
+            </div>
+            <input type="number" id="ppmIn" class="ppm-input" placeholder="0" oninput="setPPM(this.value)">
         </div>
-        <div class="type-selector">
-            <button id="btnPro" class="btn-type" onclick="setType('PRO')">PRO (3個)</button>
-            <button id="btnJust" class="btn-type" onclick="setType('JUST')">JUST (2個)</button>
+        <div class="mode-row">
+            <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO (3個)</button>
+            <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST (2個)</button>
         </div>
     </div>
-
-    <div class="footer-info">Version 1.0.1<br>© 2026 missing link. All rights reserved.</div>
+    <div class="footer">Version 1.0.1<br>© 2026 missing link. All rights reserved.</div>
 </div>
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeDetail()">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="detail-title">コンディション詳細</div>
-        
-        <div class="section-label">直近10件の使用傾向（白線：平均）</div>
-        <div class="chart-area" id="chartContainer"></div>
-        
-        <div class="section-label">月別サマリー</div>
-        <div id="monthlySummaryArea"></div>
-        
-        <div class="section-label">算出ロジックの根拠と診断</div>
-        <div class="logic-card" id="logicCard"></div>
-        
-        <button class="btn-close" onclick="closeDetail()">閉じる</button>
+        <div class="detail-label">洗車履歴（直近12件）</div>
+        <div id="historyListArea"></div>
+        <div class="detail-label">算出ロジックの根拠</div>
+        <div id="logicArea" class="logic-card"></div>
+        <button style="width:100%; background:#3a3a3c; border:none; color:white; padding:18px; border-radius:18px; font-weight:bold;" onclick="closeDetail()">閉じる</button>
     </div>
 </div>
 
 <script>
-    const KEY = 'pw_master_v101_final';
-    let d = JSON.parse(localStorage.getItem(KEY)) || { 
-        ppm: 120, type: 'PRO', used: 0, in: 0, logs: {}, history: [] 
-    };
-
-    function getCap() { return d.type === 'PRO' ? 180000 : 120000; }
-    function getAvg() { 
-        const recent = d.history.slice(0, 10);
-        return recent.length > 0 ? (recent.reduce((a,b)=>a+b.amt,0)/recent.length) : 30;
-    }
+    const STORAGE_KEY = 'pwMasterV101';
+    let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [] };
 
     function up() {
         const header = document.getElementById('headerSection');
-        const cap = getCap();
-        const avg = getAvg();
-        const rem = Math.max(0, (cap / d.ppm) - d.used);
-        const now = new Date(), monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}`;
+        const saveBtn = document.getElementById('saveBtn');
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        const resinPrice = (d.m === 'PRO' ? 12980 : 9878);
 
-        header.innerHTML = `
-            <div class="label-xs">樹脂寿命まであと</div>
-            <div class="main-val-wrap" onclick="showDetail()">
-                <span class="main-val" style="color:${rem < 100 ? 'var(--accent-red)' : 'var(--accent-green)'}">${Math.floor(rem)}<span class="unit-l">ℓ</span></span>
-            </div>
-            <div style="font-size:10px; color:#444; margin-top:12px; letter-spacing:1px; font-weight:bold;">DETAILS ></div>
-        `;
+        if (!d.ppm) {
+            header.innerHTML = `<div class="main-val-wrap"><span class="main-val" style="color:#222">----<span class="unit-l">ℓ</span></span></div><div style="font-size:12px; color:var(--accent-yellow);">PPMを入力してください</div>`;
+            document.getElementById('remCount').innerText = "--";
+            document.getElementById('predictDate').innerText = "寿命予測：--/--頃";
+            document.getElementById('costDisp').innerText = "0 円";
+        } else {
+            const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
+            const rem = Math.max(0, cap - d.used);
+            const avg = d.history.length > 0 ? (d.history.slice(0, 10).reduce((a, b) => a + b.amt, 0) / Math.min(d.history.length, 10)) : 30;
+            
+            header.innerHTML = `<div class="label-xs">交換まであと</div><div class="main-val-wrap" onclick="showDetail()"><span class="main-val" id="remDisplay">${Math.floor(rem)}<span class="unit-l">ℓ</span></span></div><button style="background:none; border:1px solid #3a3a3c; color:var(--text-sub); padding:8px 16px; border-radius:20px; font-size:11px;" onclick="showDetail()">履歴・詳細を表示</button>`;
+            
+            const remDisp = document.getElementById('remDisplay');
+            remDisp.style.color = (rem/cap < 0.1) ? 'var(--accent-red)' : (rem/cap < 0.3) ? 'var(--accent-yellow)' : 'var(--accent-green)';
+            document.getElementById('remCount').innerText = Math.floor(rem / avg);
+            document.getElementById('costDisp').innerText = Math.round(((d.logs[monthKey]||0)/cap)*resinPrice).toLocaleString() + ' 円';
+            
+            const daysRem = Math.floor((rem/avg)*7); 
+            const t = new Date(); t.setDate(now.getDate()+daysRem);
+            document.getElementById('predictDate').innerText = `寿命予測：${t.getMonth()+1}/${t.getDate()}頃`;
+        }
 
-        document.getElementById('remCount').innerText = Math.floor(rem / avg);
+        document.getElementById('ppmIn').value = d.ppm || "";
         document.getElementById('totalUsed').innerText = d.used + ' ℓ';
         document.getElementById('monthUsed').innerText = (d.logs[monthKey]||0) + ' ℓ';
-        document.getElementById('costDisp').innerText = Math.round(((d.logs[monthKey]||0)/(cap/d.ppm))*12980).toLocaleString() + ' 円';
         document.getElementById('inVal').innerText = d.in;
-        
-        const t = new Date(); t.setDate(now.getDate() + Math.floor((rem/avg)*7));
-        document.getElementById('predictDate').innerText = `寿命予測：${t.getMonth()+1}/${t.getDate()}頃`;
-
-        document.getElementById('btnPro').className = d.type === 'PRO' ? 'btn-type active' : 'btn-type';
-        document.getElementById('btnJust').className = d.type === 'JUST' ? 'btn-type active' : 'btn-type';
-        localStorage.setItem(KEY, JSON.stringify(d));
+        saveBtn.innerText = d.in > 0 ? `${d.in}ℓ の記録を保存` : '数値を入力してください';
+        saveBtn.style.opacity = (d.in > 0 && d.ppm) ? "1" : "0.3";
+        document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
+        document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
     }
 
-    function setPPM(v) { d.ppm = parseInt(v) || 1; up(); }
-    function setType(t) { d.type = t; up(); }
-    function add(v) { d.in = Math.max(0, d.in + v); up(); }
-    function clr() { d.in = 0; up(); }
+    function setPPM(v) { d.ppm = v===""?null:parseInt(v); up(); }
+    function add(v) { d.in = Math.max(0, d.in+v); up(); }
+    function clr() { d.in=0; up(); }
+    function mode(m) { d.m=m; up(); }
+    
     function save() {
-        if (d.in <= 0) return;
-        const now = new Date(), monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}`;
-        d.history.unshift({ ts: now.getTime(), amt: d.in });
-        d.used += d.in; d.logs[monthKey] = (d.logs[monthKey]||0) + d.in;
+        if (!d.ppm || d.in <= 0) return;
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}`;
+        const dateStr = `${String(now.getMonth()+1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        d.history.unshift({ ts: now.getTime(), date: dateStr, amt: d.in, mKey: monthKey });
+        d.used += d.in; 
+        d.logs[monthKey] = (d.logs[monthKey]||0) + d.in;
         d.in = 0; up();
     }
 
-    function showDetail() {
-        const avg = getAvg();
-        const capL = getCap() / d.ppm;
-        const recent = d.history.slice(0, 10).reverse();
-        const maxBar = Math.max(...recent.map(i=>i.amt), avg * 2, 50);
-        
-        const chart = document.getElementById('chartContainer');
-        const avgPos = (avg / maxBar) * 100;
-        chart.innerHTML = `<div class="avg-line" style="bottom:${avgPos}%"><span class="avg-label">AVG ${avg.toFixed(1)}ℓ</span></div>`;
-        recent.forEach(i => {
-            chart.innerHTML += `<div class="bar ${i.amt > avg*1.5 ? 'over' : ''}" style="height:${(i.amt/maxBar)*100}%"></div>`;
-        });
-
-        let sumH = "";
-        Object.keys(d.logs).sort().reverse().forEach(k => {
-            sumH += `<div class="summary-row"><span>${k}</span><div style="text-align:right"><span style="font-weight:bold; margin-right:10px;">${d.logs[k]}ℓ</span><span style="color:var(--accent-green); margin-right:10px;">${Math.round((d.logs[k]/capL)*12980).toLocaleString()}円</span><button class="btn-del" onclick="delLog('${k}')">消去</button></div></div>`;
-        });
-        document.getElementById('monthlySummaryArea').innerHTML = sumH || 'NO DATA';
-
-        document.getElementById('logicCard').innerHTML = `
-            ・イオン交換容量：${getCap().toLocaleString()} (ppm・ℓ)<br>
-            ・算出寿命：${Math.floor(capL).toLocaleString()} ℓ (水質 ${d.ppm}ppm)<br>
-            ・樹脂価格：12,980 円 / 1ℓ単価：約 ${(12980/capL).toFixed(1)}円<br>
-            <span class="blue-text">・直近10件平均：${avg.toFixed(1)} ℓ</span><br>
-            <span class="blue-text">・1回コスト目安：${Math.round(avg * (12980/capL))} 円</span>
-        `;
-        document.getElementById('modalOverlay').style.display = 'flex';
+    function delHistory(index) {
+        if(confirm("この洗車記録を消去しますか？")) {
+            const item = d.history[index];
+            d.used -= item.amt;
+            d.logs[item.mKey] -= item.amt;
+            if(d.logs[item.mKey] <= 0) delete d.logs[item.mKey];
+            d.history.splice(index, 1);
+            up(); showDetail();
+        }
     }
 
-    function delLog(k) { if(confirm('データを消去しますか？')) { delete d.logs[k]; up(); showDetail(); } }
-    function closeDetail() { document.getElementById('modalOverlay').style.display = 'none'; }
+    function showDetail() {
+        const capTotal = (d.m === 'PRO' ? 180000 : 90000), resinPrice = (d.m === 'PRO' ? 12980 : 9878);
+        const cap = capTotal / (d.ppm || 1), perL = resinPrice / cap;
+        const avg = d.history.length > 0 ? (d.history.slice(0,10).reduce((a,b)=>a+b.amt,0)/Math.min(d.history.length, 10)) : 0;
 
-    let longT;
-    document.getElementById('resetBtn').addEventListener('touchstart', () => {
-        longT = setTimeout(() => { if(confirm('全履歴をリセットしますか？')){ d.used=0; d.history=[]; d.logs={}; up(); } }, 1000);
-    });
-    document.getElementById('resetBtn').addEventListener('touchend', () => clearTimeout(longT));
+        let histHTML = "";
+        d.history.slice(0, 12).forEach((item, idx) => {
+            const cost = Math.round(item.amt * perL);
+            histHTML += `<div class="summary-card"><span class="summary-date">${item.date}</span><span class="summary-val">${item.amt}ℓ</span><span class="summary-cost">${cost.toLocaleString()}円</span><button class="btn-del-mini" onclick="delHistory(${idx})">消去</button></div>`;
+        });
+        document.getElementById('historyListArea').innerHTML = histHTML || '<div style="text-align:center; color:#555; padding:20px;">履歴なし</div>';
 
+        document.getElementById('logicArea').innerHTML = `
+            <div class="logic-item">・イオン交換容量：${capTotal.toLocaleString()} (ppm・ℓ)</div>
+            <div class="logic-item">・算出寿命：${Math.floor(cap).toLocaleString()} ℓ (水質 ${d.ppm}ppm)</div>
+            <div class="logic-item blue-text">・1ℓ単価：約 ${perL.toFixed(1)}円</div>
+            <div class="logic-item blue-text">・1回平均コスト：${avg > 0 ? Math.round(avg * perL).toLocaleString() : "--"} 円</div>`;
+        document.getElementById('modalOverlay').style.display='flex';
+    }
+    function closeDetail() { document.getElementById('modalOverlay').style.display='none'; }
+
+    let longTimer;
+    const rb = document.getElementById('resetBtn');
+    rb.addEventListener('touchstart', (e) => { e.preventDefault(); longTimer = setTimeout(() => { if(confirm("累計記録をリセット？")){ d.used=0; d.history=[]; d.logs={}; up(); } }, 1000); });
+    rb.addEventListener('touchend', () => clearTimeout(longTimer));
     up();
 </script>
 </body>
