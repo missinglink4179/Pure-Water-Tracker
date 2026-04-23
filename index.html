@@ -359,7 +359,7 @@
     }
 
     function save() { 
-        if (!d.ppm) { alert("先にPPMを入力してください"); return; }
+        if (!d.ppm) { alert("下記の設定欄にPPMを入力してください"); return; }
         vib(30);
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -391,7 +391,7 @@
     }
 
     function showDetail() {
-        if (!d.ppm) { alert("先にPPMを入力してください"); return; }
+        if (!d.ppm) { alert("下記の設定欄にPPMを入力してください"); return; }
         const resinPrice = (d.m === 'PRO' ? 12980 : 9878);
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         const histDiv = document.getElementById('historyList');
