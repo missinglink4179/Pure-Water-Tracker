@@ -118,6 +118,15 @@
 <div class="container">
     <div class="top-title">pure-water-tracker</div>
     
+    <div id="guideBox" class="logic-box" style="margin-bottom:20px; border:1px solid var(--accent-blue); display:none;">
+        <div style="color:var(--accent-blue); font-weight:bold; margin-bottom:8px;">STEP 1: 準備</div>
+        <p style="margin:0 0 10px 0;">まずは下の「水道水硬度」にPPMを入力してください。</p>
+        <div style="color:var(--accent-blue); font-weight:bold; margin-bottom:8px;">STEP 2: 記録</div>
+        <p style="margin:0 0 10px 0;">洗車が終わったら、使用量を「＋」で入力して保存します。</p>
+        <div style="color:var(--accent-blue); font-weight:bold; margin-bottom:8px;">STEP 3: 管理</div>
+        <p style="margin:0;">寿命予測やコストが自動で算出されます。</p>
+    </div>
+
     <div id="hSec" class="header-section">
         <div class="label-xs">交換まであと</div>
         <div class="main-val-wrap" id="mainValWrap" onclick="showDetail()">
@@ -268,6 +277,7 @@
         const body = document.body;
         const remL = document.getElementById('remL');
         const saveBtn = document.getElementById('saveBtn');
+        const guideBox = document.getElementById('guideBox'); // 追加：ガイド要素
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const monthUsed = d.logs[monthKey] || 0;
@@ -281,6 +291,7 @@
             document.getElementById('remCount').innerText = '--';
             document.getElementById('costDisp').innerText = '0 円';
             document.getElementById('predictDate').innerText = '寿命予測：--/--頃';
+            if (guideBox) guideBox.style.display = 'block'; // 追加：PPM未入力ならガイドを表示
         } else {
             const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
             const rem = Math.max(0, cap - d.used);
@@ -297,6 +308,7 @@
             const monthlyCost = Math.round((monthUsed / cap) * resinPrice);
             document.getElementById('costDisp').innerText = monthlyCost.toLocaleString() + ' 円';
             document.getElementById('predictDate').innerText = `寿命予測：${calculatePredictDate(rem, recentAvg)}頃`;
+            if (guideBox) guideBox.style.display = 'none'; // 追加：PPM入力済みならガイドを非表示
         }
         
         document.getElementById('totalUsed').innerText = d.used + ' ℓ';
@@ -350,7 +362,7 @@
     }
 
     function showDetail() {
-        if (!d.ppm) return;
+        if (!d.ppm) { alert("先にPPMを入力してください"); return; } // 追加：未入力時のアラート
         const resinPrice = (d.m === 'PRO' ? 12980 : 9878);
         const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
         const histDiv = document.getElementById('historyList');
