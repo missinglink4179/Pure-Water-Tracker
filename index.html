@@ -22,14 +22,36 @@
         body.alert-red { background-color: var(--alert-deep-red); }
 
         .container { width: 100%; max-width: 380px; }
-        .top-title { font-size: 12px; color: var(--text-sub); text-align: center; margin-bottom: 25px; }
+        
+        /* タイトルの強調デザイン */
+        .top-title { 
+            font-size: 14px; 
+            font-weight: 700;
+            color: var(--text-sub); 
+            text-align: center; 
+            margin-bottom: 30px; 
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #fff 0%, #666 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.8;
+        }
         
         .header-section { text-align: center; margin-bottom: 20px; padding: 20px 10px; border-radius: 24px; }
 
         .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
         
         .main-val-wrap { position: relative; display: inline-block; margin-bottom: 15px; cursor: pointer; }
-        .main-val { font-size: 64px; font-weight: 800; line-height: 1; transition: color 0.3s; }
+        
+        /* 数値の強調デザイン */
+        .main-val { 
+            font-size: 68px; 
+            font-weight: 800; 
+            line-height: 1; 
+            transition: color 0.3s; 
+            text-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
         .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
         .no-ppm-alert { font-size: 24px; color: var(--text-sub); font-weight: bold; }
 
