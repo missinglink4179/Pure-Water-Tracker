@@ -38,7 +38,7 @@
             opacity: 0.8;
         }
 
-        /* 改善③：10%通知用アラートバー */
+        /* 10%通知用アラートバー */
         .notice-bar {
             width: 100%;
             background: var(--accent-red);
@@ -140,8 +140,6 @@
         
         .history-item { position: relative; display: flex; flex-direction: column; padding: 12px 10px; border-bottom: 1px solid #2c2c2e; overflow: hidden; margin-bottom: 4px; border-radius: 8px; background: rgba(255,255,255,0.02); }
         .avg-guide-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 1.5px; background: #ffffff; z-index: 2; opacity: 0.5; }
-        
-        /* 改善④：平均ラインラベル */
         .avg-label { position: absolute; left: 51%; top: 2px; font-size: 7px; color: #fff; z-index: 4; opacity: 0.8; background: rgba(0,0,0,0.5); padding: 1px 3px; border-radius: 2px; }
 
         .graph-bar-left { position: absolute; top: 0; bottom: 0; left: 0; z-index: 0; transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1); opacity: 0.35; }
@@ -155,7 +153,7 @@
         .logic-box { font-size: 11px; color: var(--text-sub); background: #111; padding: 12px; border-radius: 8px; line-height: 1.6; }
         .btn-close { width:100%; background: #3a3a3c; border:none; color:white; padding:12px; border-radius:12px; margin-top:10px; font-weight:bold; }
 
-        /* 改善⑤：トースト表示用 */
+        /* トースト表示用 */
         #toast { position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); background: rgba(52, 199, 89, 0.9); color: white; padding: 12px 24px; border-radius: 25px; font-size: 14px; font-weight: bold; display: none; z-index: 2000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
         .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.8; padding-bottom: 100px; }
@@ -297,14 +295,12 @@
 
 <script>
     const STORAGE_KEY = 'pwMasterV4';
-    // 改善⑥：lastResetの初期値追加
     let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { 
         ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [], lastReset: null
     };
 
     function vib(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
 
-    // 改善⑤：トースト表示関数
     function showToast(msg) {
         const t = document.getElementById('toast');
         t.innerText = msg;
@@ -377,7 +373,6 @@
             remL.innerHTML = Math.floor(rem) + '<span class="unit-l">ℓ</span>';
             document.getElementById('remCount').innerText = Math.floor(rem / recentAvg);
             
-            // 改善③：10%通知判定
             if (ratio < 0.1) { 
                 remL.style.color = 'var(--accent-red)'; 
                 body.classList.add('alert-red'); 
@@ -396,7 +391,6 @@
         document.getElementById('monthUsed').innerText = monthUsed + ' ℓ';
         document.getElementById('inVal').innerText = d.in;
 
-        // 改善⑥：前回交換日表示の更新
         if (d.lastReset) {
             const lr = new Date(d.lastReset);
             document.getElementById('lastResetDate').innerText = `${lr.getFullYear()}/${lr.getMonth()+1}/${lr.getDate()}`;
@@ -444,7 +438,7 @@
             d.used += d.in; 
             d.logs[monthKey] = (d.logs[monthKey] || 0) + d.in;
             
-            // 改善⑤：トースト表示
+            // 修正箇所：呼び出しを追加
             showToast("記録を保存しました");
         }
         d.in = 0; up();
@@ -466,7 +460,6 @@
             if (h.level === 'danger') { color = 'var(--accent-red)'; label = `🔥多すぎ (+${h.wasteL}ℓ 約${h.wasteCost}円ロス)`; }
             else if (h.level === 'warn') { color = 'var(--accent-yellow)'; label = `⚠️多め (+${h.wasteL}ℓ 約${h.wasteCost}円ロス)`; }
 
-            // 改善④：平均ラインラベル追加
             histDiv.innerHTML += `
                 <div class="history-item">
                     <div class="avg-guide-line"></div>
@@ -516,7 +509,6 @@
             if(confirm("樹脂の使用記録をリセットしますか？")) { 
                 d.used = 0; 
                 d.in = 0; 
-                // 改善⑥：交換日を記録
                 d.lastReset = new Date().getTime();
                 up(); 
                 showToast("樹脂をリセットしました");
