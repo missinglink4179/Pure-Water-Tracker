@@ -62,13 +62,13 @@
 
         .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
         
-        .main-val-wrap { position: relative; display: inline-block; margin-bottom: 15px; cursor: pointer; }
+        .main-val-wrap { position: relative; display: inline-block; margin-bottom: 5px; cursor: pointer; }
         
         /* 数値の強調デザイン */
         .main-val { 
             font-size: 68px; 
             font-weight: 800; 
-            line-height: 1; 
+            line-height: 1.1; 
             transition: color 0.3s; 
             text-shadow: 0 0 20px rgba(255,255,255,0.1);
         }
@@ -78,7 +78,7 @@
         .main-val-wrap::after {
             content: '';
             position: absolute;
-            bottom: -8px;
+            bottom: -2px;
             left: 0;
             width: 0%;
             height: 4px;
@@ -90,6 +90,16 @@
         .main-val-wrap.resetting .main-val { color: var(--accent-blue) !important; }
         .main-val-wrap.resetting::after { opacity: 1; }
         .main-val-wrap.reset-active::after { width: 100%; transition: width 1.0s linear; }
+
+        /* 前回交換日の配置修正 */
+        .last-reset-label {
+            font-size: 10px;
+            color: white;
+            font-weight: bold;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
 
         .btn-detail { background: none; border: 1px solid #3a3a3c; color: var(--text-sub); padding: 8px 16px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.2s; margin-bottom: 10px; }
 
@@ -153,7 +163,6 @@
         .logic-box { font-size: 11px; color: var(--text-sub); background: #111; padding: 12px; border-radius: 8px; line-height: 1.6; }
         .btn-close { width:100%; background: #3a3a3c; border:none; color:white; padding:12px; border-radius:12px; margin-top:10px; font-weight:bold; }
 
-        /* トースト表示用 */
         #toast { position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); background: rgba(52, 199, 89, 0.9); color: white; padding: 12px 24px; border-radius: 25px; font-size: 14px; font-weight: bold; display: none; z-index: 2000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
         .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.8; padding-bottom: 100px; }
@@ -178,10 +187,11 @@
 
     <div id="hSec" class="header-section">
         <div class="label-xs">交換まであと</div>
-        <div id="lastResetDisp" class="label-xs" style="margin-top: -4px; margin-bottom: 12px; color: white; font-weight: bold;">前回交換：----/--/--</div>
         <div class="main-val-wrap" id="mainValWrap" onclick="showDetail()">
             <span class="main-val" id="remL"><span class="no-ppm-alert">PPMを入力</span></span>
         </div>
+        <div id="lastResetDisp" class="last-reset-label">前回交換：----/--/--</div>
+        
         <button class="btn-detail" onclick="showDetail()">コンディション詳細</button>
     </div>
 
@@ -250,14 +260,12 @@
         <div class="foot-h">Information</div>
         本アプリは「ピュアニッシュ PRO / JUST」の仕様を参考にした個人開発の非公式管理ツールです。<br>
         ※製造・監修元各社様とは一切関係ありません。<br>
-        
         <div class="foot-h">Terms of Use</div>
         ・本アプリは非営利目的で制作・公開されています。<br>
         ・個人利用の範囲内でご活用ください。<br>
         ・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>
         ・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
         ・無断転載・再配布、および商用利用を固く禁じます。<br>
-        
         <br>Version 1.1.0<br>
         © 2026 missing link. All rights reserved.
     </div>
@@ -296,6 +304,7 @@
 
 <script>
     const STORAGE_KEY = 'pwMasterV4';
+    // リセットせず既存データを読み込む
     let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { 
         ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [], lastReset: null
     };
