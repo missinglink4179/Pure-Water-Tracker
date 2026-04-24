@@ -37,6 +37,26 @@
             -webkit-text-fill-color: transparent;
             opacity: 0.8;
         }
+
+        /* 改善③：10%通知用アラートバー */
+        .notice-bar {
+            width: 100%;
+            background: var(--accent-red);
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
         
         .header-section { text-align: center; margin-bottom: 20px; padding: 20px 10px; border-radius: 24px; }
 
@@ -120,6 +140,10 @@
         
         .history-item { position: relative; display: flex; flex-direction: column; padding: 12px 10px; border-bottom: 1px solid #2c2c2e; overflow: hidden; margin-bottom: 4px; border-radius: 8px; background: rgba(255,255,255,0.02); }
         .avg-guide-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 1.5px; background: #ffffff; z-index: 2; opacity: 0.5; }
+        
+        /* 改善④：平均ラインラベル */
+        .avg-label { position: absolute; left: 51%; top: 2px; font-size: 7px; color: #fff; z-index: 4; opacity: 0.8; background: rgba(0,0,0,0.5); padding: 1px 3px; border-radius: 2px; }
+
         .graph-bar-left { position: absolute; top: 0; bottom: 0; left: 0; z-index: 0; transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1); opacity: 0.35; }
         .hist-main { position: relative; z-index: 3; display: flex; width: 100%; justify-content: space-between; align-items: center; font-size: 13px; }
         .hist-sub { position: relative; z-index: 3; width: 100%; font-size: 10px; text-align: right; margin-top: 4px; font-weight: bold; }
@@ -131,6 +155,9 @@
         .logic-box { font-size: 11px; color: var(--text-sub); background: #111; padding: 12px; border-radius: 8px; line-height: 1.6; }
         .btn-close { width:100%; background: #3a3a3c; border:none; color:white; padding:12px; border-radius:12px; margin-top:10px; font-weight:bold; }
 
+        /* 改善⑤：トースト表示用 */
+        #toast { position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); background: rgba(52, 199, 89, 0.9); color: white; padding: 12px 24px; border-radius: 25px; font-size: 14px; font-weight: bold; display: none; z-index: 2000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
         .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.8; padding-bottom: 100px; }
         .foot-h { font-weight: bold; color: #777; margin-top: 15px; }
     </style>
@@ -139,6 +166,8 @@
 
 <div class="container">
     <div class="top-title">pure-water-tracker</div>
+
+    <div id="noticeBar" class="notice-bar">⚠️ イオン交換樹脂の寿命が近づいています</div>
     
     <div id="guideBox" class="logic-box" style="margin-bottom:20px; border:1px solid var(--accent-blue); display:none;">
         <div style="color:var(--accent-blue); font-weight:bold; margin-bottom:8px;">STEP 1: 準備</div>
@@ -200,6 +229,10 @@
             <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST (2個)</button>
         </div>
         
+        <div style="font-size:10px; color:var(--text-sub); text-align:center; margin-top:15px; border-top: 1px solid #2c2c2e; padding-top:10px;">
+            前回樹脂リセット日：<span id="lastResetDate" style="color:white; font-weight:bold;">----/--/--</span>
+        </div>
+
         <div class="backup-section">
             <div class="backup-label">データ移行・復元</div>
             <div class="backup-guide">
@@ -226,10 +259,12 @@
         ・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
         ・無断転載・再配布、および商用利用を固く禁じます。<br>
         
-        <br>Version 1.0.0<br>
+        <br>Version 1.1.0<br>
         © 2026 missing link. All rights reserved.
     </div>
 </div>
+
+<div id="toast">保存しました</div>
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeDetail()">
     <div class="modal-content" onclick="event.stopPropagation()">
@@ -262,11 +297,20 @@
 
 <script>
     const STORAGE_KEY = 'pwMasterV4';
+    // 改善⑥：lastResetの初期値追加
     let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { 
-        ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [] 
+        ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [], lastReset: null
     };
 
     function vib(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
+
+    // 改善⑤：トースト表示関数
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 2000);
+    }
 
     function setPPM(val) {
         d.ppm = val === "" ? null : parseInt(val);
@@ -308,6 +352,7 @@
         const remL = document.getElementById('remL');
         const saveBtn = document.getElementById('saveBtn');
         const guideBox = document.getElementById('guideBox');
+        const noticeBar = document.getElementById('noticeBar');
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const monthUsed = d.logs[monthKey] || 0;
@@ -315,6 +360,7 @@
 
         if (d.ppm !== null) document.getElementById('ppmIn').value = d.ppm;
         remL.style.color = ''; body.classList.remove('alert-red');
+        if (noticeBar) noticeBar.style.display = 'none';
 
         if (d.ppm === null || d.ppm === 0) {
             remL.innerHTML = '<span class="no-ppm-alert">PPMを入力</span>';
@@ -331,7 +377,12 @@
             remL.innerHTML = Math.floor(rem) + '<span class="unit-l">ℓ</span>';
             document.getElementById('remCount').innerText = Math.floor(rem / recentAvg);
             
-            if (ratio < 0.1) { remL.style.color = 'var(--accent-red)'; body.classList.add('alert-red'); }
+            // 改善③：10%通知判定
+            if (ratio < 0.1) { 
+                remL.style.color = 'var(--accent-red)'; 
+                body.classList.add('alert-red'); 
+                if (noticeBar) noticeBar.style.display = 'block';
+            }
             else if (ratio < 0.3) { remL.style.color = 'var(--accent-yellow)'; }
             else { remL.style.color = 'var(--accent-green)'; }
 
@@ -344,6 +395,12 @@
         document.getElementById('totalUsed').innerText = d.used + ' ℓ';
         document.getElementById('monthUsed').innerText = monthUsed + ' ℓ';
         document.getElementById('inVal').innerText = d.in;
+
+        // 改善⑥：前回交換日表示の更新
+        if (d.lastReset) {
+            const lr = new Date(d.lastReset);
+            document.getElementById('lastResetDate').innerText = `${lr.getFullYear()}/${lr.getMonth()+1}/${lr.getDate()}`;
+        }
         
         if (d.in > 0) {
             saveBtn.innerText = '記録を保存';
@@ -386,6 +443,9 @@
             
             d.used += d.in; 
             d.logs[monthKey] = (d.logs[monthKey] || 0) + d.in;
+            
+            // 改善⑤：トースト表示
+            showToast("記録を保存しました");
         }
         d.in = 0; up();
     }
@@ -406,9 +466,11 @@
             if (h.level === 'danger') { color = 'var(--accent-red)'; label = `🔥多すぎ (+${h.wasteL}ℓ 約${h.wasteCost}円ロス)`; }
             else if (h.level === 'warn') { color = 'var(--accent-yellow)'; label = `⚠️多め (+${h.wasteL}ℓ 約${h.wasteCost}円ロス)`; }
 
+            // 改善④：平均ラインラベル追加
             histDiv.innerHTML += `
                 <div class="history-item">
                     <div class="avg-guide-line"></div>
+                    <div class="avg-label">平均ライン</div>
                     <div class="graph-bar-left" style="width:${barWidth}%; background:${color};"></div>
                     <div class="hist-main">
                         <span>${h.date}</span>
@@ -451,7 +513,14 @@
         vib(10);
         longClickTimer = setTimeout(() => {
             vib([50, 30, 50]);
-            if(confirm("樹脂の使用記録をリセットしますか？")) { d.used = 0; d.in = 0; up(); }
+            if(confirm("樹脂の使用記録をリセットしますか？")) { 
+                d.used = 0; 
+                d.in = 0; 
+                // 改善⑥：交換日を記録
+                d.lastReset = new Date().getTime();
+                up(); 
+                showToast("樹脂をリセットしました");
+            }
             cancelReset();
         }, 1000);
     };
