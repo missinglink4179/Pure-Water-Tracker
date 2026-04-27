@@ -122,7 +122,8 @@
         .btn-save { width: 100%; display: block; background: var(--accent-green); color: white; padding: 22px; border-radius: 18px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 15px; cursor: pointer; transition: all 0.1s; -webkit-appearance: none; touch-action: manipulation; }
         .btn-save:active { transform: scale(0.97); opacity: 0.9; }
         
-        .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; user-select: none; cursor: pointer; touch-action: none; }
+        .btn-reset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px; border-radius: 12px; font-size: 11px; margin-bottom: 25px; user-select: none; cursor: pointer; touch-action: none; position: relative; overflow: hidden; }
+        .btn-reset-bar { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: rgba(255,69,58,0.25); transition: width 0s linear; border-radius: 12px; }
         
         .settings-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 10px; }
         .settings-title { font-size: 11px; color: var(--accent-green); font-weight: bold; text-align: center; margin-bottom: 15px; }
@@ -167,6 +168,14 @@
 
         .footer { text-align: center; font-size: 10px; color: #555; margin-top: 50px; line-height: 1.8; padding-bottom: 100px; }
         .foot-h { font-weight: bold; color: #777; margin-top: 15px; }
+
+        /* ▼ 追加：全データリセットセクション */
+        .fullreset-section { margin-top: 25px; border-top: 1px dashed #3a3a3c; padding-top: 20px; }
+        .fullreset-label { font-size: 11px; color: var(--accent-red); font-weight: bold; text-align: center; margin-bottom: 10px; }
+        .fullreset-guide { font-size: 9px; color: #666; line-height: 1.4; margin-bottom: 12px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; }
+        .btn-fullreset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px 5px; border-radius: 10px; font-size: 11px; font-weight: bold; cursor: pointer; position: relative; overflow: hidden; user-select: none; touch-action: none; }
+        .btn-fullreset-bar { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: rgba(255,69,58,0.25); transition: width 0s linear; border-radius: 10px; }
+        /* ▲ 追加ここまで */
     </style>
 </head>
 <body>
@@ -225,7 +234,7 @@
     </div>
 
     <button class="btn-save" id="saveBtn" onclick="save()">数値を入力してください</button>
-    <button id="resetBtn" class="btn-reset">長押しで全履歴を消去</button>
+    <button id="resetBtn" class="btn-reset"><div class="btn-reset-bar" id="resetBar"></div>履歴を消去（長押し5秒）</button>
     
     <div class="settings-box">
         <div class="settings-title">設定・樹脂モード</div>
@@ -252,6 +261,15 @@
                 <button class="btn-b" onclick="openTransferModal('import')">読み込み</button>
             </div>
         </div>
+
+        <div class="fullreset-section">
+            <div class="fullreset-label">全データリセット</div>
+            <div class="fullreset-guide">
+                累計使用量・履歴・月別サマリー・前回交換日をすべて初期化します。PPMとモード設定は保持されます。
+            </div>
+            <button class="btn-fullreset" id="fullResetBtn"><div class="btn-fullreset-bar" id="fullResetBar"></div>すべての記録を初期化する（長押し5秒）</button>
+        </div>
+
     </div>
 
     <div class="footer">
@@ -514,6 +532,8 @@
     const startReset = (e) => {
         if (e.type === 'touchstart') e.preventDefault();
         document.getElementById('mainValWrap').classList.add('resetting', 'reset-active');
+        document.getElementById('resetBar').style.transition = 'width 5.0s linear';
+        document.getElementById('resetBar').style.width = '100%';
         vib(10);
         longClickTimer = setTimeout(() => {
             vib([50, 30, 50]);
@@ -525,11 +545,13 @@
                 showToast("樹脂をリセットしました");
             }
             cancelReset();
-        }, 1000);
+        }, 5000);
     };
     const cancelReset = () => {
         clearTimeout(longClickTimer);
         document.getElementById('mainValWrap').classList.remove('resetting', 'reset-active');
+        document.getElementById('resetBar').style.transition = 'width 0s linear';
+        document.getElementById('resetBar').style.width = '0%';
     };
     resetBtn.addEventListener('mousedown', startReset);
     resetBtn.addEventListener('touchstart', startReset, {passive: false});
@@ -567,6 +589,42 @@
         }
     }
     function closeTransferModal() { document.getElementById('transferModal').style.display = 'none'; }
+
+    // ▼ 追加：全データリセット関数（長押し5秒）
+    let fullResetTimer;
+    const fullResetBtn = document.getElementById('fullResetBtn');
+    const fullResetBar = document.getElementById('fullResetBar');
+    const startFullReset = (e) => {
+        if (e.type === 'touchstart') e.preventDefault();
+        vib(10);
+        fullResetBar.style.transition = 'width 5.0s linear';
+        fullResetBar.style.width = '100%';
+        fullResetTimer = setTimeout(() => {
+            vib([50, 30, 50]);
+            if(confirm("すべての記録を初期化しますか？\n（PPMとモード設定は保持されます）")) {
+                d.used = 0;
+                d.in = 0;
+                d.logs = {};
+                d.history = [];
+                d.lastReset = null;
+                document.getElementById('lastResetDate').innerText = '----/--/--';
+                document.getElementById('lastResetDisp').innerText = '前回交換：----/--/--';
+                up();
+                showToast("すべての記録を初期化しました");
+            }
+            cancelFullReset();
+        }, 5000);
+    };
+    const cancelFullReset = () => {
+        clearTimeout(fullResetTimer);
+        fullResetBar.style.transition = 'width 0s linear';
+        fullResetBar.style.width = '0%';
+    };
+    fullResetBtn.addEventListener('mousedown', startFullReset);
+    fullResetBtn.addEventListener('touchstart', startFullReset, {passive: false});
+    window.addEventListener('mouseup', cancelFullReset);
+    window.addEventListener('touchend', cancelFullReset);
+    // ▲ 追加ここまで
 
     up();
 </script>
