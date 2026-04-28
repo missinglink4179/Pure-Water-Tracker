@@ -181,7 +181,7 @@
 <body>
 
 <div class="container">
-    <div class="top-title">ピュアニッシュ 純水管理アプリ</div>
+    <div class="top-title">pure-water-tracker</div>
 
     <div id="noticeBar" class="notice-bar">⚠️ イオン交換樹脂の寿命が近づいています</div>
     
@@ -262,7 +262,6 @@
             </div>
         </div>
 
-        <!-- ▼ 追加：全データリセットセクション -->
         <div class="fullreset-section">
             <div class="fullreset-label">全データリセット</div>
             <div class="fullreset-guide">
@@ -270,7 +269,6 @@
             </div>
             <button class="btn-fullreset" id="fullResetBtn"><div class="btn-fullreset-bar" id="fullResetBar"></div>すべての記録を初期化する（長押し5秒）</button>
         </div>
-        <!-- ▲ 追加ここまで -->
 
     </div>
 
@@ -514,36 +512,10 @@
             summaryDiv.innerHTML += `<div class="history-item"><div class="hist-main"><span>${key}</span><span>${mUsed}ℓ</span><span>${mCost}円</span></div></div>`;
         });
 
-        const recentAvgForAdvice = getRecentAvg();
-        const intervalForAdvice = getAvgInterval();
-        const remForAdvice = Math.max(0, cap - d.used);
-        const remCountForAdvice = Math.floor(remForAdvice / recentAvgForAdvice);
-        const predictDaysForAdvice = Math.floor((remForAdvice / recentAvgForAdvice) * intervalForAdvice);
-        const predictDateObj = new Date(); predictDateObj.setDate(predictDateObj.getDate() + predictDaysForAdvice);
-        const predictDateStr = `${predictDateObj.getMonth()+1}月${predictDateObj.getDate()}日頃`;
-        const logKeys = Object.keys(d.logs).sort();
-        const monthlyAvgCost = logKeys.length > 0 ? Math.round(logKeys.reduce((a,k) => a + Math.round((d.logs[k]/cap)*resinPrice), 0) / logKeys.length) : 0;
-        const now2 = new Date();
-        const monthKey2 = `${now2.getFullYear()}-${String(now2.getMonth()+1).padStart(2,'0')}`;
-        const thisMonthUsed = d.logs[monthKey2] || 0;
-        const thisMonthCost = Math.round((thisMonthUsed / cap) * resinPrice);
-        const monthDiff = monthlyAvgCost > 0 ? thisMonthCost - monthlyAvgCost : 0;
-        const monthDiffStr = monthDiff >= 0 ? `+${monthDiff.toLocaleString()}円` : `${monthDiff.toLocaleString()}円`;
-        const yearCost = monthlyAvgCost > 0 ? (monthlyAvgCost * 12).toLocaleString() : '--';
-        const usageDiffPct = d.history && d.history.length > 0 ? Math.round(((d.history[0].amt - recentAvgForAdvice) / recentAvgForAdvice) * 100) : 0;
-        let usageDiagStr = `・使用量診断: <strong style="color:var(--accent-green);">平均値を保てています</strong>`;
-        if (usageDiffPct > 10) usageDiagStr = `・使用量診断: <strong style="color:var(--accent-yellow);">平均より ${usageDiffPct}% 多めです</strong>`;
-        else if (usageDiffPct < -10) usageDiagStr = `・使用量診断: <strong style="color:var(--accent-green);">平均より ${Math.abs(usageDiffPct)}% 少なめです 👍</strong>`;
         document.getElementById('adviceBox').innerHTML = `
-            ・洗車回数：あと <strong>${remCountForAdvice}回</strong> 分<br>
-            ・今月コスト：${thisMonthCost.toLocaleString()}円（月平均比 <strong>${monthDiffStr}</strong>）<br>
-            ・直近平均使用量: <strong>${recentAvgForAdvice}ℓ</strong><br>
-            ・現在の洗車間隔: <strong>${Math.round(intervalForAdvice * 10) / 10}日</strong> に1回<br>
-            ${usageDiagStr}<br>
-            ・交換コスト目安: ${resinPrice.toLocaleString()}円 / 1サイクル<br>
-            ・交換時期予測: <strong>${predictDateStr}・洗車あと${remCountForAdvice}回</strong><br>
-            ・年間コスト予測: <strong>${yearCost}円</strong>（実績ベース）<br>
-            <span style="color:var(--accent-yellow);">・算出ロジックは記録を更新するとカスタマイズされます</span>`;
+            ・直近平均使用量: <strong>${getRecentAvg()}ℓ</strong><br>
+            ・現在の洗車間隔: <strong>${Math.round(getAvgInterval() * 10) / 10}日</strong> に1回<br>
+            ・交換コスト目安: ${resinPrice.toLocaleString()}円 / 1サイクル`;
         document.getElementById('modalOverlay').style.display = 'flex';
         vib(10);
     }
@@ -655,30 +627,6 @@
     // ▲ 追加ここまで
 
     up();
-
-    // ▼ 追加：起動時1日1回通知
-    (function checkStartupAlert() {
-        if (!d.ppm || d.ppm === 0) return;
-        const todayKey = new Date().toDateString();
-        if (localStorage.getItem('pwAlertDate') === todayKey) return;
-        const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
-        const rem = Math.max(0, cap - d.used);
-        const ratio = rem / cap;
-        const now3 = new Date();
-        const monthKey3 = `${now3.getFullYear()}-${String(now3.getMonth()+1).padStart(2,'0')}`;
-        const thisMonthUsed3 = d.logs[monthKey3] || 0;
-        const logKeys3 = Object.keys(d.logs).filter(k => k !== monthKey3).sort();
-        const monthlyAvg3 = logKeys3.length > 0 ? logKeys3.reduce((a,k) => a + d.logs[k], 0) / logKeys3.length : 0;
-        const msgs = [];
-        if (ratio < 0.1) msgs.push("イオン交換樹脂の残量が少なくなっています。\n交換の準備をはじめましょう。");
-        if (monthlyAvg3 > 0 && thisMonthUsed3 > monthlyAvg3 * 1.2) msgs.push("今月の使用量が平均より多めです。\n洗車回数や水量を振り返ってみましょう。");
-        if (msgs.length > 0) {
-            setTimeout(() => { alert(msgs.join("\n\n")); }, 500);
-            localStorage.setItem('pwAlertDate', todayKey);
-        }
-    })();
-    // ▲ 追加ここまで
-
 </script>
 </body>
 </html>
