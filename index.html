@@ -23,18 +23,65 @@
         .top-title { font-size: 14px; font-weight: 700; color: var(--text-sub); text-align: center; margin-bottom: 30px; letter-spacing: 0.15em; text-transform: uppercase; background: linear-gradient(180deg, #fff 0%, #666 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0.8; }
         .notice-bar { width: 100%; background: var(--accent-red); color: white; font-size: 11px; font-weight: bold; text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 15px; display: none; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-        .header-section { text-align: center; margin-bottom: 20px; padding: 20px 10px; border-radius: 24px; }
-        .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
-        .main-val-wrap { position: relative; display: inline-block; margin-bottom: 5px; cursor: pointer; }
-        .main-val { font-size: 68px; font-weight: 800; line-height: 1.1; transition: color 0.3s; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
-        .unit-l { font-size: 32px; font-weight: 400; margin-left: 4px; }
-        .no-ppm-alert { font-size: 24px; color: var(--text-sub); font-weight: bold; }
-        .main-val-wrap::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0%; height: 4px; background-color: var(--accent-blue); border-radius: 2px; transition: width 0s linear; opacity: 0; }
-        .main-val-wrap.resetting .main-val { color: var(--accent-blue) !important; }
-        .main-val-wrap.resetting::after { opacity: 1; }
-        .main-val-wrap.reset-active::after { width: 100%; transition: width 1.0s linear; }
-        .last-reset-label { font-size: 10px; color: white; font-weight: bold; margin-top: 5px; margin-bottom: 15px; opacity: 0.9; }
+
+        /* ★ リングゲージ */
+        .header-section {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px 10px 20px;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .ring-wrap {
+            position: relative;
+            width: 240px;
+            height: 240px;
+            margin: 0 auto;
+        }
+        .ring-wrap svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            transform: rotate(-90deg);
+        }
+        .ring-inner {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .label-xs-ring {
+            font-size: 10px;
+            color: var(--text-sub);
+            margin-bottom: 4px;
+            letter-spacing: 0.03em;
+        }
+        .main-val {
+            font-size: 58px;
+            font-weight: 800;
+            line-height: 1;
+            transition: color 0.3s;
+            text-shadow: 0 0 24px rgba(52,199,89,0.25);
+        }
+        .unit-l { font-size: 24px; font-weight: 400; color: var(--text-sub); margin-top: 2px; }
+        .ring-pct {
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 6px;
+            letter-spacing: 0.04em;
+            transition: color 0.3s;
+        }
+        .no-ppm-alert { font-size: 13px; color: var(--text-sub); font-weight: bold; line-height: 1.5; display: block; text-align: center; padding: 0 16px; }
+        .ring-below { text-align: center; margin-top: 10px; }
+        .last-reset-label { font-size: 10px; color: white; font-weight: bold; margin-bottom: 8px; opacity: 0.9; }
         .btn-detail { background: none; border: 1px solid #3a3a3c; color: var(--text-sub); padding: 8px 16px; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.2s; margin-bottom: 10px; }
+
+        .label-xs { font-size: 10px; color: var(--text-sub); margin-bottom: 8px; }
         .sub-stats { display: flex; justify-content: space-around; font-size: 11px; color: var(--text-sub); margin-bottom: 25px; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; }
@@ -133,13 +180,37 @@
         <p style="margin:0;">寿命予測やコストが自動で算出されます。</p>
     </div>
 
+    <!-- ★ リングゲージ header-section -->
     <div id="hSec" class="header-section">
-        <div class="label-xs">交換まであと</div>
-        <div class="main-val-wrap" id="mainValWrap" onclick="showDetail()">
-            <span class="main-val" id="remL"><span class="no-ppm-alert">PPMを入力</span></span>
+        <div class="ring-wrap" id="ringWrap">
+            <svg viewBox="0 0 240 240">
+                <circle cx="120" cy="120" r="104"
+                    fill="none" stroke="#2c2c2e" stroke-width="12"/>
+                <circle cx="120" cy="120" r="104"
+                    fill="none" stroke="#ff453a" stroke-width="12"
+                    stroke-dasharray="65.3 588.7"
+                    stroke-dashoffset="1"
+                    opacity="0.2"/>
+                <circle cx="120" cy="120" r="104"
+                    fill="none" stroke="#34c759" stroke-width="12"
+                    stroke-linecap="round"
+                    stroke-dasharray="653"
+                    stroke-dashoffset="653"
+                    id="mainArc"/>
+            </svg>
+            <div class="ring-inner" onclick="showDetail()">
+                <span class="label-xs-ring">交換まであと</span>
+                <span class="main-val" id="remL">
+                    <span class="no-ppm-alert">PPMを入力</span>
+                </span>
+                <span class="unit-l" id="unitLabel" style="display:none;">ℓ</span>
+                <span class="ring-pct" id="ringPct" style="display:none;"></span>
+            </div>
         </div>
-        <div id="lastResetDisp" class="last-reset-label">前回交換：----/--/--</div>
-        <button class="btn-detail" onclick="showDetail()">コンディション詳細</button>
+        <div class="ring-below">
+            <div id="lastResetDisp" class="last-reset-label">前回交換：----/--/--</div>
+            <button class="btn-detail" onclick="showDetail()">コンディション詳細</button>
+        </div>
     </div>
 
     <div class="sub-stats">
@@ -169,6 +240,29 @@
             <button class="btn-q" onclick="add(50)">+50ℓ</button>
             <button class="btn-q" onclick="add(100)">+100ℓ</button>
         </div>
+    </div>
+
+    <!-- ★ 洗車時間入力（任意） -->
+    <div class="wash-memo-box" style="margin-bottom:12px;">
+        <div class="wash-memo-title">⏱️ 洗車時間（任意）</div>
+        <div class="counter-row" style="margin-bottom:10px;">
+            <button class="btn-round" onclick="addTime(-5)">−</button>
+            <div class="current-disp">
+                <span id="timeVal">0</span>
+                <span style="font-size:24px; margin-left:4px; color:var(--text-sub);">分</span>
+            </div>
+            <button class="btn-round" onclick="addTime(5)">＋</button>
+        </div>
+        <button class="btn-clear" onclick="clrTime()">時間をリセット</button>
+        <div class="quick-grid" style="margin-top:10px;">
+            <button class="btn-q" onclick="addTime(30)">+30分</button>
+            <button class="btn-q" onclick="addTime(60)">+1時間</button>
+            <button class="btn-q" onclick="addTime(90)">+1.5h</button>
+            <button class="btn-q" onclick="addTime(120)">+2時間</button>
+            <button class="btn-q" onclick="addTime(150)">+2.5h</button>
+            <button class="btn-q" onclick="addTime(180)">+3時間</button>
+        </div>
+        <div id="washTimeGuide" style="font-size:10px; color:var(--text-sub); text-align:center; margin-top:8px; display:none;"></div>
     </div>
 
     <!-- 施工メモボックス -->
@@ -263,6 +357,11 @@
             </div>
             <div id="historyList"></div>
         </div>
+        <!-- ★ 洗車時間セクション -->
+        <div class="modal-section" id="washTimeSectionWrap" style="display:none;">
+            <div class="modal-label">洗車時間の記録（3件以上で表示）</div>
+            <div id="washTimeSection"></div>
+        </div>
         <div class="modal-section">
             <div class="modal-label-row">
                 <div class="modal-label">月別サマリー</div>
@@ -309,9 +408,10 @@
 <script>
     const STORAGE_KEY = 'pwMasterV4';
     let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-        ppm: null, m: 'PRO', used: 0, in: 0, logs: {}, history: [], lastReset: null, calPref: true
+        ppm: null, m: 'PRO', used: 0, in: 0, washTime: 0, logs: {}, history: [], lastReset: null, calPref: true
     };
     if (d.calPref === undefined) d.calPref = true;
+    if (d.washTime === undefined) d.washTime = 0;
 
     // ── タグ・メモ ──
     let selectedTags = [];
@@ -441,6 +541,34 @@
         return `${target.getMonth() + 1}/${target.getDate()}`;
     }
 
+    // ★ リングゲージ更新関数
+    const RING_CIRCUMFERENCE = 653;
+
+    function updateRing(ratio) {
+        const arc = document.getElementById('mainArc');
+        const pctEl = document.getElementById('ringPct');
+        const unitEl = document.getElementById('unitLabel');
+        if (!arc) return;
+        const offset = RING_CIRCUMFERENCE * (1 - Math.max(0, Math.min(1, ratio)));
+        arc.setAttribute('stroke-dashoffset', offset);
+        let color = '#34c759';
+        if (ratio < 0.1) color = '#ff453a';
+        else if (ratio < 0.3) color = '#ffcc00';
+        arc.setAttribute('stroke', color);
+        pctEl.style.color = color;
+        pctEl.textContent = `残量 ${Math.round(ratio * 100)}%`;
+        pctEl.style.display = 'block';
+        unitEl.style.display = 'block';
+    }
+
+    function hideRingExtras() {
+        document.getElementById('ringPct').style.display = 'none';
+        document.getElementById('unitLabel').style.display = 'none';
+        const arc = document.getElementById('mainArc');
+        arc.setAttribute('stroke-dashoffset', RING_CIRCUMFERENCE);
+        arc.setAttribute('stroke', '#2c2c2e');
+    }
+
     function up() {
         const body = document.body;
         const remL = document.getElementById('remL');
@@ -463,13 +591,15 @@
             document.getElementById('costDisp').innerText = '0 円';
             document.getElementById('predictDate').innerText = '寿命予測：--/--頃';
             if (guideBox) guideBox.style.display = 'block';
+            hideRingExtras();
         } else {
             const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
             const rem = Math.max(0, cap - d.used);
             const ratio = rem / cap;
             const recentAvg = getRecentAvg();
-            remL.innerHTML = Math.floor(rem) + '<span class="unit-l">ℓ</span>';
+            remL.innerHTML = Math.floor(rem);
             document.getElementById('remCount').innerText = Math.floor(rem / recentAvg);
+            updateRing(ratio);
             if (ratio < 0.1) {
                 remL.style.color = 'var(--accent-red)';
                 body.classList.add('alert-red');
@@ -508,6 +638,22 @@
 
         document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
         document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
+
+        // ★ 洗車時間ガイド更新
+        const washTimeGuide = document.getElementById('washTimeGuide');
+        if (washTimeGuide) {
+            const timeCount = (d.history || []).filter(h => h.washTime && h.washTime > 0).length;
+            if (timeCount >= 3) {
+                washTimeGuide.style.display = 'none';
+            } else {
+                const remaining = 3 - timeCount;
+                washTimeGuide.style.display = 'block';
+                washTimeGuide.innerText = timeCount === 0
+                    ? '3回以上記録すると「コンディション詳細」に洗車時間の比較が表示されます'
+                    : `あと${remaining}回記録すると洗車時間の比較が表示されます`;
+            }
+        }
+
         localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
     }
 
@@ -535,7 +681,8 @@
                 ts: now.getTime(),
                 date: `${now.getMonth()+1}/${now.getDate()}`,
                 amt: d.in, cost, wasteL, wasteCost, refAvg: avg, level,
-                tags, memo
+                tags, memo,
+                washTime: d.washTime > 0 ? d.washTime : null
             });
             if (d.history.length > 10) d.history.pop();
             d.used += d.in;
@@ -545,8 +692,10 @@
 
         const totalUsed = d.used;
         d.in = 0;
+        d.washTime = 0;
         clearTags();
         clearMemo();
+        document.getElementById('timeVal').innerText = 0;
         up();
 
         if (document.getElementById('calCheck').checked) {
@@ -569,7 +718,12 @@
 
             const tagsHtml = (h.tags && h.tags.length > 0)
                 ? `<div class="hist-tags">${h.tags.map(t => `<span class="hist-tag">${t}</span>`).join('')}</div>` : '';
-            const memoHtml = h.memo ? `<div class="hist-memo">💬 ${h.memo}</div>` : '';
+
+            // XSS対策：メモはtextContentで描画
+            const memoEl = document.createElement('div');
+            memoEl.className = 'hist-memo';
+            memoEl.textContent = '💬 ' + h.memo;
+            const memoHtml = h.memo ? memoEl.outerHTML : '';
 
             histDiv.innerHTML += `
                 <div class="history-item">
@@ -580,6 +734,27 @@
                     ${tagsHtml}${memoHtml}
                 </div>`;
         });
+
+        // ★ 洗車時間セクション
+        const timeRecords = d.history.filter(h => h.washTime && h.washTime > 0);
+        const timeSection = document.getElementById('washTimeSection');
+        if (timeSection) {
+            if (timeRecords.length >= 3) {
+                const avgTime = Math.round(timeRecords.reduce((a, b) => a + b.washTime, 0) / timeRecords.length);
+                let timeHtml = '';
+                timeRecords.forEach(h => {
+                    const diff = h.washTime - avgTime;
+                    const diffStr = diff === 0 ? '平均と同じ' : diff > 0 ? `平均より${diff}分長い` : `平均より${Math.abs(diff)}分短い`;
+                    const color = diff === 0 ? 'var(--text-sub)' : diff > 0 ? 'var(--accent-yellow)' : 'var(--accent-green)';
+                    timeHtml += `<div class="history-item"><div class="hist-main"><span>${h.date}</span><span style="font-weight:bold;">${h.washTime}分</span></div><div class="hist-sub" style="color:${color}">${diffStr}</div></div>`;
+                });
+                timeHtml += `<div style="font-size:10px; color:var(--text-sub); text-align:right; margin-top:4px;">直近平均：${avgTime}分</div>`;
+                timeSection.innerHTML = timeHtml;
+                document.getElementById('washTimeSectionWrap').style.display = 'block';
+            } else {
+                document.getElementById('washTimeSectionWrap').style.display = 'none';
+            }
+        }
 
         const summaryDiv = document.getElementById('monthSummaryList');
         const sortedLogKeys = Object.keys(d.logs).sort().reverse();
@@ -628,6 +803,8 @@
 
     function clr() { d.in = 0; vib(5); up(); }
     function add(v) { d.in = Math.max(0, d.in + v); vib(5); up(); }
+    function addTime(v) { d.washTime = Math.max(0, (d.washTime || 0) + v); document.getElementById('timeVal').innerText = d.washTime; vib(5); }
+    function clrTime() { d.washTime = 0; document.getElementById('timeVal').innerText = 0; vib(5); }
     function mode(m) { d.m = m; vib(10); up(); }
     function closeDetail() { document.getElementById('modalOverlay').style.display = 'none'; }
     function resetHistory() { if(confirm("履歴をクリアしますか？")) { d.history = []; up(); showDetail(); } }
@@ -637,7 +814,6 @@
     const resetBtn = document.getElementById('resetBtn');
     const startReset = (e) => {
         if (e.type === 'touchstart') e.preventDefault();
-        document.getElementById('mainValWrap').classList.add('resetting', 'reset-active');
         document.getElementById('resetBar').style.transition = 'width 5.0s linear';
         document.getElementById('resetBar').style.width = '100%';
         vib(10);
@@ -652,7 +828,6 @@
     };
     const cancelReset = () => {
         clearTimeout(longClickTimer);
-        document.getElementById('mainValWrap').classList.remove('resetting', 'reset-active');
         document.getElementById('resetBar').style.transition = 'width 0s linear';
         document.getElementById('resetBar').style.width = '0%';
     };
@@ -688,6 +863,7 @@
             try {
                 d = JSON.parse(decodeURIComponent(escape(atob(area.value.trim()))));
                 if (d.calPref === undefined) d.calPref = true;
+                if (d.washTime === undefined) d.washTime = 0;
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
                 up(); alert("復元しました！"); closeTransferModal();
             } catch(e) { alert("不正なコードです"); }
