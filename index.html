@@ -332,8 +332,11 @@
 
     <button id="resetBtn" class="btn-reset">
         <div class="btn-reset-bar" id="resetBar"></div>
-        履歴を消去（長押し5秒）
+        樹脂交換・使用量リセット（長押し5秒）
     </button>
+    <div style="font-size:9px; color:#555; line-height:1.6; margin:-18px 4px 20px; padding:0 4px;">
+        樹脂を交換したらここを長押し。使用量・前回交換日がリセットされます。
+    </div>
 
     <div class="settings-box">
         <div class="settings-title">設定・樹脂モード</div>
@@ -513,7 +516,6 @@
         up();
     }
 
-    // ── タグ・メモ ──
     let selectedTags = [];
 
     function toggleTag(btn, tag) {
@@ -542,7 +544,6 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
     });
 
-    // ── カレンダー連携 ──
     let pendingCalData = null;
 
     function buildCalTitle(amt, totalUsed) {
@@ -603,7 +604,6 @@
         closeCalModal();
     }
 
-    // ── 既存ロジック ──
     function vib(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
 
     function showToast(msg) {
