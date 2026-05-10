@@ -24,7 +24,6 @@
         .notice-bar { width: 100%; background: var(--accent-red); color: white; font-size: 11px; font-weight: bold; text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 15px; display: none; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
-        /* ★ リングゲージ */
         .header-section {
             text-align: center;
             margin-bottom: 20px;
@@ -44,7 +43,6 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            transform: rotate(-90deg);
         }
         .ring-inner {
             position: absolute;
@@ -95,7 +93,6 @@
         .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .btn-q { background: #2c2c2e; border: none; padding: 14px 5px; border-radius: 10px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; touch-action: none; }
 
-        /* ── 施工メモボックス ── */
         .wash-memo-box { background: var(--card-bg); padding: 18px 20px; border-radius: 20px; margin-bottom: 12px; border: 1px solid #2c2c2e; }
         .wash-memo-title { font-size: 11px; color: var(--accent-blue); font-weight: bold; margin-bottom: 12px; }
         .tag-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
@@ -105,7 +102,6 @@
         .memo-input::placeholder { color: #555; }
         .memo-input:focus { border-color: var(--accent-blue); }
 
-        /* ── カレンダー連携 ── */
         .cal-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
         .cal-checkbox { width: 18px; height: 18px; accent-color: var(--accent-green); cursor: pointer; flex-shrink: 0; }
         .cal-label { font-size: 12px; color: var(--text-sub); cursor: pointer; display: flex; align-items: center; gap: 4px; }
@@ -157,13 +153,50 @@
         .btn-fullreset { width: 100%; background: none; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px 5px; border-radius: 10px; font-size: 11px; font-weight: bold; cursor: pointer; position: relative; overflow: hidden; user-select: none; touch-action: none; }
         .btn-fullreset-bar { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: rgba(255,69,58,0.25); transition: width 0s linear; border-radius: 10px; }
 
-        /* カレンダー選択モーダル */
         .cal-picker { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
         .cal-option-btn { background: #2c2c2e; border: 1px solid #3a3a3c; color: white; padding: 14px 16px; border-radius: 12px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.15s; }
         .cal-option-btn:active { opacity: 0.7; }
         .cal-option-btn.apple { border-color: rgba(52,199,89,0.4); }
         .cal-option-btn.google { border-color: rgba(10,132,255,0.4); }
         .cal-option-icon { font-size: 22px; }
+
+        .dual-toggle-row {
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 12px 0;
+            border-bottom: 1px solid #2c2c2e;
+        }
+        .toggle-switch {
+            position: relative; width: 44px; height: 26px; flex-shrink: 0;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #3a3a3c; border-radius: 26px;
+            transition: 0.3s;
+        }
+        .toggle-slider:before {
+            position: absolute; content: "";
+            height: 20px; width: 20px; left: 3px; bottom: 3px;
+            background: white; border-radius: 50%; transition: 0.3s;
+        }
+        input:checked + .toggle-slider { background: var(--accent-blue); }
+        input:checked + .toggle-slider:before { transform: translateX(18px); }
+
+        .dual-sub-box {
+            background: rgba(10,132,255,0.06);
+            border: 1px solid rgba(10,132,255,0.2);
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 8px;
+            margin-bottom: 4px;
+            display: none;
+        }
+        .dual-sub-title {
+            font-size: 11px; font-weight: bold;
+            color: var(--accent-blue); margin-bottom: 10px;
+        }
+        .sub-mode-row { display: flex; gap: 8px; margin-top: 8px; }
     </style>
 </head>
 <body>
@@ -180,23 +213,32 @@
         <p style="margin:0;">寿命予測やコストが自動で算出されます。</p>
     </div>
 
-    <!-- ★ リングゲージ header-section -->
     <div id="hSec" class="header-section">
         <div class="ring-wrap" id="ringWrap">
             <svg viewBox="0 0 240 240">
-                <circle cx="120" cy="120" r="104"
-                    fill="none" stroke="#2c2c2e" stroke-width="12"/>
-                <circle cx="120" cy="120" r="104"
-                    fill="none" stroke="#ff453a" stroke-width="12"
-                    stroke-dasharray="65.3 588.7"
-                    stroke-dashoffset="1"
-                    opacity="0.2"/>
-                <circle cx="120" cy="120" r="104"
-                    fill="none" stroke="#34c759" stroke-width="12"
-                    stroke-linecap="round"
-                    stroke-dasharray="653"
-                    stroke-dashoffset="653"
-                    id="mainArc"/>
+                <g transform="rotate(-90 120 120)">
+                    <circle cx="120" cy="120" r="104"
+                        fill="none" stroke="#2c2c2e" stroke-width="12"/>
+                    <circle cx="120" cy="120" r="104"
+                        fill="none" stroke="#ff453a" stroke-width="12"
+                        stroke-dasharray="65.3 588.7"
+                        stroke-dashoffset="1"
+                        opacity="0.2"/>
+                    <circle cx="120" cy="120" r="104"
+                        fill="none" stroke="#34c759" stroke-width="12"
+                        stroke-linecap="round"
+                        stroke-dasharray="653"
+                        stroke-dashoffset="653"
+                        id="mainArc"/>
+                    <circle cx="120" cy="120" r="104"
+                        fill="none" stroke="#ffcc00" stroke-width="13"
+                        stroke-linecap="round"
+                        stroke-dasharray="0 653"
+                        stroke-dashoffset="0"
+                        transform="scale(-1,1) translate(-240,0)"
+                        id="overArc"
+                        opacity="0"/>
+                </g>
             </svg>
             <div class="ring-inner" onclick="showDetail()">
                 <span class="label-xs-ring">交換まであと</span>
@@ -242,7 +284,6 @@
         </div>
     </div>
 
-    <!-- ★ 洗車時間入力（任意） -->
     <div class="wash-memo-box" style="margin-bottom:12px;">
         <div class="wash-memo-title">⏱️ 洗車時間（任意）</div>
         <div class="counter-row" style="margin-bottom:10px;">
@@ -265,7 +306,6 @@
         <div id="washTimeGuide" style="font-size:10px; color:var(--text-sub); text-align:center; margin-top:8px; display:none;"></div>
     </div>
 
-    <!-- 施工メモボックス -->
     <div class="wash-memo-box">
         <div class="wash-memo-title">📋 施工内容・メモ（任意）</div>
         <div class="tag-grid" id="tagGrid">
@@ -283,7 +323,6 @@
         <textarea id="memoInput" class="memo-input" rows="2" placeholder="一言メモ（例：花粉多かったので2度洗い）"></textarea>
     </div>
 
-    <!-- カレンダー連携チェック -->
     <div class="cal-row">
         <input type="checkbox" id="calCheck" class="cal-checkbox" checked>
         <label for="calCheck" class="cal-label"><span>📅</span> カレンダーに記録する</label>
@@ -306,6 +345,29 @@
             <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO (3個)</button>
             <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST (2個)</button>
         </div>
+
+        <!-- 2連結モード -->
+        <div class="dual-toggle-row" style="margin-top:15px;">
+            <div>
+                <span class="label-xs" style="color:#fff; font-size:12px;">2連結モード</span>
+                <div style="font-size:9px; color:#666; margin-top:2px;">純水器を2台連結して使用している場合にON</div>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="dualToggle" onchange="onDualToggle(this.checked)">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
+        <div id="dualSubBox" class="dual-sub-box">
+            <div class="dual-sub-title">🔗 2台目の設定（ピュアニッシュ）</div>
+            <div style="font-size:11px; color:#fff; margin-bottom:6px;">機種を選択してください</div>
+            <div class="sub-mode-row">
+                <button id="subPRO" class="btn-m" onclick="setSubMode('PRO')">PRO</button>
+                <button id="subJUST" class="btn-m" onclick="setSubMode('JUST')">JUST</button>
+                <button id="subJU" class="btn-m" onclick="setSubMode('JU')">無印</button>
+            </div>
+        </div>
+
         <div style="font-size:10px; color:var(--text-sub); text-align:center; margin-top:15px; border-top: 1px solid #2c2c2e; padding-top:10px;">
             前回樹脂リセット日：<span id="lastResetDate" style="color:white; font-weight:bold;">----/--/--</span>
         </div>
@@ -357,7 +419,6 @@
             </div>
             <div id="historyList"></div>
         </div>
-        <!-- ★ 洗車時間セクション -->
         <div class="modal-section" id="washTimeSectionWrap" style="display:none;">
             <div class="modal-label">洗車時間の記録（3件以上で表示）</div>
             <div id="washTimeSection"></div>
@@ -408,10 +469,49 @@
 <script>
     const STORAGE_KEY = 'pwMasterV4';
     let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-        ppm: null, m: 'PRO', used: 0, in: 0, washTime: 0, logs: {}, history: [], lastReset: null, calPref: true
+        ppm: null, m: 'PRO', used: 0, in: 0, washTime: 0, logs: {}, history: [], lastReset: null, calPref: true,
+        isDual: false, subMode: 'PRO'
     };
     if (d.calPref === undefined) d.calPref = true;
     if (d.washTime === undefined) d.washTime = 0;
+    if (d.isDual === undefined) d.isDual = false;
+    if (d.subMode === undefined) d.subMode = 'PRO';
+
+    const PURENISH_PRESETS = {
+        PRO:  { cap: 180000, price: 12980 },
+        JUST: { cap: 90000,  price: 9878  },
+        JU:   { cap: 36000,  price: 4902  }
+    };
+
+    function calcCap() {
+        const mainCap = PURENISH_PRESETS[d.m].cap / d.ppm;
+        if (d.isDual) {
+            const subCap = PURENISH_PRESETS[d.subMode].cap / d.ppm;
+            return mainCap + subCap;
+        }
+        return mainCap;
+    }
+
+    function calcTotalPrice() {
+        if (d.isDual) return PURENISH_PRESETS[d.m].price + PURENISH_PRESETS[d.subMode].price;
+        return PURENISH_PRESETS[d.m].price;
+    }
+
+    function onDualToggle(checked) {
+        d.isDual = checked;
+        document.getElementById('dualSubBox').style.display = checked ? 'block' : 'none';
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+        up();
+    }
+
+    function setSubMode(m) {
+        d.subMode = m;
+        document.getElementById('subPRO').className = m === 'PRO' ? 'btn-m active' : 'btn-m';
+        document.getElementById('subJUST').className = m === 'JUST' ? 'btn-m active' : 'btn-m';
+        document.getElementById('subJU').className = m === 'JU' ? 'btn-m active' : 'btn-m';
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+        up();
+    }
 
     // ── タグ・メモ ──
     let selectedTags = [];
@@ -434,7 +534,6 @@
     function getMemo() { return document.getElementById('memoInput').value.trim(); }
     function clearMemo() { document.getElementById('memoInput').value = ''; }
 
-    // カレンダーチェック状態
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('calCheck').checked = d.calPref;
     });
@@ -534,29 +633,44 @@
     }
 
     function calculatePredictDate(remaining, avgUsage) {
-        if (!avgUsage || avgUsage <= 0 || remaining <= 0) return "--/--";
+        if (!avgUsage || avgUsage <= 0) return "--/--";
         const daysRem = Math.floor((remaining / avgUsage) * getAvgInterval());
         const target = new Date();
         target.setDate(target.getDate() + daysRem);
         return `${target.getMonth() + 1}/${target.getDate()}`;
     }
 
-    // ★ リングゲージ更新関数
     const RING_CIRCUMFERENCE = 653;
 
     function updateRing(ratio) {
         const arc = document.getElementById('mainArc');
+        const overArc = document.getElementById('overArc');
         const pctEl = document.getElementById('ringPct');
         const unitEl = document.getElementById('unitLabel');
         if (!arc) return;
-        const offset = RING_CIRCUMFERENCE * (1 - Math.max(0, Math.min(1, ratio)));
-        arc.setAttribute('stroke-dashoffset', offset);
-        let color = '#34c759';
-        if (ratio < 0.1) color = '#ff453a';
-        else if (ratio < 0.3) color = '#ffcc00';
-        arc.setAttribute('stroke', color);
-        pctEl.style.color = color;
-        pctEl.textContent = `残量 ${Math.round(ratio * 100)}%`;
+
+        if (ratio >= 0) {
+            const offset = RING_CIRCUMFERENCE * (1 - Math.min(1, ratio));
+            arc.setAttribute('stroke-dashoffset', offset);
+            let color = '#34c759';
+            if (ratio < 0.1) color = '#ff453a';
+            else if (ratio < 0.3) color = '#ffcc00';
+            arc.setAttribute('stroke', color);
+            arc.setAttribute('opacity', '1');
+            overArc.setAttribute('stroke-dasharray', `0 ${RING_CIRCUMFERENCE}`);
+            overArc.setAttribute('opacity', '0');
+            pctEl.style.color = color;
+            pctEl.textContent = `残量 ${Math.round(ratio * 100)}%`;
+        } else {
+            arc.setAttribute('stroke-dashoffset', RING_CIRCUMFERENCE);
+            arc.setAttribute('opacity', '0.15');
+            const overRatio = Math.abs(ratio);
+            const overDash = Math.min(RING_CIRCUMFERENCE, overRatio * RING_CIRCUMFERENCE * 3);
+            overArc.setAttribute('stroke-dasharray', `${overDash} ${RING_CIRCUMFERENCE}`);
+            overArc.setAttribute('opacity', '0.95');
+            pctEl.style.color = '#ffcc00';
+            pctEl.textContent = `+${Math.round(overRatio * 100)}%`;
+        }
         pctEl.style.display = 'block';
         unitEl.style.display = 'block';
     }
@@ -567,6 +681,10 @@
         const arc = document.getElementById('mainArc');
         arc.setAttribute('stroke-dashoffset', RING_CIRCUMFERENCE);
         arc.setAttribute('stroke', '#2c2c2e');
+        arc.setAttribute('opacity', '1');
+        const overArc = document.getElementById('overArc');
+        overArc.setAttribute('stroke-dasharray', `0 ${RING_CIRCUMFERENCE}`);
+        overArc.setAttribute('opacity', '0');
     }
 
     function up() {
@@ -578,12 +696,19 @@
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const monthUsed = d.logs[monthKey] || 0;
-        const resinPrice = (d.m === 'PRO' ? 12980 : 9878);
 
         if (d.ppm !== null) document.getElementById('ppmIn').value = d.ppm;
         remL.style.color = '';
         body.classList.remove('alert-red');
         if (noticeBar) noticeBar.style.display = 'none';
+
+        document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
+        document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
+        document.getElementById('dualToggle').checked = d.isDual;
+        document.getElementById('dualSubBox').style.display = d.isDual ? 'block' : 'none';
+        document.getElementById('subPRO').className = d.subMode === 'PRO' ? 'btn-m active' : 'btn-m';
+        document.getElementById('subJUST').className = d.subMode === 'JUST' ? 'btn-m active' : 'btn-m';
+        document.getElementById('subJU').className = d.subMode === 'JU' ? 'btn-m active' : 'btn-m';
 
         if (d.ppm === null || d.ppm === 0) {
             remL.innerHTML = '<span class="no-ppm-alert">PPMを入力</span>';
@@ -593,25 +718,33 @@
             if (guideBox) guideBox.style.display = 'block';
             hideRingExtras();
         } else {
-            const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
-            const rem = Math.max(0, cap - d.used);
+            const cap = calcCap();
+            const totalPrice = calcTotalPrice();
+            const rem = cap - d.used;
             const ratio = rem / cap;
             const recentAvg = getRecentAvg();
-            remL.innerHTML = Math.floor(rem);
-            document.getElementById('remCount').innerText = Math.floor(rem / recentAvg);
-            updateRing(ratio);
-            if (ratio < 0.1) {
-                remL.style.color = 'var(--accent-red)';
-                body.classList.add('alert-red');
-                if (noticeBar) noticeBar.style.display = 'block';
-            } else if (ratio < 0.3) {
-                remL.style.color = 'var(--accent-yellow)';
+
+            if (rem < 0) {
+                remL.innerHTML = Math.floor(rem);
+                remL.style.color = '#ffcc00';
             } else {
-                remL.style.color = 'var(--accent-green)';
+                remL.innerHTML = Math.floor(rem);
+                if (ratio < 0.1) {
+                    remL.style.color = 'var(--accent-red)';
+                    body.classList.add('alert-red');
+                    if (noticeBar) noticeBar.style.display = 'block';
+                } else if (ratio < 0.3) {
+                    remL.style.color = 'var(--accent-yellow)';
+                } else {
+                    remL.style.color = 'var(--accent-green)';
+                }
             }
-            const monthlyCost = Math.round((monthUsed / cap) * resinPrice);
+
+            updateRing(ratio);
+            document.getElementById('remCount').innerText = rem > 0 ? Math.floor(rem / recentAvg) : '--';
+            const monthlyCost = Math.round((monthUsed / cap) * totalPrice);
             document.getElementById('costDisp').innerText = monthlyCost.toLocaleString() + ' 円';
-            document.getElementById('predictDate').innerText = `寿命予測：${calculatePredictDate(rem, recentAvg)}頃`;
+            document.getElementById('predictDate').innerText = rem > 0 ? `寿命予測：${calculatePredictDate(rem, recentAvg)}頃` : '理論値超過中';
             if (guideBox) guideBox.style.display = 'none';
         }
 
@@ -636,10 +769,6 @@
             saveBtn.style.pointerEvents = "none";
         }
 
-        document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
-        document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
-
-        // ★ 洗車時間ガイド更新
         const washTimeGuide = document.getElementById('washTimeGuide');
         if (washTimeGuide) {
             const timeCount = (d.history || []).filter(h => h.washTime && h.washTime > 0).length;
@@ -662,9 +791,9 @@
         vib(30);
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-        const resinPrice = (d.m === 'PRO' ? 12980 : 9878);
-        const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
-        const cost = Math.round((d.in / cap) * resinPrice);
+        const cap = calcCap();
+        const totalPrice = calcTotalPrice();
+        const cost = Math.round((d.in / cap) * totalPrice);
         const avg = getRecentAvg();
         const tags = [...selectedTags];
         const memo = getMemo();
@@ -672,7 +801,7 @@
 
         if (d.in > 0) {
             const wasteL = Math.max(0, d.in - avg);
-            const wasteCost = Math.round((wasteL / cap) * resinPrice);
+            const wasteCost = Math.round((wasteL / cap) * totalPrice);
             let level = 'normal';
             if (d.in > avg * 1.5) level = 'danger';
             else if (d.in > avg * 1.2) level = 'warn';
@@ -705,8 +834,8 @@
 
     function showDetail() {
         if (!d.ppm) { alert("下記の設定欄にPPMを入力してください"); return; }
-        const resinPrice = (d.m === 'PRO' ? 12980 : 9878);
-        const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
+        const cap = calcCap();
+        const totalPrice = calcTotalPrice();
         const histDiv = document.getElementById('historyList');
         histDiv.innerHTML = d.history.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">履歴なし</div>';
         d.history.forEach(h => {
@@ -719,7 +848,6 @@
             const tagsHtml = (h.tags && h.tags.length > 0)
                 ? `<div class="hist-tags">${h.tags.map(t => `<span class="hist-tag">${t}</span>`).join('')}</div>` : '';
 
-            // XSS対策：メモはtextContentで描画
             const memoEl = document.createElement('div');
             memoEl.className = 'hist-memo';
             memoEl.textContent = '💬 ' + h.memo;
@@ -735,7 +863,6 @@
                 </div>`;
         });
 
-        // ★ 洗車時間セクション
         const timeRecords = d.history.filter(h => h.washTime && h.washTime > 0);
         const timeSection = document.getElementById('washTimeSection');
         if (timeSection) {
@@ -761,23 +888,23 @@
         summaryDiv.innerHTML = sortedLogKeys.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">サマリーなし</div>';
         sortedLogKeys.slice(0, 12).forEach(key => {
             const mUsed = d.logs[key];
-            const mCost = Math.round((mUsed / cap) * resinPrice);
+            const mCost = Math.round((mUsed / cap) * totalPrice);
             summaryDiv.innerHTML += `<div class="history-item"><div class="hist-main"><span>${key}</span><span>${mUsed}ℓ</span><span>${mCost}円</span></div></div>`;
         });
 
         const recentAvg = getRecentAvg();
         const interval = getAvgInterval();
-        const rem = Math.max(0, cap - d.used);
-        const remCount = Math.floor(rem / recentAvg);
+        const rem = cap - d.used;
+        const remCount = rem > 0 ? Math.floor(rem / recentAvg) : '--';
         const predictDate = new Date();
         predictDate.setDate(predictDate.getDate() + Math.floor((rem / recentAvg) * interval));
-        const predictStr = `${predictDate.getMonth()+1}月${predictDate.getDate()}日頃`;
+        const predictStr = rem > 0 ? `${predictDate.getMonth()+1}月${predictDate.getDate()}日頃` : '理論値超過中';
         const logKeys = Object.keys(d.logs).sort();
-        const monthlyAvgCost = logKeys.length > 0 ? Math.round(logKeys.reduce((a,k) => a + Math.round((d.logs[k]/cap)*resinPrice), 0) / logKeys.length) : 0;
+        const monthlyAvgCost = logKeys.length > 0 ? Math.round(logKeys.reduce((a,k) => a + Math.round((d.logs[k]/cap)*totalPrice), 0) / logKeys.length) : 0;
         const now2 = new Date();
         const mk2 = `${now2.getFullYear()}-${String(now2.getMonth()+1).padStart(2,'0')}`;
         const thisMonthUsed = d.logs[mk2] || 0;
-        const thisMonthCost = Math.round((thisMonthUsed / cap) * resinPrice);
+        const thisMonthCost = Math.round((thisMonthUsed / cap) * totalPrice);
         const monthDiff = monthlyAvgCost > 0 ? thisMonthCost - monthlyAvgCost : 0;
         const monthDiffStr = monthDiff >= 0 ? `+${monthDiff.toLocaleString()}円` : `${monthDiff.toLocaleString()}円`;
         const yearCost = monthlyAvgCost > 0 ? (monthlyAvgCost * 12).toLocaleString() : '--';
@@ -792,8 +919,8 @@
             ・直近平均使用量: <strong>${recentAvg}ℓ</strong><br>
             ・現在の洗車間隔: <strong>${Math.round(interval * 10) / 10}日</strong> に1回<br>
             ${usageDiagStr}<br>
-            ・交換コスト目安: ${resinPrice.toLocaleString()}円 / 1サイクル<br>
-            ・交換時期予測: <strong>${predictStr}・洗車あと${remCount}回</strong><br>
+            ・交換コスト目安: ${totalPrice.toLocaleString()}円 / 1サイクル${d.isDual ? '（2連結合計）' : ''}<br>
+            ・交換時期予測: <strong>${predictStr}${rem > 0 ? '・洗車あと' + remCount + '回' : ''}</strong><br>
             ・年間コスト予測: <strong>${yearCost}円</strong>（実績ベース）<br>
             <span style="color:var(--accent-yellow);">・算出ロジックは記録を更新するとカスタマイズされます</span>`;
 
@@ -864,6 +991,8 @@
                 d = JSON.parse(decodeURIComponent(escape(atob(area.value.trim()))));
                 if (d.calPref === undefined) d.calPref = true;
                 if (d.washTime === undefined) d.washTime = 0;
+                if (d.isDual === undefined) d.isDual = false;
+                if (d.subMode === undefined) d.subMode = 'PRO';
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
                 up(); alert("復元しました！"); closeTransferModal();
             } catch(e) { alert("不正なコードです"); }
@@ -907,16 +1036,15 @@
         if (!d.ppm || d.ppm === 0) return;
         const todayKey = new Date().toDateString();
         if (localStorage.getItem('pwAlertDate') === todayKey) return;
-        const cap = (d.m === 'PRO' ? 180000 : 90000) / d.ppm;
-        const rem = Math.max(0, cap - d.used);
-        const ratio = rem / cap;
+        const cap = calcCap();
+        const rem = cap - d.used;
         const now3 = new Date();
         const mk3 = `${now3.getFullYear()}-${String(now3.getMonth()+1).padStart(2,'0')}`;
         const thisMonthUsed3 = d.logs[mk3] || 0;
         const logKeys3 = Object.keys(d.logs).filter(k => k !== mk3).sort();
         const monthlyAvg3 = logKeys3.length > 0 ? logKeys3.reduce((a,k) => a + d.logs[k], 0) / logKeys3.length : 0;
         const msgs = [];
-        if (ratio < 0.1) msgs.push("イオン交換樹脂の残量が少なくなっています。\n交換の準備をはじめましょう。");
+        if (rem > 0 && rem / cap < 0.1) msgs.push("イオン交換樹脂の残量が少なくなっています。\n交換の準備をはじめましょう。");
         if (monthlyAvg3 > 0 && thisMonthUsed3 > monthlyAvg3 * 1.2) msgs.push("今月の使用量が平均より多めです。\n洗車回数や水量を振り返ってみましょう。");
         if (msgs.length > 0) {
             setTimeout(() => { alert(msgs.join("\n\n")); }, 500);
