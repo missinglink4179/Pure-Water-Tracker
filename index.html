@@ -24,6 +24,90 @@
         .notice-bar { width: 100%; background: var(--accent-red); color: white; font-size: 11px; font-weight: bold; text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 15px; display: none; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
+        /* ===== 前回洗車カード ===== */
+        .wash-day-card {
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-bottom: 15px;
+            border: 1px solid #2c2c2e;
+            position: relative;
+            overflow: hidden;
+        }
+        .wash-day-card.state-over {
+            border-color: rgba(255,69,58,0.25);
+        }
+        .wash-day-card.state-over::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            border: 1px solid rgba(255,69,58,0.3);
+            animation: overBorder 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes overBorder {
+            0%,100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        .wdc-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .wdc-left { display: flex; flex-direction: column; gap: 4px; }
+        .wdc-eyebrow { font-size: 10px; color: var(--text-sub); letter-spacing: 0.05em; }
+        .wdc-number-row { display: flex; align-items: baseline; gap: 3px; }
+        .wdc-number {
+            font-size: 44px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+        .wdc-unit { font-size: 16px; font-weight: 400; color: var(--text-sub); }
+        .wdc-sub { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+        .wdc-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .wdc-bar-wrap {
+            margin-top: 14px;
+            height: 3px;
+            background: #2c2c2e;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .wdc-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+        }
+        .wdc-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 9px;
+            color: #3a3a3c;
+        }
+        /* 状態カラー */
+        .wdc-ok   .wdc-number { color: var(--accent-green); }
+        .wdc-ok   .wdc-badge  { background: rgba(52,199,89,0.12); border: 1px solid rgba(52,199,89,0.3); color: var(--accent-green); }
+        .wdc-ok   .wdc-bar-fill { background: var(--accent-green); }
+        .wdc-warn .wdc-number { color: var(--accent-yellow); }
+        .wdc-warn .wdc-badge  { background: rgba(255,204,0,0.1); border: 1px solid rgba(255,204,0,0.3); color: var(--accent-yellow); }
+        .wdc-warn .wdc-bar-fill { background: var(--accent-yellow); }
+        .wdc-over .wdc-number { color: var(--accent-red); }
+        .wdc-over .wdc-badge  { background: rgba(255,69,58,0.12); border: 1px solid rgba(255,69,58,0.35); color: var(--accent-red); }
+        .wdc-over .wdc-bar-fill { background: var(--accent-red); }
+        .wdc-none .wdc-number { font-size: 20px; font-weight: 600; color: #3a3a3c; letter-spacing: 0; }
+        .wdc-none .wdc-badge  { background: #1c1c1e; border: 1px solid #2c2c2e; color: #3a3a3c; }
+        .wdc-none .wdc-bar-fill { background: #2c2c2e; }
+        /* ========================= */
+
         .header-section {
             text-align: center;
             margin-bottom: 20px;
@@ -197,12 +281,43 @@
             color: var(--accent-blue); margin-bottom: 10px;
         }
         .sub-mode-row { display: flex; gap: 8px; margin-top: 8px; }
+
+        /* 推奨洗車間隔 入力 */
+        .interval-input {
+            background: none; border: none;
+            color: var(--accent-green); font-weight: bold;
+            font-size: 16px; text-align: right;
+            width: 60px; outline: none;
+        }
+        .interval-unit { font-size: 12px; color: var(--text-sub); margin-left: 2px; }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="top-title">ピュアニッシュ 純水管理アプリ</div>
     <div id="noticeBar" class="notice-bar">⚠️ イオン交換樹脂の寿命が近づいています</div>
+
+    <!-- 前回洗車カード -->
+    <div id="washDayCard" class="wash-day-card wdc-none">
+        <div class="wdc-row">
+            <div class="wdc-left">
+                <span class="wdc-eyebrow">前回の洗車から</span>
+                <div class="wdc-number-row">
+                    <span class="wdc-number" id="wdcNumber">記録なし</span>
+                    <span class="wdc-unit" id="wdcUnit" style="display:none;">日</span>
+                </div>
+                <span class="wdc-sub" id="wdcSub">洗車を記録すると表示されます</span>
+            </div>
+            <span class="wdc-badge" id="wdcBadge">----</span>
+        </div>
+        <div class="wdc-bar-wrap">
+            <div class="wdc-bar-fill" id="wdcBarFill" style="width:0%;"></div>
+        </div>
+        <div class="wdc-bar-labels">
+            <span>0日</span>
+            <span id="wdcBarLabel">推奨：--日</span>
+        </div>
+    </div>
 
     <div id="guideBox" class="logic-box" style="margin-bottom:20px; border:1px solid var(--accent-blue); display:none;">
         <div style="color:var(--accent-blue); font-weight:bold; margin-bottom:8px;">STEP 1: 準備</div>
@@ -344,6 +459,16 @@
             <span class="label-xs" style="color:#fff; font-size:12px;">水道水硬度 (ppm)</span>
             <input type="number" id="ppmIn" class="ppm-input" placeholder="0" oninput="setPPM(this.value)" pattern="\d*">
         </div>
+        <div class="setting-item">
+            <div>
+                <div class="label-xs" style="color:#fff; font-size:12px;">推奨洗車間隔</div>
+                <div style="font-size:10px; color:var(--text-sub); margin-top:2px;">経過日数の目安として使用</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:2px;">
+                <input type="number" id="intervalIn" class="interval-input" placeholder="--" oninput="setInterval(this.value)" pattern="\d*">
+                <span class="interval-unit">日</span>
+            </div>
+        </div>
         <div class="mode-row">
             <button id="mPRO" class="btn-m" onclick="mode('PRO')">PRO (3個)</button>
             <button id="mJUST" class="btn-m" onclick="mode('JUST')">JUST (2個)</button>
@@ -404,7 +529,7 @@
         ・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>
         ・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
         ・無断転載・再配布、および商用利用を固く禁じます。<br>
-        <br>Version 1.1.0<br>
+        <br>Version 1.1.1<br>
         © 2026 missing link. All rights reserved.
     </div>
 </div>
@@ -473,12 +598,13 @@
     const STORAGE_KEY = 'pwMasterV4';
     let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
         ppm: null, m: 'PRO', used: 0, in: 0, washTime: 0, logs: {}, history: [], lastReset: null, calPref: true,
-        isDual: false, subMode: 'PRO'
+        isDual: false, subMode: 'PRO', washInterval: null
     };
     if (d.calPref === undefined) d.calPref = true;
     if (d.washTime === undefined) d.washTime = 0;
     if (d.isDual === undefined) d.isDual = false;
     if (d.subMode === undefined) d.subMode = 'PRO';
+    if (d.washInterval === undefined) d.washInterval = null;
 
     const PURENISH_PRESETS = {
         PRO:  { cap: 180000, price: 12980 },
@@ -514,6 +640,84 @@
         document.getElementById('subJU').className = m === 'JU' ? 'btn-m active' : 'btn-m';
         localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
         up();
+    }
+
+    function setInterval(val) {
+        d.washInterval = val === "" ? null : parseInt(val);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+        updateWashDayCard();
+    }
+
+    function updateWashDayCard() {
+        const card = document.getElementById('washDayCard');
+        const numEl = document.getElementById('wdcNumber');
+        const unitEl = document.getElementById('wdcUnit');
+        const subEl = document.getElementById('wdcSub');
+        const badgeEl = document.getElementById('wdcBadge');
+        const barFill = document.getElementById('wdcBarFill');
+        const barLabel = document.getElementById('wdcBarLabel');
+
+        // 状態クラスをリセット
+        card.classList.remove('wdc-ok', 'wdc-warn', 'wdc-over', 'wdc-none', 'state-over');
+
+        // ログなし
+        if (!d.history || d.history.length === 0 || !d.history[0].ts) {
+            card.classList.add('wdc-none');
+            numEl.textContent = '記録なし';
+            numEl.style.fontSize = '';
+            unitEl.style.display = 'none';
+            subEl.textContent = '洗車を記録すると表示されます';
+            badgeEl.textContent = '----';
+            barFill.style.width = '0%';
+            barLabel.textContent = `推奨：${d.washInterval ? d.washInterval + '日' : '--日'}`;
+            return;
+        }
+
+        const lastTs = d.history[0].ts;
+        const lastDate = new Date(lastTs);
+        const now = new Date();
+        const diffMs = now.getTime() - lastTs;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const dateStr = `${lastDate.getMonth() + 1}月${lastDate.getDate()}日に洗車済み`;
+
+        numEl.style.fontSize = '';
+        unitEl.style.display = 'inline';
+        numEl.textContent = diffDays;
+        subEl.textContent = dateStr;
+
+        const interval = d.washInterval;
+
+        if (!interval) {
+            // 間隔未設定：日数だけ表示、グリーン固定
+            card.classList.add('wdc-ok');
+            badgeEl.textContent = '目安未設定';
+            barFill.style.width = '0%';
+            barLabel.textContent = '推奨：--日';
+            return;
+        }
+
+        barLabel.textContent = `推奨：${interval}日`;
+        const ratio = diffDays / interval;
+        const barPct = Math.min(100, Math.round(ratio * 100));
+        barFill.style.width = barPct + '%';
+
+        if (ratio >= 1) {
+            // 超過
+            card.classList.add('wdc-over', 'state-over');
+            const over = diffDays - interval;
+            badgeEl.textContent = `${over}日 超過`;
+            barFill.style.width = '100%';
+        } else if (ratio >= 0.8) {
+            // 注意（残り20%以内）
+            card.classList.add('wdc-warn');
+            const remaining = interval - diffDays;
+            badgeEl.textContent = `あと ${remaining}日`;
+        } else {
+            // 通常
+            card.classList.add('wdc-ok');
+            const remaining = interval - diffDays;
+            badgeEl.textContent = `あと ${remaining}日`;
+        }
     }
 
     let selectedTags = [];
@@ -698,6 +902,7 @@
         const monthUsed = d.logs[monthKey] || 0;
 
         if (d.ppm !== null) document.getElementById('ppmIn').value = d.ppm;
+        if (d.washInterval !== null) document.getElementById('intervalIn').value = d.washInterval;
         remL.style.color = '';
         body.classList.remove('alert-red');
         if (noticeBar) noticeBar.style.display = 'none';
@@ -783,6 +988,7 @@
             }
         }
 
+        updateWashDayCard();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
     }
 
@@ -887,7 +1093,6 @@
         const sortedLogKeys = Object.keys(d.logs).sort().reverse();
         summaryDiv.innerHTML = sortedLogKeys.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">サマリーなし</div>';
 
-        // ── 月平均コストを全月から算出 ──
         const logKeys = Object.keys(d.logs).sort();
         const avgMonthlyCost = logKeys.length > 0
             ? Math.round(logKeys.reduce((a, k) => a + Math.round((d.logs[k] / cap) * totalPrice), 0) / logKeys.length)
@@ -1002,6 +1207,7 @@
                 if (d.washTime === undefined) d.washTime = 0;
                 if (d.isDual === undefined) d.isDual = false;
                 if (d.subMode === undefined) d.subMode = 'PRO';
+                if (d.washInterval === undefined) d.washInterval = null;
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
                 up(); alert("復元しました！"); closeTransferModal();
             } catch(e) { alert("不正なコードです"); }
