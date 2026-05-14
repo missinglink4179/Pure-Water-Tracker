@@ -302,6 +302,69 @@
             width: 60px; outline: none;
         }
         .interval-unit { font-size: 12px; color: var(--text-sub); margin-left: 2px; }
+
+        /* ===== 移行促進モーダル ===== */
+        .migration-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.88); display:none;
+            justify-content:center; align-items:flex-start;
+            z-index:2000; padding:20px; overflow-y:auto;
+        }
+        .migration-content {
+            background: #1c1c1e; width:100%; max-width:350px;
+            border-radius:24px; padding:26px 20px 22px;
+            border:1px solid #3a3a3c;
+            box-shadow:0 10px 30px rgba(0,0,0,0.5);
+            margin: auto;
+        }
+        .mig-eyebrow {
+            font-size:12px; color:#8e8e93; text-align:center;
+            letter-spacing:0.08em; margin-bottom:6px;
+        }
+        .mig-title {
+            font-size:20px; font-weight:800; text-align:center;
+            color:#fff; margin-bottom:6px; letter-spacing:-0.3px;
+        }
+        .mig-subtitle {
+            font-size:13px; color:#8e8e93; text-align:center;
+            margin-bottom:20px; line-height:1.6;
+        }
+        .mig-divider { border:none; border-top:1px solid #2c2c2e; margin:16px 0; }
+        .mig-section-title {
+            font-size:12px; font-weight:700; color:#0a84ff;
+            letter-spacing:0.05em; margin-bottom:8px;
+        }
+        .mig-body {
+            font-size:14px; color:#ccc; line-height:1.7; margin:0;
+        }
+        .mig-body strong { color:#fff; font-weight:700; }
+        .mig-privacy {
+            background:rgba(52,199,89,0.08);
+            border:1px solid rgba(52,199,89,0.25);
+            border-radius:10px; padding:12px 14px;
+            font-size:13px; color:#34c759; line-height:1.65;
+            margin-top:14px; display:flex; gap:8px; align-items:flex-start;
+        }
+        .mig-privacy strong { color:#34c759; }
+        .mig-note {
+            font-size:12px; color:#8e8e93; line-height:1.6; margin-top:10px;
+        }
+        .mig-btn-primary {
+            width:100%; background:#0a84ff; color:#fff; border:none;
+            border-radius:14px; padding:18px; font-size:16px; font-weight:700;
+            cursor:pointer; margin-top:20px; display:flex;
+            align-items:center; justify-content:center; gap:6px;
+            -webkit-appearance:none;
+        }
+        .mig-btn-primary:active { opacity:0.85; transform:scale(0.98); }
+        .mig-btn-secondary {
+            width:100%; background:none; color:#8e8e93;
+            border:1px solid #3a3a3c; border-radius:14px;
+            padding:14px; font-size:14px; font-weight:600;
+            cursor:pointer; margin-top:10px; -webkit-appearance:none;
+        }
+        .mig-btn-secondary:active { opacity:0.7; }
+        /* ========================= */
     </style>
 </head>
 <body>
@@ -607,6 +670,41 @@
     </div>
 </div>
 
+<!-- 移行促進モーダル -->
+<div id="migrationOverlay" class="migration-overlay">
+    <div class="migration-content">
+        <div class="mig-eyebrow">開発者からのメッセージ</div>
+        <div class="mig-title">🌟 ありがとうございます</div>
+        <div class="mig-subtitle">純水管理をコツコツ続けてくださり、<br>本当にありがとうございます。<br>少しだけメッセージをお読みください。</div>
+
+        <hr class="mig-divider">
+        <div class="mig-section-title">このアプリが生まれた理由</div>
+        <p class="mig-body">本アプリは、私が洗車を学ぶ中でお世話になった <strong>BeautifulCars 村上社長</strong> に直接ご意見を伺いながら完成させた、開発の原点とも言えるアプリです。ピュアニッシュユーザーが迷わず純水管理できるよう、専用設計しました。</p>
+
+        <hr class="mig-divider">
+        <div class="mig-section-title">純水器業界の「見えない問題」</div>
+        <p class="mig-body">メーカーごとにバラバラな生成量の基準、比較できないコスト、ユーザーが検証する術のない情報の非対称性——この不透明な状況に <strong>「可視化」</strong> という光を当てたいと思っています。</p>
+
+        <hr class="mig-divider">
+        <div class="mig-section-title">汎用版に込めた想いと、データ収集へのお願い</div>
+        <p class="mig-body">私は2年以上ピュアニッシュPROを使い続け、メーカー公表値とほぼ同量の純水が生成できることを自ら実証しました。ピュアニッシュは <strong>「100ppm基準」を明記した誠実なメーカー</strong> です。<br><br>
+        汎用版では、各社純水器の <strong>実際の生成量・樹脂効率・コスト</strong> をユーザーの皆様のデータをもとに可視化し、その結果を <strong>皆様にもフィードバック</strong> としてお返しします。次の純水器選びに必ず役立てていただけます。</p>
+        <div class="mig-privacy">
+            <span style="font-size:15px; flex-shrink:0; margin-top:1px;">🔒</span>
+            <span>収集するのは <strong>純水関連データのみ</strong> です。お名前・住所・メールアドレスなどの個人情報は一切収集しません。どなたのデータかが特定される情報は取得しない設計になっています。</span>
+        </div>
+
+        <hr class="mig-divider">
+        <div class="mig-section-title">あなたに先駆者になってほしい</div>
+        <p class="mig-body">純水管理という、地味だけれど大切な作業をこのアプリとともに続けてくださったこと——それだけで、開発者として本当に嬉しく、心から感謝しています。<br><br>
+        <strong>データと向き合い続けてくださったあなたにこそ</strong>、汎用版でのデータ収集に加わっていただきたいのです。ユーザー主導で「本当のコスパ」を明らかにし、洗車文化をより良くする——その最初の一歩を、一緒に踏み出してもらえませんか。</p>
+        <p class="mig-note">※ このアプリは引き続きお使いいただけます。汎用版もピュアニッシュ版とほぼ同じ使い心地で設計していますので、どうかご安心ください。</p>
+
+        <button class="mig-btn-primary" onclick="openGeneral()">🚀 汎用版を使ってみる</button>
+        <button class="mig-btn-secondary" onclick="closeMigration()">このまま使い続ける</button>
+    </div>
+</div>
+
 <script>
     const STORAGE_KEY = 'pwMasterV4';
     let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
@@ -670,10 +768,8 @@
         const barFill = document.getElementById('wdcBarFill');
         const barLabel = document.getElementById('wdcBarLabel');
 
-        // 状態クラスをリセット
         card.classList.remove('wdc-ok', 'wdc-warn', 'wdc-over', 'wdc-none', 'state-over');
 
-        // ログなし
         if (!d.history || d.history.length === 0 || !d.history[0].ts) {
             card.classList.add('wdc-none');
             numEl.textContent = '記録なし';
@@ -701,7 +797,6 @@
         const interval = d.washInterval;
 
         if (!interval) {
-            // 間隔未設定：日数だけ表示、グリーン固定
             card.classList.add('wdc-ok');
             badgeEl.textContent = '目安未設定';
             barFill.style.width = '0%';
@@ -715,18 +810,15 @@
         barFill.style.width = barPct + '%';
 
         if (ratio >= 1) {
-            // 超過
             card.classList.add('wdc-over', 'state-over');
             const over = diffDays - interval;
             badgeEl.textContent = `${over}日 超過`;
             barFill.style.width = '100%';
         } else if (ratio >= 0.8) {
-            // 注意（残り20%以内）
             card.classList.add('wdc-warn');
             const remaining = interval - diffDays;
             badgeEl.textContent = `あと ${remaining}日`;
         } else {
-            // 通常
             card.classList.add('wdc-ok');
             const remaining = interval - diffDays;
             badgeEl.textContent = `あと ${remaining}日`;
@@ -1174,8 +1266,17 @@
         longClickTimer = setTimeout(() => {
             vib([50, 30, 50]);
             if(confirm("樹脂の使用記録をリセットしますか？")) {
+                const firstTs = (d.history && d.history.length > 0)
+                    ? d.history[d.history.length - 1].ts : null;
                 d.used = 0; d.in = 0; d.lastReset = new Date().getTime();
                 up(); showToast("樹脂をリセットしました");
+                const shown = localStorage.getItem('pwMigrationShown');
+                if (!shown && firstTs && (Date.now() - firstTs) >= 180 * 24 * 60 * 60 * 1000) {
+                    setTimeout(() => {
+                        document.getElementById('migrationOverlay').style.display = 'flex';
+                    }, 600);
+                    localStorage.setItem('pwMigrationShown', '1');
+                }
             }
             cancelReset();
         }, 5000);
@@ -1257,6 +1358,14 @@
     fullResetBtn.addEventListener('touchstart', startFullReset, {passive: false});
     window.addEventListener('mouseup', cancelFullReset);
     window.addEventListener('touchend', cancelFullReset);
+
+    function openGeneral() {
+        window.open('https://missinglink4179.github.io/pure-water-generic/', '_blank');
+        closeMigration();
+    }
+    function closeMigration() {
+        document.getElementById('migrationOverlay').style.display = 'none';
+    }
 
     up();
 
