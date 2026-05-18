@@ -605,7 +605,7 @@
         ・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>
         ・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
         ・無断転載・再配布、および商用利用を固く禁じます。<br>
-        <br>Version 1.1.1<br>
+        <br>Version 1.1.2<br>
         © 2026 missing link. All rights reserved.<br>
         本アプリのコード・デザイン・文言の無断転載・改変・商用利用を固く禁じます。
     </div>
@@ -884,11 +884,15 @@
         const now = new Date();
         const pad = n => String(n).padStart(2, '0');
         const dtStart = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
+        // [修正①] DTENDを翌日に修正
+        const tomorrow = new Date(now);
+        tomorrow.setDate(now.getDate() + 1);
+        const dtEnd = `${tomorrow.getFullYear()}${pad(tomorrow.getMonth()+1)}${pad(tomorrow.getDate())}`;
         const ics = [
             'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Pure Water Tracker//JP',
             'BEGIN:VEVENT',
             `DTSTART;VALUE=DATE:${dtStart}`,
-            `DTEND;VALUE=DATE:${dtStart}`,
+            `DTEND;VALUE=DATE:${dtEnd}`,
             `SUMMARY:${buildCalTitle(amt, totalUsed)}`,
             `DESCRIPTION:${buildCalDesc(tags, memo).replace(/\n/g, '\\n')}`,
             'END:VEVENT', 'END:VCALENDAR'
@@ -908,9 +912,13 @@
         const now = new Date();
         const pad = n => String(n).padStart(2, '0');
         const dateOnly = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
+        // [修正②] Googleカレンダーの終了日を翌日に修正
+        const nextDay = new Date(now);
+        nextDay.setDate(now.getDate() + 1);
+        const dateEnd = `${nextDay.getFullYear()}${pad(nextDay.getMonth()+1)}${pad(nextDay.getDate())}`;
         const title = encodeURIComponent(buildCalTitle(amt, totalUsed));
         const details = encodeURIComponent(buildCalDesc(tags, memo));
-        window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${dateOnly}/${dateOnly}`, '_blank');
+        window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${dateOnly}/${dateEnd}`, '_blank');
         closeCalModal();
     }
 
@@ -1320,6 +1328,8 @@
                 d = JSON.parse(decodeURIComponent(escape(atob(area.value.trim()))));
                 if (d.calPref === undefined) d.calPref = true;
                 if (d.washTime === undefined) d.washTime = 0;
+                // [修正③] インポート時にfirstLaunchを補完
+                if (d.firstLaunch === undefined) d.firstLaunch = new Date().getTime();
                 if (d.isDual === undefined) d.isDual = false;
                 if (d.subMode === undefined) d.subMode = 'PRO';
                 if (d.washInterval === undefined) d.washInterval = null;
