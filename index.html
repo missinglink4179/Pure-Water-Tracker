@@ -37,75 +37,21 @@
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
         /* ===== 前回洗車カード ===== */
-        .wash-day-card {
-            width: 100%;
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 16px 18px;
-            margin-bottom: 15px;
-            border: 1px solid #2c2c2e;
-            position: relative;
-            overflow: hidden;
-        }
-        .wash-day-card.state-over {
-            border-color: rgba(255,69,58,0.25);
-        }
-        .wash-day-card.state-over::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 16px;
-            border: 1px solid rgba(255,69,58,0.3);
-            animation: overBorder 2s ease-in-out infinite;
-            pointer-events: none;
-        }
-        @keyframes overBorder {
-            0%,100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-        .wdc-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+        .wash-day-card { width: 100%; background: var(--card-bg); border-radius: 16px; padding: 16px 18px; margin-bottom: 15px; border: 1px solid #2c2c2e; position: relative; overflow: hidden; }
+        .wash-day-card.state-over { border-color: rgba(255,69,58,0.25); }
+        .wash-day-card.state-over::after { content: ''; position: absolute; inset: 0; border-radius: 16px; border: 1px solid rgba(255,69,58,0.3); animation: overBorder 2s ease-in-out infinite; pointer-events: none; }
+        @keyframes overBorder { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .wdc-row { display: flex; align-items: center; justify-content: space-between; }
         .wdc-left { display: flex; flex-direction: column; gap: 4px; }
         .wdc-eyebrow { font-size: 10px; color: var(--text-sub); letter-spacing: 0.05em; }
         .wdc-number-row { display: flex; align-items: baseline; gap: 3px; }
-        .wdc-number {
-            font-size: 44px;
-            font-weight: 800;
-            line-height: 1;
-            letter-spacing: -2px;
-        }
+        .wdc-number { font-size: 44px; font-weight: 800; line-height: 1; letter-spacing: -2px; }
         .wdc-unit { font-size: 16px; font-weight: 400; color: var(--text-sub); }
         .wdc-sub { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
-        .wdc-badge {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 5px 12px;
-            border-radius: 20px;
-            white-space: nowrap;
-        }
-        .wdc-bar-wrap {
-            margin-top: 14px;
-            height: 3px;
-            background: #2c2c2e;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .wdc-bar-fill {
-            height: 100%;
-            border-radius: 2px;
-            transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
-        }
-        .wdc-bar-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 5px;
-            font-size: 9px;
-            color: #3a3a3c;
-        }
-        /* 状態カラー */
+        .wdc-badge { font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px; white-space: nowrap; }
+        .wdc-bar-wrap { margin-top: 14px; height: 3px; background: #2c2c2e; border-radius: 2px; overflow: hidden; }
+        .wdc-bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+        .wdc-bar-labels { display: flex; justify-content: space-between; margin-top: 5px; font-size: 9px; color: #3a3a3c; }
         .wdc-ok   .wdc-number { color: var(--accent-green); }
         .wdc-ok   .wdc-badge  { background: rgba(52,199,89,0.12); border: 1px solid rgba(52,199,89,0.3); color: var(--accent-green); }
         .wdc-ok   .wdc-bar-fill { background: var(--accent-green); }
@@ -118,58 +64,15 @@
         .wdc-none .wdc-number { font-size: 20px; font-weight: 600; color: #3a3a3c; letter-spacing: 0; }
         .wdc-none .wdc-badge  { background: #1c1c1e; border: 1px solid #2c2c2e; color: #3a3a3c; }
         .wdc-none .wdc-bar-fill { background: #2c2c2e; }
-        /* ========================= */
 
-        .header-section {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 10px 10px 20px;
-            border-radius: 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .ring-wrap {
-            position: relative;
-            width: 240px;
-            height: 240px;
-            margin: 0 auto;
-        }
-        .ring-wrap svg {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-        }
-        .ring-inner {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        .label-xs-ring {
-            font-size: 10px;
-            color: var(--text-sub);
-            margin-bottom: 4px;
-            letter-spacing: 0.03em;
-        }
-        .main-val {
-            font-size: 58px;
-            font-weight: 800;
-            line-height: 1;
-            transition: color 0.3s;
-            text-shadow: 0 0 24px rgba(52,199,89,0.25);
-        }
+        .header-section { text-align: center; margin-bottom: 20px; padding: 10px 10px 20px; border-radius: 24px; display: flex; flex-direction: column; align-items: center; }
+        .ring-wrap { position: relative; width: 240px; height: 240px; margin: 0 auto; }
+        .ring-wrap svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .ring-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+        .label-xs-ring { font-size: 10px; color: var(--text-sub); margin-bottom: 4px; letter-spacing: 0.03em; }
+        .main-val { font-size: 58px; font-weight: 800; line-height: 1; transition: color 0.3s; text-shadow: 0 0 24px rgba(52,199,89,0.25); }
         .unit-l { font-size: 24px; font-weight: 400; color: var(--text-sub); margin-top: 2px; }
-        .ring-pct {
-            font-size: 13px;
-            font-weight: 700;
-            margin-top: 6px;
-            letter-spacing: 0.04em;
-            transition: color 0.3s;
-        }
+        .ring-pct { font-size: 13px; font-weight: 700; margin-top: 6px; letter-spacing: 0.04em; transition: color 0.3s; }
         .no-ppm-alert { font-size: 13px; color: var(--text-sub); font-weight: bold; line-height: 1.5; display: block; text-align: center; padding: 0 16px; }
         .ring-below { text-align: center; margin-top: 10px; }
         .last-reset-label { font-size: 10px; color: white; font-weight: bold; margin-bottom: 8px; opacity: 0.9; }
@@ -198,10 +101,12 @@
         .memo-input::placeholder { color: #555; }
         .memo-input:focus { border-color: var(--accent-blue); }
 
-        .cal-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
+        /* チェックボックス縦揃え */
+        .cal-rows-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 10px; }
+        .cal-row { display: flex; align-items: center; gap: 8px; width: 200px; }
         .cal-checkbox { width: 18px; height: 18px; accent-color: var(--accent-green); cursor: pointer; flex-shrink: 0; }
-        .cal-label { font-size: 12px; color: var(--text-sub); cursor: pointer; display: flex; align-items: center; gap: 4px; }
-        .cal-label span { font-size: 14px; }
+        .cal-label { font-size: 12px; color: var(--text-sub); cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .x-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: #fff; color: #000; border-radius: 3px; font-size: 10px; font-weight: 900; line-height: 1; flex-shrink: 0; }
 
         .btn-save { width: 100%; display: block; background: var(--accent-green); color: white; padding: 22px; border-radius: 18px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 15px; cursor: pointer; transition: all 0.1s; -webkit-appearance: none; touch-action: manipulation; }
         .btn-save:active { transform: scale(0.97); opacity: 0.9; }
@@ -256,115 +161,39 @@
         .cal-option-btn.google { border-color: rgba(10,132,255,0.4); }
         .cal-option-icon { font-size: 22px; }
 
-        .dual-toggle-row {
-            display: flex; justify-content: space-between;
-            align-items: center; padding: 12px 0;
-            border-bottom: 1px solid #2c2c2e;
-        }
-        .toggle-switch {
-            position: relative; width: 44px; height: 26px; flex-shrink: 0;
-        }
+        .dual-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2c2c2e; }
+        .toggle-switch { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .toggle-slider {
-            position: absolute; cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: #3a3a3c; border-radius: 26px;
-            transition: 0.3s;
-        }
-        .toggle-slider:before {
-            position: absolute; content: "";
-            height: 20px; width: 20px; left: 3px; bottom: 3px;
-            background: white; border-radius: 50%; transition: 0.3s;
-        }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #3a3a3c; border-radius: 26px; transition: 0.3s; }
+        .toggle-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
         input:checked + .toggle-slider { background: var(--accent-blue); }
         input:checked + .toggle-slider:before { transform: translateX(18px); }
-
-        .dual-sub-box {
-            background: rgba(10,132,255,0.06);
-            border: 1px solid rgba(10,132,255,0.2);
-            border-radius: 12px;
-            padding: 14px;
-            margin-top: 8px;
-            margin-bottom: 4px;
-            display: none;
-        }
-        .dual-sub-title {
-            font-size: 11px; font-weight: bold;
-            color: var(--accent-blue); margin-bottom: 10px;
-        }
+        .dual-sub-box { background: rgba(10,132,255,0.06); border: 1px solid rgba(10,132,255,0.2); border-radius: 12px; padding: 14px; margin-top: 8px; margin-bottom: 4px; display: none; }
+        .dual-sub-title { font-size: 11px; font-weight: bold; color: var(--accent-blue); margin-bottom: 10px; }
         .sub-mode-row { display: flex; gap: 8px; margin-top: 8px; }
 
-        /* 推奨洗車間隔 入力 */
-        .interval-input {
-            background: none; border: none;
-            color: var(--accent-green); font-weight: bold;
-            font-size: 16px; text-align: right;
-            width: 60px; outline: none;
-        }
+        .interval-input { background: none; border: none; color: var(--accent-green); font-weight: bold; font-size: 16px; text-align: right; width: 60px; outline: none; }
         .interval-unit { font-size: 12px; color: var(--text-sub); margin-left: 2px; }
 
+        .softener-text-input { width: 100%; background: #2c2c2e; border: 1px solid #3a3a3c; color: white; font-size: 13px; padding: 8px 12px; border-radius: 8px; margin-top: 4px; }
+
         /* ===== 移行促進モーダル ===== */
-        .migration-overlay {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.88); display:none;
-            justify-content:center; align-items:flex-start;
-            z-index:2000; padding:20px; overflow-y:auto;
-        }
-        .migration-content {
-            background: #1c1c1e; width:100%; max-width:350px;
-            border-radius:24px; padding:26px 20px 22px;
-            border:1px solid #3a3a3c;
-            box-shadow:0 10px 30px rgba(0,0,0,0.5);
-            margin: auto;
-        }
-        .mig-eyebrow {
-            font-size:12px; color:#8e8e93; text-align:center;
-            letter-spacing:0.08em; margin-bottom:6px;
-        }
-        .mig-title {
-            font-size:20px; font-weight:800; text-align:center;
-            color:#fff; margin-bottom:6px; letter-spacing:-0.3px;
-        }
-        .mig-subtitle {
-            font-size:13px; color:#8e8e93; text-align:center;
-            margin-bottom:20px; line-height:1.6;
-        }
+        .migration-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.88); display:none; justify-content:center; align-items:flex-start; z-index:2000; padding:20px; overflow-y:auto; }
+        .migration-content { background: #1c1c1e; width:100%; max-width:350px; border-radius:24px; padding:26px 20px 22px; border:1px solid #3a3a3c; box-shadow:0 10px 30px rgba(0,0,0,0.5); margin: auto; }
+        .mig-eyebrow { font-size:12px; color:#8e8e93; text-align:center; letter-spacing:0.08em; margin-bottom:6px; }
+        .mig-title { font-size:20px; font-weight:800; text-align:center; color:#fff; margin-bottom:6px; letter-spacing:-0.3px; }
+        .mig-subtitle { font-size:13px; color:#8e8e93; text-align:center; margin-bottom:20px; line-height:1.6; }
         .mig-divider { border:none; border-top:1px solid #2c2c2e; margin:16px 0; }
-        .mig-section-title {
-            font-size:12px; font-weight:700; color:#0a84ff;
-            letter-spacing:0.05em; margin-bottom:8px;
-        }
-        .mig-body {
-            font-size:14px; color:#ccc; line-height:1.7; margin:0;
-        }
+        .mig-section-title { font-size:12px; font-weight:700; color:#0a84ff; letter-spacing:0.05em; margin-bottom:8px; }
+        .mig-body { font-size:14px; color:#ccc; line-height:1.7; margin:0; }
         .mig-body strong { color:#fff; font-weight:700; }
-        .mig-privacy {
-            background:rgba(52,199,89,0.08);
-            border:1px solid rgba(52,199,89,0.25);
-            border-radius:10px; padding:12px 14px;
-            font-size:13px; color:#34c759; line-height:1.65;
-            margin-top:14px; display:flex; gap:8px; align-items:flex-start;
-        }
+        .mig-privacy { background:rgba(52,199,89,0.08); border:1px solid rgba(52,199,89,0.25); border-radius:10px; padding:12px 14px; font-size:13px; color:#34c759; line-height:1.65; margin-top:14px; display:flex; gap:8px; align-items:flex-start; }
         .mig-privacy strong { color:#34c759; }
-        .mig-note {
-            font-size:12px; color:#8e8e93; line-height:1.6; margin-top:10px;
-        }
-        .mig-btn-primary {
-            width:100%; background:#0a84ff; color:#fff; border:none;
-            border-radius:14px; padding:18px; font-size:16px; font-weight:700;
-            cursor:pointer; margin-top:20px; display:flex;
-            align-items:center; justify-content:center; gap:6px;
-            -webkit-appearance:none;
-        }
+        .mig-note { font-size:12px; color:#8e8e93; line-height:1.6; margin-top:10px; }
+        .mig-btn-primary { width:100%; background:#0a84ff; color:#fff; border:none; border-radius:14px; padding:18px; font-size:16px; font-weight:700; cursor:pointer; margin-top:20px; display:flex; align-items:center; justify-content:center; gap:6px; -webkit-appearance:none; }
         .mig-btn-primary:active { opacity:0.85; transform:scale(0.98); }
-        .mig-btn-secondary {
-            width:100%; background:none; color:#8e8e93;
-            border:1px solid #3a3a3c; border-radius:14px;
-            padding:14px; font-size:14px; font-weight:600;
-            cursor:pointer; margin-top:10px; -webkit-appearance:none;
-        }
+        .mig-btn-secondary { width:100%; background:none; color:#8e8e93; border:1px solid #3a3a3c; border-radius:14px; padding:14px; font-size:14px; font-weight:600; cursor:pointer; margin-top:10px; -webkit-appearance:none; }
         .mig-btn-secondary:active { opacity:0.7; }
-        /* ========================= */
     </style>
 </head>
 <body>
@@ -372,7 +201,6 @@
     <div class="top-title">ピュアニッシュ 純水管理アプリ</div>
     <div id="noticeBar" class="notice-bar">⚠️ イオン交換樹脂の寿命が近づいています</div>
 
-    <!-- 前回洗車カード -->
     <div id="washDayCard" class="wash-day-card wdc-none">
         <div class="wdc-row">
             <div class="wdc-left">
@@ -385,13 +213,8 @@
             </div>
             <span class="wdc-badge" id="wdcBadge">----</span>
         </div>
-        <div class="wdc-bar-wrap">
-            <div class="wdc-bar-fill" id="wdcBarFill" style="width:0%;"></div>
-        </div>
-        <div class="wdc-bar-labels">
-            <span>0日</span>
-            <span id="wdcBarLabel">推奨：--日</span>
-        </div>
+        <div class="wdc-bar-wrap"><div class="wdc-bar-fill" id="wdcBarFill" style="width:0%;"></div></div>
+        <div class="wdc-bar-labels"><span>0日</span><span id="wdcBarLabel">推奨：--日</span></div>
     </div>
 
     <div id="guideBox" class="logic-box" style="margin-bottom:20px; border:1px solid var(--accent-blue); display:none;">
@@ -407,34 +230,15 @@
         <div class="ring-wrap" id="ringWrap">
             <svg viewBox="0 0 240 240">
                 <g transform="rotate(-90 120 120)">
-                    <circle cx="120" cy="120" r="104"
-                        fill="none" stroke="#2c2c2e" stroke-width="12"/>
-                    <circle cx="120" cy="120" r="104"
-                        fill="none" stroke="#ff453a" stroke-width="12"
-                        stroke-dasharray="65.3 588.7"
-                        stroke-dashoffset="1"
-                        opacity="0.2"/>
-                    <circle cx="120" cy="120" r="104"
-                        fill="none" stroke="#34c759" stroke-width="12"
-                        stroke-linecap="round"
-                        stroke-dasharray="653"
-                        stroke-dashoffset="653"
-                        id="mainArc"/>
-                    <circle cx="120" cy="120" r="104"
-                        fill="none" stroke="#ffcc00" stroke-width="13"
-                        stroke-linecap="round"
-                        stroke-dasharray="0 653"
-                        stroke-dashoffset="0"
-                        transform="scale(-1,1) translate(-240,0)"
-                        id="overArc"
-                        opacity="0"/>
+                    <circle cx="120" cy="120" r="104" fill="none" stroke="#2c2c2e" stroke-width="12"/>
+                    <circle cx="120" cy="120" r="104" fill="none" stroke="#ff453a" stroke-width="12" stroke-dasharray="65.3 588.7" stroke-dashoffset="1" opacity="0.2"/>
+                    <circle cx="120" cy="120" r="104" fill="none" stroke="#34c759" stroke-width="12" stroke-linecap="round" stroke-dasharray="653" stroke-dashoffset="653" id="mainArc"/>
+                    <circle cx="120" cy="120" r="104" fill="none" stroke="#ffcc00" stroke-width="13" stroke-linecap="round" stroke-dasharray="0 653" stroke-dashoffset="0" transform="scale(-1,1) translate(-240,0)" id="overArc" opacity="0"/>
                 </g>
             </svg>
             <div class="ring-inner" onclick="showDetail()">
                 <span class="label-xs-ring">交換まであと</span>
-                <span class="main-val" id="remL">
-                    <span class="no-ppm-alert">PPMを入力</span>
-                </span>
+                <span class="main-val" id="remL"><span class="no-ppm-alert">PPMを入力</span></span>
                 <span class="unit-l" id="unitLabel" style="display:none;">ℓ</span>
                 <span class="ring-pct" id="ringPct" style="display:none;"></span>
             </div>
@@ -478,10 +282,7 @@
         <div class="wash-memo-title">⏱️ 洗車時間（任意）</div>
         <div class="counter-row" style="margin-bottom:10px;">
             <button class="btn-round" onclick="addTime(-5)">−</button>
-            <div class="current-disp">
-                <span id="timeVal">0</span>
-                <span style="font-size:24px; margin-left:4px; color:var(--text-sub);">分</span>
-            </div>
+            <div class="current-disp"><span id="timeVal">0</span><span style="font-size:24px; margin-left:4px; color:var(--text-sub);">分</span></div>
             <button class="btn-round" onclick="addTime(5)">＋</button>
         </div>
         <button class="btn-clear" onclick="clrTime()">時間をリセット</button>
@@ -513,9 +314,15 @@
         <textarea id="memoInput" class="memo-input" rows="2" placeholder="一言メモ（例：花粉多かったので2度洗い）"></textarea>
     </div>
 
-    <div class="cal-row">
-        <input type="checkbox" id="calCheck" class="cal-checkbox" checked>
-        <label for="calCheck" class="cal-label"><span>📅</span> カレンダーに記録する</label>
+    <div class="cal-rows-wrap">
+        <div class="cal-row">
+            <input type="checkbox" id="calCheck" class="cal-checkbox" checked>
+            <label for="calCheck" class="cal-label"><span>📅</span> カレンダーに記録する</label>
+        </div>
+        <div class="cal-row">
+            <input type="checkbox" id="xPostCheck" class="cal-checkbox">
+            <label for="xPostCheck" class="cal-label"><span class="x-icon">X</span> Xに投稿する</label>
+        </div>
     </div>
 
     <button class="btn-save" id="saveBtn" onclick="save()">数値を入力してください</button>
@@ -550,7 +357,6 @@
             </div>
         </div>
 
-        <!-- 2連結モード -->
         <div class="dual-toggle-row" style="margin-top:15px;">
             <div>
                 <span class="label-xs" style="color:#fff; font-size:12px;">2連結モード</span>
@@ -575,6 +381,13 @@
         <div style="font-size:10px; color:var(--text-sub); text-align:center; margin-top:15px; border-top: 1px solid #2c2c2e; padding-top:10px;">
             前回樹脂リセット日：<span id="lastResetDate" style="color:white; font-weight:bold;">----/--/--</span>
         </div>
+
+        <div class="backup-section">
+            <div class="backup-label">X投稿のカスタムタグ</div>
+            <div class="backup-guide">車種名や好きなタグを保存しておくと、X投稿時に自動で追加されます。<br>例：#シビック #洗車好きと繋がりたい</div>
+            <input type="text" id="customTagsIn" class="softener-text-input" placeholder="#車種名 #好きなタグ" oninput="setCustomTags(this.value)" style="margin-bottom:0;">
+        </div>
+
         <div class="backup-section">
             <div class="backup-label">データ移行・復元</div>
             <div class="backup-guide">機種変更やブラウザ変更時に、これまでの洗車記録をコードで引き継ぐことができます。</div>
@@ -583,6 +396,7 @@
                 <button class="btn-b" onclick="openTransferModal('import')">読み込み</button>
             </div>
         </div>
+
         <div class="fullreset-section">
             <div class="fullreset-label">全データリセット</div>
             <div class="fullreset-guide">累計使用量・履歴・月別サマリー・前回交換日をすべて初期化します。PPMとモード設定は保持されます。</div>
@@ -605,7 +419,7 @@
         ・本アプリの利用により生じたトラブルや損失・損害について、開発者は一切の責任を負いません。<br>
         ・数値は算出理論値に基づく目安であり、正確性や樹脂の寿命を保証するものではありません。<br>
         ・無断転載・再配布、および商用利用を固く禁じます。<br>
-        <br>Version 1.1.2<br>
+        <br>Version 1.1.3<br>
         © 2026 missing link. All rights reserved.<br>
         本アプリのコード・デザイン・文言の無断転載・改変・商用利用を固く禁じます。
     </div>
@@ -660,14 +474,20 @@
         <div class="modal-h" style="font-size:16px; margin-bottom:12px;">📅 カレンダーに追加</div>
         <div style="font-size:12px; color:var(--text-sub); text-align:center; margin-bottom:16px;" id="calModalPreview"></div>
         <div class="cal-picker">
-            <button class="cal-option-btn apple" onclick="addToAppleCalendar()">
-                <span class="cal-option-icon">🍎</span><span>Appleカレンダー（iOS）</span>
-            </button>
-            <button class="cal-option-btn google" onclick="addToGoogleCalendar()">
-                <span class="cal-option-icon">📆</span><span>Googleカレンダー（Android等）</span>
-            </button>
+            <button class="cal-option-btn apple" onclick="addToAppleCalendar()"><span class="cal-option-icon">🍎</span><span>Appleカレンダー（iOS）</span></button>
+            <button class="cal-option-btn google" onclick="addToGoogleCalendar()"><span class="cal-option-icon">📆</span><span>Googleカレンダー（Android等）</span></button>
         </div>
         <button class="btn-close" onclick="closeCalModal()">スキップ</button>
+    </div>
+</div>
+
+<!-- X投稿モーダル -->
+<div id="xModal" class="modal-overlay" onclick="closeXModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-height:60vh;">
+        <div class="modal-h" style="font-size:16px; margin-bottom:12px;">𝕏 Xに投稿する</div>
+        <div id="xModalPreview" style="background:#111; border-radius:12px; padding:14px; font-size:13px; color:#ccc; line-height:1.8; margin-bottom:16px; white-space:pre-wrap;"></div>
+        <a id="xModalLink" href="" style="display:block; width:100%; background:#000; color:#fff; text-align:center; padding:14px; border-radius:12px; font-size:15px; font-weight:bold; text-decoration:none; margin-bottom:10px;" onclick="closeXModal()">Xアプリで開く</a>
+        <button class="btn-close" onclick="closeXModal()">スキップ</button>
     </div>
 </div>
 
@@ -677,30 +497,23 @@
         <div class="mig-eyebrow">開発者からのメッセージ</div>
         <div class="mig-title">🌟 ありがとうございます</div>
         <div class="mig-subtitle">純水管理をコツコツ続けてくださり、<br>本当にありがとうございます。<br>少しだけメッセージをお読みください。</div>
-
         <hr class="mig-divider">
         <div class="mig-section-title">このアプリが生まれた理由</div>
         <p class="mig-body">本アプリは、私が洗車を学ぶ中でお世話になった <strong>BeautifulCars 村上社長</strong> に直接ご意見を伺いながら完成させた、開発の原点とも言えるアプリです。ピュアニッシュユーザーが迷わず純水管理できるよう、専用設計しました。</p>
-
         <hr class="mig-divider">
         <div class="mig-section-title">純水器業界の「見えない問題」</div>
         <p class="mig-body">メーカーごとにバラバラな生成量の基準、比較できないコスト、ユーザーが検証する術のない情報の非対称性——この不透明な状況に <strong>「可視化」</strong> という光を当てたいと思っています。</p>
-
         <hr class="mig-divider">
         <div class="mig-section-title">汎用版に込めた想いと、データ収集へのお願い</div>
-        <p class="mig-body">私は2年以上ピュアニッシュPROを使い続け、メーカー公表値とほぼ同量の純水が生成できることを自ら実証しました。ピュアニッシュは <strong>「100ppm基準」を明記した誠実なメーカー</strong> です。<br><br>
-        汎用版では、各社純水器の <strong>実際の生成量・樹脂効率・コスト</strong> をユーザーの皆様のデータをもとに可視化し、その結果を <strong>皆様にもフィードバック</strong> としてお返しします。次の純水器選びに必ず役立てていただけます。</p>
+        <p class="mig-body">私は2年以上ピュアニッシュPROを使い続け、メーカー公表値とほぼ同量の純水が生成できることを自ら実証しました。ピュアニッシュは <strong>「100ppm基準」を明記した誠実なメーカー</strong> です。<br><br>汎用版では、各社純水器の <strong>実際の生成量・樹脂効率・コスト</strong> をユーザーの皆様のデータをもとに可視化し、その結果を <strong>皆様にもフィードバック</strong> としてお返しします。</p>
         <div class="mig-privacy">
             <span style="font-size:15px; flex-shrink:0; margin-top:1px;">🔒</span>
-            <span>収集するのは <strong>純水関連データのみ</strong> です。お名前・住所・メールアドレスなどの個人情報は一切収集しません。どなたのデータかが特定される情報は取得しない設計になっています。</span>
+            <span>収集するのは <strong>純水関連データのみ</strong> です。個人情報は一切収集しません。</span>
         </div>
-
         <hr class="mig-divider">
         <div class="mig-section-title">あなたに先駆者になってほしい</div>
-        <p class="mig-body">純水管理という、地味だけれど大切な作業をこのアプリとともに続けてくださったこと——それだけで、開発者として本当に嬉しく、心から感謝しています。<br><br>
-        <strong>データと向き合い続けてくださったあなたにこそ</strong>、汎用版でのデータ収集に加わっていただきたいのです。ユーザー主導で「本当のコスパ」を明らかにし、洗車文化をより良くする——その最初の一歩を、一緒に踏み出してもらえませんか。</p>
-        <p class="mig-note">※ このアプリは引き続きお使いいただけます。汎用版もピュアニッシュ版とほぼ同じ使い心地で設計していますので、どうかご安心ください。</p>
-
+        <p class="mig-body"><strong>データと向き合い続けてくださったあなたにこそ</strong>、汎用版でのデータ収集に加わっていただきたいのです。</p>
+        <p class="mig-note">※ このアプリは引き続きお使いいただけます。</p>
         <button class="mig-btn-primary" onclick="openGeneral()">🚀 汎用版を使ってみる</button>
         <button class="mig-btn-secondary" onclick="closeMigration()">このまま使い続ける</button>
     </div>
@@ -710,13 +523,15 @@
     const STORAGE_KEY = 'pwMasterV4';
     let d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
         ppm: null, m: 'PRO', used: 0, in: 0, washTime: 0, logs: {}, history: [], lastReset: null, calPref: true,
-        isDual: false, subMode: 'PRO', washInterval: null
+        isDual: false, subMode: 'PRO', washInterval: null, xPostPref: false, customTags: ''
     };
     if (d.calPref === undefined) d.calPref = true;
     if (d.washTime === undefined) d.washTime = 0;
     if (d.isDual === undefined) d.isDual = false;
     if (d.subMode === undefined) d.subMode = 'PRO';
     if (d.washInterval === undefined) d.washInterval = null;
+    if (d.xPostPref === undefined) d.xPostPref = false;
+    if (d.customTags === undefined) d.customTags = '';
 
     const PURENISH_PRESETS = {
         PRO:  { cap: 180000, price: 12980 },
@@ -760,6 +575,8 @@
         updateWashDayCard();
     }
 
+    function setCustomTags(v) { d.customTags = v; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+
     function updateWashDayCard() {
         const card = document.getElementById('washDayCard');
         const numEl = document.getElementById('wdcNumber');
@@ -768,115 +585,72 @@
         const badgeEl = document.getElementById('wdcBadge');
         const barFill = document.getElementById('wdcBarFill');
         const barLabel = document.getElementById('wdcBarLabel');
-
         card.classList.remove('wdc-ok', 'wdc-warn', 'wdc-over', 'wdc-none', 'state-over');
-
         if (!d.history || d.history.length === 0 || !d.history[0].ts) {
             card.classList.add('wdc-none');
-            numEl.textContent = '記録なし';
-            numEl.style.fontSize = '';
+            numEl.textContent = '記録なし'; numEl.style.fontSize = '';
             unitEl.style.display = 'none';
             subEl.textContent = '洗車を記録すると表示されます';
-            badgeEl.textContent = '----';
-            barFill.style.width = '0%';
+            badgeEl.textContent = '----'; barFill.style.width = '0%';
             barLabel.textContent = `推奨：${d.washInterval ? d.washInterval + '日' : '--日'}`;
             return;
         }
-
         const lastTs = d.history[0].ts;
         const lastDate = new Date(lastTs);
         const now = new Date();
-        const diffMs = now.getTime() - lastTs;
-        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-        const dateStr = `${lastDate.getMonth() + 1}月${lastDate.getDate()}日に洗車済み`;
-
-        numEl.style.fontSize = '';
-        unitEl.style.display = 'inline';
+        const diffDays = Math.floor((now.getTime() - lastTs) / (1000 * 60 * 60 * 24));
+        numEl.style.fontSize = ''; unitEl.style.display = 'inline';
         numEl.textContent = diffDays;
-        subEl.textContent = dateStr;
-
+        subEl.textContent = `${lastDate.getMonth() + 1}月${lastDate.getDate()}日に洗車済み`;
         const interval = d.washInterval;
-
         if (!interval) {
-            card.classList.add('wdc-ok');
-            badgeEl.textContent = '目安未設定';
-            barFill.style.width = '0%';
-            barLabel.textContent = '推奨：--日';
-            return;
+            card.classList.add('wdc-ok'); badgeEl.textContent = '目安未設定';
+            barFill.style.width = '0%'; barLabel.textContent = '推奨：--日'; return;
         }
-
         barLabel.textContent = `推奨：${interval}日`;
         const ratio = diffDays / interval;
-        const barPct = Math.min(100, Math.round(ratio * 100));
-        barFill.style.width = barPct + '%';
-
+        barFill.style.width = Math.min(100, Math.round(ratio * 100)) + '%';
         if (ratio >= 1) {
             card.classList.add('wdc-over', 'state-over');
-            const over = diffDays - interval;
-            badgeEl.textContent = `${over}日 超過`;
-            barFill.style.width = '100%';
+            badgeEl.textContent = `${diffDays - interval}日 超過`; barFill.style.width = '100%';
         } else if (ratio >= 0.8) {
-            card.classList.add('wdc-warn');
-            const remaining = interval - diffDays;
-            badgeEl.textContent = `あと ${remaining}日`;
+            card.classList.add('wdc-warn'); badgeEl.textContent = `あと ${interval - diffDays}日`;
         } else {
-            card.classList.add('wdc-ok');
-            const remaining = interval - diffDays;
-            badgeEl.textContent = `あと ${remaining}日`;
+            card.classList.add('wdc-ok'); badgeEl.textContent = `あと ${interval - diffDays}日`;
         }
     }
 
     let selectedTags = [];
-
     function toggleTag(btn, tag) {
-        if (btn.classList.contains('selected')) {
-            btn.classList.remove('selected');
-            selectedTags = selectedTags.filter(t => t !== tag);
-        } else {
-            btn.classList.add('selected');
-            selectedTags.push(tag);
-        }
+        if (btn.classList.contains('selected')) { btn.classList.remove('selected'); selectedTags = selectedTags.filter(t => t !== tag); }
+        else { btn.classList.add('selected'); selectedTags.push(tag); }
     }
-
-    function clearTags() {
-        selectedTags = [];
-        document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('selected'));
-    }
-
+    function clearTags() { selectedTags = []; document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('selected')); }
     function getMemo() { return document.getElementById('memoInput').value.trim(); }
     function clearMemo() { document.getElementById('memoInput').value = ''; }
 
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('calCheck').checked = d.calPref;
+        document.getElementById('xPostCheck').checked = d.xPostPref;
+        if (d.customTags) document.getElementById('customTagsIn').value = d.customTags;
     });
-    document.getElementById('calCheck').addEventListener('change', function() {
-        d.calPref = this.checked;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-    });
+    document.getElementById('calCheck').addEventListener('change', function() { d.calPref = this.checked; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); });
+    document.getElementById('xPostCheck').addEventListener('change', function() { d.xPostPref = this.checked; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); });
 
     let pendingCalData = null;
-
-    function buildCalTitle(amt, totalUsed) {
-        return `🚗 洗車　純水使用量 ${amt}ℓ（累計 ${totalUsed}ℓ）`;
-    }
-
+    function buildCalTitle(amt, totalUsed) { return `🚗 洗車　純水使用量 ${amt}ℓ（累計 ${totalUsed}ℓ）`; }
     function buildCalDesc(tags, memo) {
         let parts = [];
         if (tags.length > 0) parts.push('施工内容: ' + tags.join('・'));
         if (memo) parts.push(memo);
         return parts.join('\n') || '純水使用量記録';
     }
-
     function openCalModal(calData) {
         pendingCalData = calData;
         document.getElementById('calModalPreview').innerText = buildCalTitle(calData.amt, calData.totalUsed);
         document.getElementById('calModal').style.display = 'flex';
     }
-
-    function closeCalModal() {
-        document.getElementById('calModal').style.display = 'none';
-        pendingCalData = null;
-    }
+    function closeCalModal() { document.getElementById('calModal').style.display = 'none'; pendingCalData = null; }
 
     function addToAppleCalendar() {
         if (!pendingCalData) return;
@@ -884,25 +658,18 @@
         const now = new Date();
         const pad = n => String(n).padStart(2, '0');
         const dtStart = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
-        // [修正①] DTENDを翌日に修正
-        const tomorrow = new Date(now);
-        tomorrow.setDate(now.getDate() + 1);
+        const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
         const dtEnd = `${tomorrow.getFullYear()}${pad(tomorrow.getMonth()+1)}${pad(tomorrow.getDate())}`;
-        const ics = [
-            'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Pure Water Tracker//JP',
-            'BEGIN:VEVENT',
-            `DTSTART;VALUE=DATE:${dtStart}`,
-            `DTEND;VALUE=DATE:${dtEnd}`,
+        const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Pure Water Tracker//JP','BEGIN:VEVENT',
+            `DTSTART;VALUE=DATE:${dtStart}`,`DTEND;VALUE=DATE:${dtEnd}`,
             `SUMMARY:${buildCalTitle(amt, totalUsed)}`,
             `DESCRIPTION:${buildCalDesc(tags, memo).replace(/\n/g, '\\n')}`,
-            'END:VEVENT', 'END:VCALENDAR'
-        ].join('\r\n');
+            'END:VEVENT','END:VCALENDAR'].join('\r\n');
         const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url; a.download = `washlog_${dtStart}.ics`;
-        document.body.appendChild(a); a.click();
-        document.body.removeChild(a); URL.revokeObjectURL(url);
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
         closeCalModal();
     }
 
@@ -912,9 +679,7 @@
         const now = new Date();
         const pad = n => String(n).padStart(2, '0');
         const dateOnly = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
-        // [修正②] Googleカレンダーの終了日を翌日に修正
-        const nextDay = new Date(now);
-        nextDay.setDate(now.getDate() + 1);
+        const nextDay = new Date(now); nextDay.setDate(now.getDate() + 1);
         const dateEnd = `${nextDay.getFullYear()}${pad(nextDay.getMonth()+1)}${pad(nextDay.getDate())}`;
         const title = encodeURIComponent(buildCalTitle(amt, totalUsed));
         const details = encodeURIComponent(buildCalDesc(tags, memo));
@@ -922,14 +687,24 @@
         closeCalModal();
     }
 
-    function vib(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
-
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg; t.style.display = 'block';
-        setTimeout(() => { t.style.display = 'none'; }, 2000);
+    function postToX(amt, totalUsed) {
+        const cap = calcCap();
+        const rem = cap - d.used;
+        const pct = Math.round((rem / cap) * 100);
+        const washCount = d.history ? d.history.length : 0;
+        const countStr = washCount > 0 ? ` / 第${washCount}回` : '';
+        const customTags = d.customTags ? `\n${d.customTags}` : '';
+        const text = `純水洗車記録\n${amt}ℓ使用 / 残 ${pct}% / 累計 ${totalUsed}ℓ${countStr}${customTags}\n#PureWaterTracker`;
+        const encoded = encodeURIComponent(text);
+        const appUrl = `twitter://post?message=${encoded}`;
+        document.getElementById('xModalPreview').textContent = text;
+        document.getElementById('xModalLink').href = appUrl;
+        document.getElementById('xModal').style.display = 'flex';
     }
+    function closeXModal() { document.getElementById('xModal').style.display = 'none'; }
 
+    function vib(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
+    function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, 2000); }
     function setPPM(val) { d.ppm = val === "" ? null : parseInt(val); up(); }
 
     function getRecentAvg() {
@@ -937,72 +712,52 @@
         const recent = d.history.slice(0, 5);
         return Math.round(recent.reduce((a, b) => a + b.amt, 0) / recent.length);
     }
-
     function getAvgInterval() {
         if (!d.history || d.history.length < 2) return 7;
         let totalDays = 0, count = 0;
         for (let i = 0; i < d.history.length - 1; i++) {
-            if (d.history[i].ts && d.history[i+1].ts) {
-                totalDays += (d.history[i].ts - d.history[i+1].ts) / (1000 * 60 * 60 * 24);
-                count++;
-            }
+            if (d.history[i].ts && d.history[i+1].ts) { totalDays += (d.history[i].ts - d.history[i+1].ts) / (1000 * 60 * 60 * 24); count++; }
         }
         return count > 0 ? Math.max(1, totalDays / count) : 7;
     }
-
     function calculatePredictDate(remaining, avgUsage) {
         if (!avgUsage || avgUsage <= 0) return "--/--";
         const daysRem = Math.floor((remaining / avgUsage) * getAvgInterval());
-        const target = new Date();
-        target.setDate(target.getDate() + daysRem);
+        const target = new Date(); target.setDate(target.getDate() + daysRem);
         return `${target.getMonth() + 1}/${target.getDate()}`;
     }
 
     const RING_CIRCUMFERENCE = 653;
-
     function updateRing(ratio) {
         const arc = document.getElementById('mainArc');
         const overArc = document.getElementById('overArc');
         const pctEl = document.getElementById('ringPct');
         const unitEl = document.getElementById('unitLabel');
         if (!arc) return;
-
         if (ratio >= 0) {
             const offset = RING_CIRCUMFERENCE * (1 - Math.min(1, ratio));
             arc.setAttribute('stroke-dashoffset', offset);
             let color = '#34c759';
             if (ratio < 0.1) color = '#ff453a';
             else if (ratio < 0.3) color = '#ffcc00';
-            arc.setAttribute('stroke', color);
-            arc.setAttribute('opacity', '1');
-            overArc.setAttribute('stroke-dasharray', `0 ${RING_CIRCUMFERENCE}`);
-            overArc.setAttribute('opacity', '0');
-            pctEl.style.color = color;
-            pctEl.textContent = `残量 ${Math.round(ratio * 100)}%`;
+            arc.setAttribute('stroke', color); arc.setAttribute('opacity', '1');
+            overArc.setAttribute('stroke-dasharray', `0 ${RING_CIRCUMFERENCE}`); overArc.setAttribute('opacity', '0');
+            pctEl.style.color = color; pctEl.textContent = `残量 ${Math.round(ratio * 100)}%`;
         } else {
-            arc.setAttribute('stroke-dashoffset', RING_CIRCUMFERENCE);
-            arc.setAttribute('opacity', '0.15');
+            arc.setAttribute('stroke-dashoffset', RING_CIRCUMFERENCE); arc.setAttribute('opacity', '0.15');
             const overRatio = Math.abs(ratio);
             const overDash = Math.min(RING_CIRCUMFERENCE, overRatio * RING_CIRCUMFERENCE * 3);
-            overArc.setAttribute('stroke-dasharray', `${overDash} ${RING_CIRCUMFERENCE}`);
-            overArc.setAttribute('opacity', '0.95');
-            pctEl.style.color = '#ffcc00';
-            pctEl.textContent = `+${Math.round(overRatio * 100)}%`;
+            overArc.setAttribute('stroke-dasharray', `${overDash} ${RING_CIRCUMFERENCE}`); overArc.setAttribute('opacity', '0.95');
+            pctEl.style.color = '#ffcc00'; pctEl.textContent = `+${Math.round(overRatio * 100)}%`;
         }
-        pctEl.style.display = 'block';
-        unitEl.style.display = 'block';
+        pctEl.style.display = 'block'; unitEl.style.display = 'block';
     }
-
     function hideRingExtras() {
-        document.getElementById('ringPct').style.display = 'none';
-        document.getElementById('unitLabel').style.display = 'none';
+        document.getElementById('ringPct').style.display = 'none'; document.getElementById('unitLabel').style.display = 'none';
         const arc = document.getElementById('mainArc');
-        arc.setAttribute('stroke-dashoffset', RING_CIRCUMFERENCE);
-        arc.setAttribute('stroke', '#2c2c2e');
-        arc.setAttribute('opacity', '1');
+        arc.setAttribute('stroke-dashoffset', RING_CIRCUMFERENCE); arc.setAttribute('stroke', '#2c2c2e'); arc.setAttribute('opacity', '1');
         const overArc = document.getElementById('overArc');
-        overArc.setAttribute('stroke-dasharray', `0 ${RING_CIRCUMFERENCE}`);
-        overArc.setAttribute('opacity', '0');
+        overArc.setAttribute('stroke-dasharray', `0 ${RING_CIRCUMFERENCE}`); overArc.setAttribute('opacity', '0');
     }
 
     function up() {
@@ -1017,10 +772,8 @@
 
         if (d.ppm !== null) document.getElementById('ppmIn').value = d.ppm;
         if (d.washInterval !== null) document.getElementById('intervalIn').value = d.washInterval;
-        remL.style.color = '';
-        body.classList.remove('alert-red');
+        remL.style.color = ''; body.classList.remove('alert-red');
         if (noticeBar) noticeBar.style.display = 'none';
-
         document.getElementById('mPRO').className = d.m === 'PRO' ? 'btn-m active' : 'btn-m';
         document.getElementById('mJUST').className = d.m === 'JUST' ? 'btn-m active' : 'btn-m';
         document.getElementById('dualToggle').checked = d.isDual;
@@ -1034,31 +787,17 @@
             document.getElementById('remCount').innerText = '--';
             document.getElementById('costDisp').innerText = '0 円';
             document.getElementById('predictDate').innerText = '寿命予測：--/--頃';
-            if (guideBox) guideBox.style.display = 'block';
-            hideRingExtras();
+            if (guideBox) guideBox.style.display = 'block'; hideRingExtras();
         } else {
-            const cap = calcCap();
-            const totalPrice = calcTotalPrice();
-            const rem = cap - d.used;
-            const ratio = rem / cap;
-            const recentAvg = getRecentAvg();
-
-            if (rem < 0) {
+            const cap = calcCap(); const totalPrice = calcTotalPrice();
+            const rem = cap - d.used; const ratio = rem / cap; const recentAvg = getRecentAvg();
+            if (rem < 0) { remL.innerHTML = Math.floor(rem); remL.style.color = '#ffcc00'; }
+            else {
                 remL.innerHTML = Math.floor(rem);
-                remL.style.color = '#ffcc00';
-            } else {
-                remL.innerHTML = Math.floor(rem);
-                if (ratio < 0.1) {
-                    remL.style.color = 'var(--accent-red)';
-                    body.classList.add('alert-red');
-                    if (noticeBar) noticeBar.style.display = 'block';
-                } else if (ratio < 0.3) {
-                    remL.style.color = 'var(--accent-yellow)';
-                } else {
-                    remL.style.color = 'var(--accent-green)';
-                }
+                if (ratio < 0.1) { remL.style.color = 'var(--accent-red)'; body.classList.add('alert-red'); if (noticeBar) noticeBar.style.display = 'block'; }
+                else if (ratio < 0.3) remL.style.color = 'var(--accent-yellow)';
+                else remL.style.color = 'var(--accent-green)';
             }
-
             updateRing(ratio);
             document.getElementById('remCount').innerText = rem > 0 ? Math.floor(rem / recentAvg) : '--';
             const monthlyCost = Math.round((monthUsed / cap) * totalPrice);
@@ -1078,30 +817,18 @@
             document.getElementById('lastResetDisp').innerText = `前回交換：${dateStr}`;
         }
 
-        if (d.in > 0) {
-            saveBtn.innerText = '記録を保存';
-            saveBtn.style.opacity = "1";
-            saveBtn.style.pointerEvents = "auto";
-        } else {
-            saveBtn.innerText = '数値を入力してください';
-            saveBtn.style.opacity = "0.3";
-            saveBtn.style.pointerEvents = "none";
-        }
+        if (d.in > 0) { saveBtn.innerText = '記録を保存'; saveBtn.style.opacity = "1"; saveBtn.style.pointerEvents = "auto"; }
+        else { saveBtn.innerText = '数値を入力してください'; saveBtn.style.opacity = "0.3"; saveBtn.style.pointerEvents = "none"; }
 
         const washTimeGuide = document.getElementById('washTimeGuide');
         if (washTimeGuide) {
             const timeCount = (d.history || []).filter(h => h.washTime && h.washTime > 0).length;
-            if (timeCount >= 3) {
-                washTimeGuide.style.display = 'none';
-            } else {
-                const remaining = 3 - timeCount;
-                washTimeGuide.style.display = 'block';
-                washTimeGuide.innerText = timeCount === 0
-                    ? '3回以上記録すると「コンディション詳細」に洗車時間の比較が表示されます'
-                    : `あと${remaining}回記録すると洗車時間の比較が表示されます`;
+            if (timeCount >= 3) { washTimeGuide.style.display = 'none'; }
+            else {
+                const remaining = 3 - timeCount; washTimeGuide.style.display = 'block';
+                washTimeGuide.innerText = timeCount === 0 ? '3回以上記録すると「コンディション詳細」に洗車時間の比較が表示されます' : `あと${remaining}回記録すると洗車時間の比較が表示されます`;
             }
         }
-
         updateWashDayCard();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
     }
@@ -1111,13 +838,9 @@
         vib(30);
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-        const cap = calcCap();
-        const totalPrice = calcTotalPrice();
+        const cap = calcCap(); const totalPrice = calcTotalPrice();
         const cost = Math.round((d.in / cap) * totalPrice);
-        const avg = getRecentAvg();
-        const tags = [...selectedTags];
-        const memo = getMemo();
-        const savedAmt = d.in;
+        const avg = getRecentAvg(); const tags = [...selectedTags]; const memo = getMemo(); const savedAmt = d.in;
 
         if (d.in > 0) {
             const wasteL = Math.max(0, d.in - avg);
@@ -1126,13 +849,7 @@
             if (d.in > avg * 1.5) level = 'danger';
             else if (d.in > avg * 1.2) level = 'warn';
             if (!d.history) d.history = [];
-            d.history.unshift({
-                ts: now.getTime(),
-                date: `${now.getMonth()+1}/${now.getDate()}`,
-                amt: d.in, cost, wasteL, wasteCost, refAvg: avg, level,
-                tags, memo,
-                washTime: d.washTime > 0 ? d.washTime : null
-            });
+            d.history.unshift({ ts: now.getTime(), date: `${now.getMonth()+1}/${now.getDate()}`, amt: d.in, cost, wasteL, wasteCost, refAvg: avg, level, tags, memo, washTime: d.washTime > 0 ? d.washTime : null });
             if (d.history.length > 10) d.history.pop();
             d.used += d.in;
             d.logs[monthKey] = (d.logs[monthKey] || 0) + d.in;
@@ -1140,47 +857,32 @@
         }
 
         const totalUsed = d.used;
-        d.in = 0;
-        d.washTime = 0;
-        clearTags();
-        clearMemo();
+        d.in = 0; d.washTime = 0; clearTags(); clearMemo();
         document.getElementById('timeVal').innerText = 0;
         up();
 
         if (document.getElementById('calCheck').checked) {
             openCalModal({ amt: savedAmt, totalUsed, tags, memo });
         }
+        if (document.getElementById('xPostCheck').checked) {
+            postToX(savedAmt, totalUsed);
+        }
     }
 
     function showDetail() {
         if (!d.ppm) { alert("下記の設定欄にPPMを入力してください"); return; }
-        const cap = calcCap();
-        const totalPrice = calcTotalPrice();
+        const cap = calcCap(); const totalPrice = calcTotalPrice();
         const histDiv = document.getElementById('historyList');
         histDiv.innerHTML = d.history.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">履歴なし</div>';
         d.history.forEach(h => {
             const barWidth = Math.min(100, (h.amt / (h.refAvg || 30)) * 50);
-            let color = 'var(--accent-green)';
-            let label = `平均より ${Math.abs(h.amt - h.refAvg)}ℓ 節約`;
+            let color = 'var(--accent-green)'; let label = `平均より ${Math.abs(h.amt - h.refAvg)}ℓ 節約`;
             if (h.level === 'danger') { color = 'var(--accent-red)'; label = `🔥多すぎ (+${h.wasteL}ℓ 約${h.wasteCost}円ロス)`; }
             else if (h.level === 'warn') { color = 'var(--accent-yellow)'; label = `⚠️多め (+${h.wasteL}ℓ 約${h.wasteCost}円ロス)`; }
-
-            const tagsHtml = (h.tags && h.tags.length > 0)
-                ? `<div class="hist-tags">${h.tags.map(t => `<span class="hist-tag">${t}</span>`).join('')}</div>` : '';
-
-            const memoEl = document.createElement('div');
-            memoEl.className = 'hist-memo';
-            memoEl.textContent = '💬 ' + h.memo;
+            const tagsHtml = (h.tags && h.tags.length > 0) ? `<div class="hist-tags">${h.tags.map(t => `<span class="hist-tag">${t}</span>`).join('')}</div>` : '';
+            const memoEl = document.createElement('div'); memoEl.className = 'hist-memo'; memoEl.textContent = '💬 ' + h.memo;
             const memoHtml = h.memo ? memoEl.outerHTML : '';
-
-            histDiv.innerHTML += `
-                <div class="history-item">
-                    <div class="avg-guide-line"></div><div class="avg-label">平均ライン</div>
-                    <div class="graph-bar-left" style="width:${barWidth}%; background:${color};"></div>
-                    <div class="hist-main"><span>${h.date}</span><span style="font-weight:bold;font-size:15px;">${h.amt}ℓ</span><span>${h.cost}円</span></div>
-                    <div class="hist-sub" style="color:${color}">${label}</div>
-                    ${tagsHtml}${memoHtml}
-                </div>`;
+            histDiv.innerHTML += `<div class="history-item"><div class="avg-guide-line"></div><div class="avg-label">平均ライン</div><div class="graph-bar-left" style="width:${barWidth}%; background:${color};"></div><div class="hist-main"><span>${h.date}</span><span style="font-weight:bold;font-size:15px;">${h.amt}ℓ</span><span>${h.cost}円</span></div><div class="hist-sub" style="color:${color}">${label}</div>${tagsHtml}${memoHtml}</div>`;
         });
 
         const timeRecords = d.history.filter(h => h.washTime && h.washTime > 0);
@@ -1198,41 +900,29 @@
                 timeHtml += `<div style="font-size:10px; color:var(--text-sub); text-align:right; margin-top:4px;">直近平均：${avgTime}分</div>`;
                 timeSection.innerHTML = timeHtml;
                 document.getElementById('washTimeSectionWrap').style.display = 'block';
-            } else {
-                document.getElementById('washTimeSectionWrap').style.display = 'none';
-            }
+            } else { document.getElementById('washTimeSectionWrap').style.display = 'none'; }
         }
 
         const summaryDiv = document.getElementById('monthSummaryList');
         const sortedLogKeys = Object.keys(d.logs).sort().reverse();
         summaryDiv.innerHTML = sortedLogKeys.length ? '' : '<div style="font-size:12px;color:#555;text-align:center;padding:20px;">サマリーなし</div>';
-
         const logKeys = Object.keys(d.logs).sort();
-        const avgMonthlyCost = logKeys.length > 0
-            ? Math.round(logKeys.reduce((a, k) => a + Math.round((d.logs[k] / cap) * totalPrice), 0) / logKeys.length)
-            : 0;
-
+        const avgMonthlyCost = logKeys.length > 0 ? Math.round(logKeys.reduce((a, k) => a + Math.round((d.logs[k] / cap) * totalPrice), 0) / logKeys.length) : 0;
         sortedLogKeys.slice(0, 12).forEach(key => {
-            const mUsed = d.logs[key];
-            const mCost = Math.round((mUsed / cap) * totalPrice);
+            const mUsed = d.logs[key]; const mCost = Math.round((mUsed / cap) * totalPrice);
             const diff = avgMonthlyCost > 0 ? mCost - avgMonthlyCost : 0;
             const diffStr = diff > 0 ? `月平均比 +${diff.toLocaleString()}円` : diff < 0 ? `月平均比 ${diff.toLocaleString()}円` : `月平均比 ±0円`;
             const diffColor = diff > 0 ? '#ff9500' : diff < 0 ? '#34c759' : '#888';
             summaryDiv.innerHTML += `<div class="history-item"><div class="hist-main"><span>${key}</span><span>${mUsed}ℓ</span><span>${mCost}円</span></div><div class="hist-sub" style="color:${diffColor}">${diffStr}</div></div>`;
         });
 
-        const recentAvg = getRecentAvg();
-        const interval = getAvgInterval();
-        const rem = cap - d.used;
+        const recentAvg = getRecentAvg(); const interval = getAvgInterval(); const rem = cap - d.used;
         const remCount = rem > 0 ? Math.floor(rem / recentAvg) : '--';
-        const predictDate = new Date();
-        predictDate.setDate(predictDate.getDate() + Math.floor((rem / recentAvg) * interval));
+        const predictDate = new Date(); predictDate.setDate(predictDate.getDate() + Math.floor((rem / recentAvg) * interval));
         const predictStr = rem > 0 ? `${predictDate.getMonth()+1}月${predictDate.getDate()}日頃` : '理論値超過中';
         const monthlyAvgCost = logKeys.length > 0 ? Math.round(logKeys.reduce((a,k) => a + Math.round((d.logs[k]/cap)*totalPrice), 0) / logKeys.length) : 0;
-        const now2 = new Date();
-        const mk2 = `${now2.getFullYear()}-${String(now2.getMonth()+1).padStart(2,'0')}`;
-        const thisMonthUsed = d.logs[mk2] || 0;
-        const thisMonthCost = Math.round((thisMonthUsed / cap) * totalPrice);
+        const now2 = new Date(); const mk2 = `${now2.getFullYear()}-${String(now2.getMonth()+1).padStart(2,'0')}`;
+        const thisMonthUsed = d.logs[mk2] || 0; const thisMonthCost = Math.round((thisMonthUsed / cap) * totalPrice);
         const monthDiff = monthlyAvgCost > 0 ? thisMonthCost - monthlyAvgCost : 0;
         const monthDiffStr = monthDiff >= 0 ? `+${monthDiff.toLocaleString()}円` : `${monthDiff.toLocaleString()}円`;
         const yearCost = monthlyAvgCost > 0 ? (monthlyAvgCost * 12).toLocaleString() : '--';
@@ -1275,26 +965,19 @@
         longClickTimer = setTimeout(() => {
             vib([50, 30, 50]);
             if(confirm("樹脂の使用記録をリセットしますか？")) {
-                const firstTs = (d.history && d.history.length > 0)
-                    ? d.history[d.history.length - 1].ts : null;
+                const firstTs = (d.history && d.history.length > 0) ? d.history[d.history.length - 1].ts : null;
                 d.used = 0; d.in = 0; d.lastReset = new Date().getTime();
                 up(); showToast("樹脂をリセットしました");
                 const shown = localStorage.getItem('pwMigrationShown');
                 if (!shown && firstTs && (Date.now() - firstTs) >= 180 * 24 * 60 * 60 * 1000) {
-                    setTimeout(() => {
-                        document.getElementById('migrationOverlay').style.display = 'flex';
-                    }, 600);
+                    setTimeout(() => { document.getElementById('migrationOverlay').style.display = 'flex'; }, 600);
                     localStorage.setItem('pwMigrationShown', '1');
                 }
             }
             cancelReset();
         }, 5000);
     };
-    const cancelReset = () => {
-        clearTimeout(longClickTimer);
-        document.getElementById('resetBar').style.transition = 'width 0s linear';
-        document.getElementById('resetBar').style.width = '0%';
-    };
+    const cancelReset = () => { clearTimeout(longClickTimer); document.getElementById('resetBar').style.transition = 'width 0s linear'; document.getElementById('resetBar').style.width = '0%'; };
     resetBtn.addEventListener('mousedown', startReset);
     resetBtn.addEventListener('touchstart', startReset, {passive: false});
     window.addEventListener('mouseup', cancelReset);
@@ -1303,13 +986,11 @@
     let currentTransferMode = '';
     function openTransferModal(mode) {
         currentTransferMode = mode;
-        const area = document.getElementById('transferArea');
-        const btn = document.getElementById('transferActionBtn');
+        const area = document.getElementById('transferArea'); const btn = document.getElementById('transferActionBtn');
         if (mode === 'export') {
             document.getElementById('transferTitle').innerText = 'データの書き出し';
             document.getElementById('transferDesc').innerText = 'コードをコピーして保存してください。';
-            area.value = btoa(unescape(encodeURIComponent(JSON.stringify(d))));
-            area.readOnly = true; btn.innerText = 'コピーする';
+            area.value = btoa(unescape(encodeURIComponent(JSON.stringify(d)))); area.readOnly = true; btn.innerText = 'コピーする';
             setTimeout(() => { area.select(); }, 100);
         } else {
             document.getElementById('transferTitle').innerText = 'データの読み込み';
@@ -1328,11 +1009,12 @@
                 d = JSON.parse(decodeURIComponent(escape(atob(area.value.trim()))));
                 if (d.calPref === undefined) d.calPref = true;
                 if (d.washTime === undefined) d.washTime = 0;
-                // [修正③] インポート時にfirstLaunchを補完
                 if (d.firstLaunch === undefined) d.firstLaunch = new Date().getTime();
                 if (d.isDual === undefined) d.isDual = false;
                 if (d.subMode === undefined) d.subMode = 'PRO';
                 if (d.washInterval === undefined) d.washInterval = null;
+                if (d.xPostPref === undefined) d.xPostPref = false;
+                if (d.customTags === undefined) d.customTags = '';
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
                 up(); alert("復元しました！"); closeTransferModal();
             } catch(e) { alert("不正なコードです"); }
@@ -1346,9 +1028,7 @@
     const fullResetBar = document.getElementById('fullResetBar');
     const startFullReset = (e) => {
         if (e.type === 'touchstart') e.preventDefault();
-        vib(10);
-        fullResetBar.style.transition = 'width 5.0s linear';
-        fullResetBar.style.width = '100%';
+        vib(10); fullResetBar.style.transition = 'width 5.0s linear'; fullResetBar.style.width = '100%';
         fullResetTimer = setTimeout(() => {
             vib([50, 30, 50]);
             if(confirm("すべての記録を初期化しますか？\n（PPMとモード設定は保持されます）")) {
@@ -1360,23 +1040,14 @@
             cancelFullReset();
         }, 5000);
     };
-    const cancelFullReset = () => {
-        clearTimeout(fullResetTimer);
-        fullResetBar.style.transition = 'width 0s linear';
-        fullResetBar.style.width = '0%';
-    };
+    const cancelFullReset = () => { clearTimeout(fullResetTimer); fullResetBar.style.transition = 'width 0s linear'; fullResetBar.style.width = '0%'; };
     fullResetBtn.addEventListener('mousedown', startFullReset);
     fullResetBtn.addEventListener('touchstart', startFullReset, {passive: false});
     window.addEventListener('mouseup', cancelFullReset);
     window.addEventListener('touchend', cancelFullReset);
 
-    function openGeneral() {
-        window.open('https://missinglink4179.github.io/pure-water-generic/', '_blank');
-        closeMigration();
-    }
-    function closeMigration() {
-        document.getElementById('migrationOverlay').style.display = 'none';
-    }
+    function openGeneral() { window.open('https://missinglink4179.github.io/pure-water-generic/', '_blank'); closeMigration(); }
+    function closeMigration() { document.getElementById('migrationOverlay').style.display = 'none'; }
 
     up();
 
@@ -1384,20 +1055,15 @@
         if (!d.ppm || d.ppm === 0) return;
         const todayKey = new Date().toDateString();
         if (localStorage.getItem('pwAlertDate') === todayKey) return;
-        const cap = calcCap();
-        const rem = cap - d.used;
-        const now3 = new Date();
-        const mk3 = `${now3.getFullYear()}-${String(now3.getMonth()+1).padStart(2,'0')}`;
+        const cap = calcCap(); const rem = cap - d.used;
+        const now3 = new Date(); const mk3 = `${now3.getFullYear()}-${String(now3.getMonth()+1).padStart(2,'0')}`;
         const thisMonthUsed3 = d.logs[mk3] || 0;
         const logKeys3 = Object.keys(d.logs).filter(k => k !== mk3).sort();
         const monthlyAvg3 = logKeys3.length > 0 ? logKeys3.reduce((a,k) => a + d.logs[k], 0) / logKeys3.length : 0;
         const msgs = [];
         if (rem > 0 && rem / cap < 0.1) msgs.push("イオン交換樹脂の残量が少なくなっています。\n交換の準備をはじめましょう。");
         if (monthlyAvg3 > 0 && thisMonthUsed3 > monthlyAvg3 * 1.2) msgs.push("今月の使用量が平均より多めです。\n洗車回数や水量を振り返ってみましょう。");
-        if (msgs.length > 0) {
-            setTimeout(() => { alert(msgs.join("\n\n")); }, 500);
-            localStorage.setItem('pwAlertDate', todayKey);
-        }
+        if (msgs.length > 0) { setTimeout(() => { alert(msgs.join("\n\n")); }, 500); localStorage.setItem('pwAlertDate', todayKey); }
     })();
 </script>
 </body>
