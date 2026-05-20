@@ -691,10 +691,27 @@
         const cap = calcCap();
         const rem = cap - d.used;
         const pct = Math.round((rem / cap) * 100);
-        const washCount = d.history ? d.history.length : 0;
-        const countStr = washCount > 0 ? ` / 第${washCount}回` : '';
-        const customTags = d.customTags ? `\n${d.customTags}` : '';
-        const text = `純水洗車記録\n${amt}ℓ使用 / 残 ${pct}% / 累計 ${totalUsed}ℓ${countStr}${customTags}\n#PureWaterTracker`;
+        const remL = Math.max(0, Math.floor(rem));
+
+        // 洗車時間（直近）
+        const lastWashTime = d.history && d.history[0] && d.history[0].washTime
+            ? d.history[0].washTime : (d.washTime || 0);
+
+        // 施工タグ（直近）
+        const lastTags = d.history && d.history[0] && d.history[0].tags && d.history[0].tags.length > 0
+            ? d.history[0].tags : [];
+
+        // 投稿テキスト組み立て
+        let lines = [];
+        lines.push('本日の純水洗車完了！');
+        lines.push(`💧 使用量: ${amt}ℓ`);
+        lines.push(`🔄 残り: ${remL}ℓ（${pct}%）`);
+        if (lastWashTime > 0) lines.push(`⏱️ 洗車時間: ${lastWashTime}分`);
+        if (lastTags.length > 0) lines.push(`🛠️ 施工: ${lastTags.join('・')}`);
+        lines.push('#PureWaterTracker');
+        if (d.customTags) lines.push(d.customTags);
+
+        const text = lines.join('\n');
         const encoded = encodeURIComponent(text);
         const appUrl = `twitter://post?message=${encoded}`;
         document.getElementById('xModalPreview').textContent = text;
